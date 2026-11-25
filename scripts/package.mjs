@@ -3,15 +3,32 @@
 //
 //   node scripts/package.mjs <output directory>
 import { cp, mkdir, readdir, rm, stat } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { isAbsolute, join, parse, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 export const publicFiles = ["index.html", "404.html", "robots.txt", "sitemap.xml", "CNAME", ".nojekyll", "assets"];
 
-export async function packageSite(output) {
+const inside = (parent, child) => {
+  const path = relative(parent, child);
+  return path === "" || (!path.startsWith("..") && !isAbsolute(path));
+};
+
+// The output directory is replaced, so refuse the repository, its parents, the filesystem root
+// and any folder inside the repository other than the ignored dist/.
+export function assertSafeTarget(output, repository = root) {
   const target = resolve(output);
-  if (target === resolve(root) || resolve(root).startsWith(`${target}/`)) throw new Error(`Refusing to replace ${target}`);
+  const base = resolve(repository);
+  if (target === parse(target).root || inside(target, base) || (inside(base, target) && relative(base, target) !== "dist")) {
+    throw new Error(`Refusing to replace ${target}; choose dist/ or a directory outside the repository`);
+  }
+  return target;
+}
+
+export async function packageSite(output) {
+  const target = assertSafeTarget(output);
+  const existing = await stat(target).catch(() => null);
+  if (existing && !existing.isDirectory()) throw new Error(`${target} is not a directory`);
   await rm(target, { recursive: true, force: true });
   await mkdir(join(target, "docs"), { recursive: true });
   for (const entry of publicFiles) {

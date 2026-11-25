@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { checkSite } from "../scripts/check-links.mjs";
 import { repositoryTarget } from "../scripts/links.mjs";
+import { assertSafeTarget } from "../scripts/package.mjs";
 import { createSlugger, flowchartToHtml, renderMarkdown } from "../scripts/markdown.mjs";
 
 test("heading ids follow GitHub's slugs, including duplicates and punctuation", () => {
@@ -91,4 +92,13 @@ test("the site check reports broken files, anchors and duplicate ids", async () 
   } finally {
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test("packaging refuses to replace the repository, its parents or its folders", () => {
+  const repo = join(tmpdir(), "site-repo");
+  for (const target of ["/", repo, join(repo, ".."), join(repo, "docs"), join(repo, "vendor/porto")]) {
+    assert.throws(() => assertSafeTarget(target, repo), /Refusing to replace/, target);
+  }
+  assert.equal(assertSafeTarget(join(repo, "dist"), repo), join(repo, "dist"));
+  assert.equal(assertSafeTarget(join(tmpdir(), "pages"), repo), join(tmpdir(), "pages"));
 });

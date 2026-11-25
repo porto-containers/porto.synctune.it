@@ -56,7 +56,9 @@ schedule and manual dispatch:
   `pages: write` and `id-token: write`, and it never runs for pull requests or
   the weekly schedule.
 
-Pull request runs cancel older runs of the same PR; production runs queue.
+Each event and branch has its own concurrency group, so scheduled or manual
+runs never cancel a push. Pull request runs cancel older runs of the same PR,
+and deployments queue in a separate `pages-deploy` group.
 Redeploy with **Actions > Website > Run workflow** on `main`. Actions are pinned
 to full commit SHAs and the workflow needs no secrets.
 

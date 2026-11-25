@@ -7,7 +7,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdtempSync, rmSync } from "node:fs";
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -61,11 +61,11 @@ try {
   const problems = [];
   const images = new Set();
 
-  await rm(vendor, { recursive: true, force: true });
+  // Read and validate everything before replacing vendor/porto, so a failed sync changes nothing.
+  const contents = new Map();
   for (const path of vendored) {
     const content = show(path);
-    await mkdir(dirname(join(vendor, path)), { recursive: true });
-    await writeFile(join(vendor, path), content);
+    contents.set(path, content);
     documents[path] = createHash("sha256").update(content).digest("hex");
     for (const url of collectLinks(content)) {
       if (/^https?:/i.test(url) && /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)|user-attachments\/assets/i.test(url)) images.add(url);
@@ -100,7 +100,15 @@ try {
     assets,
     derived: previous.derived ?? {},
   };
-  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  const staging = `${vendor}.next`;
+  await rm(staging, { recursive: true, force: true });
+  for (const [path, content] of contents) {
+    await mkdir(dirname(join(staging, path)), { recursive: true });
+    await writeFile(join(staging, path), content);
+  }
+  await writeFile(join(staging, "SOURCE.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+  await rm(vendor, { recursive: true, force: true });
+  await rename(staging, vendor);
   const files = await readdir(vendor, { recursive: true });
   console.log(`Vendored ${Object.keys(documents).length} documents (${files.length} entries) from ${site.repository}@${commit.slice(0, 7)} into ${relative(root, vendor)}.`);
   console.log(`Pages: ${pages.length}. Repository links: ${Object.keys(links).length}. Run node scripts/build.mjs next.`);
