@@ -1,0 +1,1398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>CI and releases | Porto docs</title>
+  <meta name="description" content="Local validation, GitHub Actions, packaging, release steps and artifacts.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/ci-cd.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="CI and releases | Porto docs">
+  <meta property="og:description" content="Local validation, GitHub Actions, packaging, release steps and artifacts.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/ci-cd.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute" aria-current="page">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html" aria-current="page">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#develop">Develop and release</a></p>
+  <article class="prose" aria-label="Continuous integration and releases">
+<h1 id="continuous-integration-and-releases">Continuous integration and releases</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">6 sections</span></summary>
+    <ol>
+      <li><a href="#workflows">Workflows</a></li>
+      <li><a href="#ci-details">CI details</a></li>
+      <li><a href="#management-and-packaging-validation">Management and packaging validation</a></li>
+      <li><a href="#cutting-a-release">Cutting a release</a></li>
+      <li><a href="#release-artifacts">Release artifacts</a></li>
+      <li><a href="#running-the-checks-locally">Running the checks locally</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto's automation lives in <code>.github/workflows</code>. Every workflow declares the least privilege it needs and checks out the repository without persisted Git credentials.</p>
+<h2 id="workflows">Workflows<a class="anchor" href="#workflows" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="table" role="region" aria-label="Table: Workflows" tabindex="0"><table>
+<thead><tr><th scope="col">Workflow</th><th scope="col">File</th><th scope="col">Trigger</th><th scope="col">Purpose</th></tr></thead>
+<tbody>
+<tr><td>CI</td><td><code>ci.yml</code></td><td>pull requests, pushes to <code>main</code> (except Markdown-only), manual</td><td>Formatting, vet, tests, cross-compilation, dashboard lint and build</td></tr>
+<tr><td>CodeQL</td><td><code>codeql.yml</code></td><td>pull requests, pushes to <code>main</code> (except Markdown-only), weekly</td><td>Static analysis for <code>go</code> and <code>javascript-typescript</code></td></tr>
+<tr><td>Security audit</td><td><code>security.yml</code></td><td>pushes to <code>main</code> (except Markdown-only), weekly, manual</td><td><code>govulncheck</code> and <code>npm audit</code></td></tr>
+<tr><td>Emulated runtime acceptance</td><td><code>emulated-runtime.yml</code></td><td>manual</td><td>Full software-emulated Lima platform/phase matrix</td></tr>
+<tr><td>Release</td><td><code>release.yml</code></td><td>tags matching <code>v*</code>, manual</td><td>Builds, packages, and publishes archives plus native macOS and Windows installers</td></tr>
+</tbody>
+</table></div>
+<p>Pull requests and pushes that change only Markdown files (<code>**.md</code>) don't start
+CI, CodeQL or the security audit: no test, build or package reads them. A change
+to any other file, including a workflow, runs every check. Releases still copy
+<code>README.md</code> into archives and are unaffected, because path filters don't apply to
+tag pushes. GitHub evaluates at most the first 3,000 changed files, so start CI
+manually if a very large mixed change doesn't trigger it. Weekly CodeQL and
+security runs keep full coverage. There are no required status checks, so a
+skipped run never blocks merging.</p>
+<p>CodeQL retains both complete language analyses on every run it starts, including
+draft pull requests; there are no language-selection exclusions.
+The security audit runs <code>govulncheck@latest</code> and audits the complete dashboard
+lockfile with <code>npm audit --package-lock-only --audit-level=high</code>. The audit-only
+job does not install packages, run dependency lifecycle scripts, or transfer an
+unused npm download cache. Locked <code>npm ci</code> installations, builds, and tests remain
+part of CI and release validation; registry errors and high-severity findings
+still fail the security audit.</p>
+<p>When <code>npm audit</code> reports high or critical findings, both this audit and the CI
+Electron lockfile audit pass the JSON report to <code>scripts/npm-audit-policy.cjs</code>.
+It fails on every advisory except the explicitly accepted ones and prints each
+accepted advisory as a workflow warning. Only advisories with no patched release
+that reach build tooling alone may be accepted. The list currently holds
+picomatch ReDoS <code>GHSA-fc5q-39xc-vjpf</code> (every release up to 4.0.7, reached through
+Vite and electron-builder's node-gyp); remove it once picomatch ships a fix.
+npm's suggested <code>audit fix --force</code> would downgrade Vite and electron-builder
+across major versions instead.</p>
+<p>The maintained official <code>golang.org/x/crypto</code> module is required for SSH.
+GO-2026-5932 covers its retired OpenPGP packages, which remain in the latest
+stable release, <code>v0.58.0</code>; Porto imports none of those packages. The crypto
+dependency policy checks production and test dependency graphs for all six
+release targets and rejects any future deprecated OpenPGP import. It does not
+suppress vulnerability findings, replace official cryptography with a fork, or
+claim that the upstream module-only advisory has disappeared.</p>
+<h2 id="ci-details">CI details<a class="anchor" href="#ci-details" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The <code>go</code> job runs on <code>ubuntu-latest</code>, <code>macos-latest</code>, and <code>windows-latest</code> with the current stable toolchain, plus one extra <code>ubuntu-latest</code> job on <code>1.27.3</code> to guard the exact minimum version declared in <code>go.mod</code>. Linux runs <code>gofmt -l</code>, <code>go mod tidy -diff</code>, and <code>go test ./... -race</code>; the other platforms run the plain test suite.</p>
+<p>The ordinary Go suite exercises the native-mount and WSL helper CLI contracts
+in owned subprocesses without mounting filesystems or starting WSL. It also
+covers backup schedule bounds and resource keys, local-tool stream limits,
+environment isolation and cancellation, and the synthetic registry's OCI,
+HTTP/HTTPS/SOCKS and destination-confinement contracts. Stream-limit tests use
+both <code>io.Copy</code> and real subprocess output so optimized copy paths cannot bypass
+the bound. Native VM-helper tests require real piped subprocess stdin and a
+smaller compressed transfer with byte-exact uncompressed checksum delivery.
+Linux guest-script tests preserve the existing helper and clean staged files
+after gzip corruption, checksum mismatch or executable failure. Cancellation,
+transport and encoding causes retain bounded diagnostics. These checks do not
+replace native-driver, installed-package or VM-backed acceptance.</p>
+<p>The <a href="data-compatibility.html#regression-evidence-and-remaining-limits">data compatibility suite</a>
+pins fingerprint serialization, archive-1 readers, data-table transaction
+rollback, legacy operation JSON and the local operation-history HTTP shape.
+Its fixtures are synthetic and do not claim historical-binary downgrade or
+real runtime/driver acceptance.</p>
+<p>Optional Etcqlite tests cover disabled no-op gates, full-width identity,
+private mTLS/SPIFFE material, restart ownership, occupied listeners, native
+snapshot preconditions/integrity, k3s credential/readiness ordering and reversible
+writer-lock-protected retention. The ordinary suites use synthetic fixtures and
+do not start a real Kubernetes cluster. For separately installed matching native
+binaries on macOS/Linux, run isolated native acceptance explicitly:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PORTO_ETCQLITE_TEST_BINARY=/absolute/install/bin/etcqlite \
+  go test ./internal/etcqlite -count=1
+npm --prefix ui test -- tests/etcqlite.spec.ts</code></pre></div>
+<p>Native acceptance creates only private temporary standalone/three-member data,
+uses ephemeral host ports and stops only its own identity-verified processes.
+Setting <code>PORTO_ETCQLITE_TEST_VM</code> additionally runs a bounded mTLS
+<code>host.lima.internal</code> readiness/identity probe in that explicitly authorized isolated
+Lima VM. It stages and removes only a unique private <code>/tmp/porto-etcqlite-probe-*</code>
+directory; it does not start, stop or reconfigure guest workloads or mount host data.
+Do not select an ordinary user VM or a guest running a measured qualification job.
+No CI workflow is added or enabled for this integration.</p>
+<p>The Unix Git-timeout fixture reexecutes its already-running test binary instead
+of cold-starting a generated shell script and a separate <code>sleep</code> process under
+the Git deadlines. Locale checks, actual lock creation, process termination and
+owned-lock cleanup remain required; production timeouts are unchanged.</p>
+<p>The real npm dependency-startup fixture allows three minutes for a cold
+installer and 30 seconds for the started <code>npm run dev</code> server to become ready;
+synthetic setup fixtures retain their 15-second deadline and 3-second status
+wait. On Windows CI it runs in its own verbose step after the parallel package
+suite, which skips it, so the cold npm does not compete with other packages. It
+runs npm offline with an isolated cache, since its only dependency is a local
+file package, and at verbose log level so a timeout's stored output shows the
+stalled phase. A setup timeout also lists the test binary's child processes
+(<code>cmd.exe</code>, <code>npm-prefix.js</code>, <code>npm-cli.js</code>) to show which one never exited. It
+still requires the installed development dependency and an HTTP-ready
+application.
+Setup timeouts include stored command output instead of only a generic failure.</p>
+<p>Operation and Kubernetes administration test waits allow 30 seconds: they guard
+against hangs, not latency, and queued work on loaded Windows runners exceeded
+the earlier one- and five-second bounds.</p>
+<p>Docker CLI parity tests allow one minute for the initial context creation on
+Windows, separating cold CLI/configuration bootstrap from the 30-second budget
+for each subsequent command. They still execute every command through the real
+<code>porto</code> context and native named pipe; no command is retried or skipped.
+Before the parallel package suite, the Windows Go job runs <code>docker --version</code>,
+<code>docker context ls</code> and <code>npm --version</code> once and logs how long each took. A
+job's first launch of these CLIs reads cold binaries and module trees, and during
+the suite's compile and link I/O it has stalled with no output past those
+deadlines.</p>
+<p>Lima installation verifies containerd with <code>nerdctl info --format '{{.ServerVersion}}'</code> within the existing 30-second deadline, taking the version
+only from stdout and rejecting a missing version. Unlike <code>nerdctl version</code>,
+this daemon probe does not launch separate <code>buildctl --version</code> and
+<code>runc --version</code> subprocesses, whose cold starts compete with boot work under
+TCG. The independent BuildKit connection check remains required before saving
+engine state.</p>
+<p>The native platform-networking job runs on Ubuntu, Windows x64 and Windows
+ARM64. Disposable hosts install the real loopback HTTPS integration, check
+occupied IPv4/IPv6 port rollback, import two synthetic CAs, and verify a dotted
+portless route in a real browser without certificate-error bypass flags. It
+checks native trust, certificate renewal, least-privilege helper identity,
+crash recovery, reinstall and fingerprint-scoped removal. Ubuntu includes
+Chromium's real NSS database; Windows uses the current user's native store.
+The Windows fixture answers the real protected-root confirmation only in its
+own CLI child process and only when the dialog displays the complete synthetic
+CA fingerprint. This consent helper exists only in the disposable CI test; it
+does not change Windows trust policy or automate a developer's desktop.
+ConPTY resize, subprocess exit and disconnect/reaping contracts run natively
+on both Windows architectures. The privileged Linux fixture is a synthetic TLS
+server, not a privileged Porto daemon or workload.</p>
+<p>Native Windows-container acceptance has a separate Windows Server 2025 AMD64
+row. It builds only the owned native payload and current Porto CLI, using an
+immutable Nano Server image reference. Its native fixture covers lifecycle,
+networking, bind writes, logs/exec, host/image/isolation rejection and
+ownership-safe mode/data preservation. Docker create must leave the task Created,
+without a PID or fixture side effects; start is tested separately. Native image
+configuration IDs remain distinct from manifest targets across listing,
+inspection, tagging and creation. Unsupported hosts/architectures have
+unit and capability gates, not an x64 binary fallback.</p>
+<p>The native fixture also exercises the actual dashboard WebSocket against SDK
+execs, including exact nonzero exit, resize, process/exec-metadata reaping and an
+unrelated interactive exec that must survive. Reaping binds to the tracked SDK
+exec IDs and PIDs, preserves every baseline PID, and rejects leftover terminal
+or fixture processes. New non-SDK Windows background services are identified
+from maintained HCS process details rather than mistaken for leaked execs by
+an exact whole-container PID-count comparison. The Windows development-client
+row enables <code>PORTO_TEST_WINDOWS_COEXISTENCE=1</code> against its already running owned
+Linux engine, preserving live PID/start identity and exact binary volume data
+through native install, changed-binary update, repair and context changes.</p>
+<p>Networking acceptance uses loopback-only synthetic TLS registries and real
+HTTP, HTTPS and SOCKS proxies on every existing development-client backend.
+The matrix includes rootful local Linux and KVM-backed Linux Lima, plus Lima
+on macOS and Windows. The Linux Lima row fails if native KVM is unavailable;
+software emulation is not substituted for that required acceptance.
+The full Linux Lima fixture runs in a fresh <code>kvm</code>-group process, as the runtime
+data fixtures do, so a later engine wake does not depend on the initial device
+ACL remaining unchanged. KVM access diagnostics are retained on boot failure.
+It verifies custom CA trust and its removal, proxy transitions and local
+bypass; rootful local Linux additionally requests a real container private IP.
+Unit transport gates run on Linux, macOS and Windows and exercise changing
+resolver answers without modifying host DNS. Expired/near-expiry leaf fixtures
+verify recovery without replacing the trusted CA.</p>
+<p>Image-transfer tests use a real HTTP/1 server and flush backend progress before
+reading either a content-length or chunked binary upload. This catches a
+request-body draining race; in-memory response recorders alone cannot exercise
+that HTTP server behavior.</p>
+<p>BuildKit control and session channels share a one-minute connection-setup
+allowance for the owned SSH/stdio tunnel. gRPC's default 20-second dial attempt
+could discard a slow but valid emulated-guest connection before the caller's
+longer RPC deadline. A deterministic virtual-clock regression verifies a
+25-second tunnel connects once, while a caller's shorter ten-second deadline
+still expires on time. This does not retry builds or extend their request,
+container-start, provisioning or readiness budgets.</p>
+<p>Solve admission also performs a live guest architecture/binfmt check before
+BuildKit's 15-second gateway Ping deadline. The probe parses proc entries with
+shell builtins instead of forking <code>grep</code> and <code>sed</code> for each handler, which took
+18 seconds under Windows ARM QEMU TCG. Enabled state, the fix-binary <code>F</code> flag
+and an executable interpreter remain required. An isolated shell fixture checks
+valid, disabled and unsafe handlers without external parsers. This adds no
+capability cache or build retries and does not extend any deadline.</p>
+<p>Container identity checks on an available, matching owned Lima inventory use
+live containerd metadata over its established connection instead of forking
+<code>nerdctl inspect</code> for each guard. They do not trust cached snapshot names and do
+not reuse a connection after engine ownership changes. The metadata timeout and
+shorter caller deadlines remain unchanged; metadata failures stay explicit.
+The Resource Saver fixture keeps its inventory context alive until registered
+container, sharing and inventory cleanups finish. Returning from the test body
+must not close its RPC connection while synthetic-container cleanup still needs it.</p>
+<p>Windows QEMU still uses Lima's
+<a href="https://github.com/lima-vm/lima/issues/2158" rel="noopener">known unreliable serial guest-agent channel</a>.
+Its <code>Info</code> health probe is bounded at ten seconds, allowing the existing reconnect
+loop to replace a stalled channel rather than hold its client lock until shutdown.
+Virtual-clock coverage verifies expiration, a shorter three-second caller deadline
+and a healthy replacement connection. The one-minute guest-agent startup check
+and all real forwarding assertions remain required. Failed boot diagnostics include
+the guest-agent service state, journal and available virtio ports.</p>
+<p>The reported Lima save/load flake also came from its older nerdctl 2.3.5:
+<code>save</code> could exit before its asynchronous export writer finished, returning an
+empty or truncated archive. The preceding passing run used the same version.
+Lima 2.3.0 supplies checksum-pinned nerdctl 2.4.2, which keeps the
+<a href="https://github.com/containerd/nerdctl/commit/80d3ab8a4dac11f4c87f0ea09d07492807c458a8" rel="noopener">upstream save fix</a>.
+Saved archives are checked through the end before Porto serves them, so a
+failed export cannot masquerade as a successful backup.</p>
+<p>Container stop also distinguishes its own grace deadline from caller
+cancellation. A shim may report gRPC <code>Canceled</code> when that grace period expires;
+Porto checks the actual grace context before canceling it, then performs the
+requested SIGKILL escalation and confirms task exit. An earlier caller deadline
+still returns cancellation without an extra kill. This avoids an intermittent
+Testcontainers stop failure without retrying its workflow.</p>
+<p>The disposable development-client Lima fixture is initially created by
+<code>limactl</code>, not Porto's installer. Before timed Resource Saver checks, it completes
+Porto's normal engine provisioning, including static QEMU/binfmt packages and
+BuildKit platform registration. Otherwise the first shutdown/wake would try to
+download and install those missing prerequisites inside its 60-second readiness
+budget. The configured wake deadline and real request/readiness assertions are
+unchanged; later wakes still verify the installed handlers through the normal
+production path.</p>
+<p>Development-client acceptance also runs Resource Saver against the same
+disposable backends: original binary POST preservation, shared concurrent wakes,
+real WebSocket activity, manual-pause exclusion, and owned-engine shutdown and
+traffic-triggered readiness. POSIX Lima rows additionally synchronize a synthetic
+10,000-file project through the owned SSH endpoint, verify strict host-key
+pinning with an unrelated synthetic key, mount the verified guest copy in an
+actual container, and check bidirectional writes and inotify notifications.
+The maintained-tool test independently covers ignores, executable permissions,
+relative symlinks, renames and retaining both sides of a conflict. These are
+additional gates, not replacements for the existing clients or native mounts.</p>
+<p>Complete Windows guest shutdown/wake uses an explicit 180-second fixture
+policy: QEMU/WHPX boot plus Lima's final rootless provisioning can exceed the
+60-second product default on hosted runners. Native Linux/macOS keep their
+60-second check; software-emulated macOS keeps its existing 600-second policy.
+Its complete-suspension wait is six minutes, covering Porto's five-minute
+<code>limactl stop</code> bound for slow TCG guest shutdowns; other fixtures keep 90 seconds.
+The original binary body, real task readiness, shared-wake assertions and
+configured deadline remain mandatory. The product default is unchanged.</p>
+<p>An opt-in native Apple Silicon fixture creates only its own 2 GiB VZ engine with
+only its private synthetic project directory mounted for a bind comparison.
+It verifies Rosetta, QEMU-compatible policy transitions,
+native-only rejections and native arm64 builds, as well as the resource and
+sharing cases above. It requires installed Rosetta and must not be substituted
+with a software-emulated result. Reproduction commands and measured boundaries
+are in <a href="resource-management.html">resource management</a>.</p>
+<p>Native and Linux Lima policy acceptance also creates a real two-member Docker
+Compose group with exec-form dependency health checks. A separate process runs
+the production ownership controller, health scheduler and HTTP wake handlers.
+SIGKILL/restart verifies persistent stopped ownership and quarantine after an
+external unpause/re-pause; active execs, canceled initiating bodies and actual
+readiness timeouts retain their safety and diagnostics. Native sharing acceptance
+exercises guest shutdown/reconnect, offline edits, case-collision preservation,
+and identical 64 MiB/10,000-file ordinary/synchronized bind workloads.</p>
+<p>Separate opt-in standalone VM acceptance boots both an arm64 VZ guest executing
+real amd64 Rosetta userspace and an amd64 QEMU guest kernel. It checks native
+arm64 execution, unsupported combinations before creation, persistent guest-home
+data across restart, and identity-scoped teardown, with no host-folder mounts.</p>
+<p>Native HTTPS acceptance includes a real Porto daemon restart and live renewal,
+not only a substitute TLS server. Its Linux root fixture, like the rootful local
+development-client row, forwards the CI identity, temporary directory and
+toolchain variables explicitly because Ubuntu 26's sudo-rs ignores <code>sudo -E</code>.
+Only its helper installation is elevated;
+the daemon runs under the original Unix user or a restricted Windows token.
+The approved macOS workflow uses the existing launchd/login-keychain integration
+and installed Chrome, with noninteractive sudo only for the existing root
+install/uninstall entry points. Each trust fixture runs in a fresh process so
+Go's cached system root pool cannot retain the preceding fixture's removed CA.
+Native cases fail on unavailable trust/authorization instead of disabling TLS
+checks or silently passing.</p>
+<h3 id="blocked-hosted-macos-trust-verification">Blocked hosted macOS trust verification<a class="anchor" href="#blocked-hosted-macos-trust-verification" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>The hosted macOS attempt reached the existing <code>cert trust</code> login-keychain
+operation but did not complete within its 120-second acceptance deadline.
+<a href="https://github.com/porto-containers/porto/actions/runs/40232377758/job/121286650808" rel="noopener">The recorded run</a>
+does not establish native macOS HTTPS acceptance. Porto will not bypass user
+trust authorization or replace login-keychain trust with machine-wide trust to
+make hosted CI pass.</p>
+<p>Full launchd/login-keychain/browser/restart tests remain executable in
+<code>Approved macOS native HTTPS</code>, a manual workflow requiring a disposable
+<code>[self-hosted, macOS, porto-native-trust]</code> runner and a logged-in operator
+available to approve only its synthetic certificate. Select the revision being
+reviewed and confirm <code>approve_user_trust</code>. No success is claimed until that
+workflow actually passes. Ordinary macOS Go, desktop startup, filesystem,
+installer and development-client gates remain automatic.
+No self-hosted runner carrying the required approval label was registered when
+this blocker was recorded, so the manual workflow has not been dispatched.</p>
+<p>The native payload is built from checksum-pinned official source archives with
+Go 1.27.3 or newer and patched crypto/network/sys/logging/gRPC dependencies.
+This avoids newly shipping old upstream executable toolchains or the CNI
+release's pinned vulnerable <code>x/sys</code> replacement. Each built entry point rejects
+deprecated OpenPGP imports; the ordinary vulnerability audit remains enabled.
+Download caches contain verified inputs, not trusted final native executables.</p>
+<p>The Windows x64 development-client row also imports two fresh, named WSL 2
+distributions from a checksum-pinned Ubuntu 24.04.5 rootfs. Only one opts in.
+The existing independently owned QEMU engine serves real native Linux Docker,
+Compose and Buildx clients through the private Windows pipe. Acceptance checks
+quoted/non-ASCII paths, bidirectional bind writes, polling file changes, the
+native Windows credential vault, distro shutdown/reconnect and removal without
+changing the control distribution. No WSL driver replaces QEMU, and there is no
+WSL 1 fallback or expected-failure path. The fixture releases owned shares
+before unregistering only its own distributions.</p>
+<p>The Windows Lima source patch also classifies only <code>ERROR_INVALID_FUNCTION</code>
+from the WSL UNC provider as a temporarily unavailable mount, like Lima's
+existing missing-directory case. A stopped/reconnecting distribution must not
+make the running engine's configuration unreadable. Ordinary UNC paths,
+access-denied errors and non-directory paths still fail validation; actual
+mount/read failures remain visible. The full native shutdown/reconnect workflow
+and a source-level error-classification test exercise this boundary.
+Explicit requests from the selected running distribution wait for its UNC
+directory provider to support real reads before reaching Docker. This bounded
+readiness gate does not restart a stopped distribution, probe an unselected
+one, or retry permission errors; read-only status never touches its filesystem.</p>
+<p>Hosted Windows ARM64 does not provide the nested virtualization needed for WSL
+2. That row verifies native HTTPS/ConPTY and architecture-matched Linux ELF
+artifacts rather than claiming a real ARM64 WSL workflow. The complete platform
+boundaries are in <a href="windows-integration.html">Windows development integration</a>.</p>
+<p>The <code>cross-build</code> matrix compiles <code>./cmd/porto</code> with <code>CGO_ENABLED=0</code> in six
+independent jobs, one for each release target (<code>linux</code>, <code>darwin</code>, and <code>windows</code>
+on <code>amd64</code> and <code>arm64</code>). All targets remain mandatory; a broken platform build
+fails the pull request instead of the release. Each job resolves its locked Go
+modules before the crypto import-graph check, so a cold cache's network downloads
+do not consume that check's unchanged two-minute metadata budget. The import
+policy and overall cross-build job limit remain unchanged.</p>
+<p>Generic Linux x64 jobs use <code>ubuntu-latest</code>, including native containerd and
+KVM-backed Lima acceptance. ARM macOS jobs use <code>macos-latest</code>, including the
+native-filesystem and optional emulated-runtime rows. These rolling aliases track
+GitHub's stable images, which can lag the OS vendor's newest release during a
+rollout. Acceptance explicitly rejects the wrong architecture on rolling-image
+rows; a future alias change must not silently replace x64 Linux or ARM macOS
+coverage.</p>
+<p>Linux ARM64 remains <code>ubuntu-26.04-arm</code> and Intel macOS remains
+<code>macos-26-intel</code>: GitHub provides neither <code>ubuntu-latest-arm</code> nor an Intel
+<code>macos-latest</code> alias. These pins preserve architecture coverage, not a blanket
+host-version requirement. Windows runner labels, guest/container images and
+toolchain pins are unchanged. Linux still builds SSHFS against the host's FUSE3
+libraries, checks the actual FUSE device and requires actual <code>/dev/kvm</code> for the
+VM-backed PR gate; a rolling image is not permission to fall back to emulation.
+The Ubuntu 26.04 <strong>guest</strong> requirement for rootless startup and the macOS 26/Xcode
+26 minimum for Icon Composer packaging are separate from host-runner aliases.
+See GitHub's <a href="https://docs.github.com/en/actions/reference/runners/github-hosted-runners" rel="noopener">supported runner labels</a>.</p>
+<p>CI shares Go module downloads separately from compiler objects. Build caches
+are scoped by runner OS/architecture, resolved Go version, workload, target,
+and dependency/runtime inputs, so a host-only cache cannot displace a
+cross-build or native-packaging cache. Go still validates compiler cache
+entries against current source and flags; test executions retain <code>-count=1</code>.
+After restoring those caches, setup resolves the locked module graph before
+builds, tests and import-policy checks. Source-built Windows runtimes, Lima and
+the synchronization tools use the same dependency-acquisition helper.
+<code>scripts/go-dependencies.cjs</code> retries recognized HTTP/2, transport, rate-limit
+and server failures at most three times, with two- and four-second backoffs.
+Each failed attempt retains its diagnostics; only the successful import graph
+reaches stdout. Integrity, authentication, missing-version and unknown errors
+still fail immediately. Compilation, tests and vulnerability checks are never
+retried, and the existing job deadlines are unchanged.
+Cache paths are exported through the job environment so post-job saves can
+resolve them even when setup actions are nested inside runtime acceptance.
+The same rule keeps nested Electron/builder download caches available at cleanup.
+On privileged Linux client fixtures, downloading and compilation run as the
+runner user so restored caches remain usable and readable by cache upload.
+Only the integration executable and its isolated runtime run as root.</p>
+<p>Desktop jobs cache Electron/builder downloads and checksum-addressed runtime
+inputs, not built applications, container layers, VM disks, or runtime state.
+Every runtime cache read recomputes SHA-256 against the caller's expected
+digest; corrupt bytes fail the job. A miss retains the existing bounded
+download retries, then verifies and atomically publishes the complete cache
+entry. Manifests and licenses without expected checksums are always fetched.
+Source builds of the patched Docker CLI and Windows Lima still run against
+verified sources and patches, reusing Go's compiler cache rather than skipping
+builds or executable smoke checks. Docker integration image builds retain
+their no-cache setting and use fresh disposable engines.</p>
+<p>POSIX bundles also compile Porto's patched synchronization CLI and both Linux
+agent architectures from checksum-pinned Mutagen source. Module and compiler
+cache keys include that builder's pinned dependencies; no final synchronization
+binary, daemon state or selected-project data is cached. macOS compilation
+retains native FSEvents; the upstream deprecated FSEvents scheduling API produces
+a compiler warning, not a suppressed diagnostic or a polling-only replacement.</p>
+<p>The same optional download cache is available locally by setting
+<code>PORTO_DOWNLOAD_CACHE</code> to a dedicated directory when running packaging scripts.
+Leaving it unset preserves uncached downloads. <code>scripts/download-file.sh</code>
+accepts an optional third SHA-256 argument; only downloads with an expected
+checksum can enter the cache.</p>
+<p>Build, packaging, runtime-acceptance, and security jobs use the latest Node 26.x
+release. This host/build toolchain selection does not change the Node runtime
+embedded in Electron.</p>
+<p>The <code>ui</code> job installs with <code>npm ci</code> and runs <code>npm run lint</code>, <code>npm run build</code>,
+and the desktop shell tests on Node 22.12, 24, and 26. Node 22.12 is the lowest
+version Vite and oxlint accept. The Node 26 job audits the Electron lockfile
+once, avoiding redundant registry requests and npm-version-specific tree checks.
+Confirmed npm registry transport or server outages emit a warning instead of
+failing the matrix; vulnerability reports and invalid lockfiles still fail.
+The desktop test command initializes Electron before parallel test workers
+start, preventing concurrent first-run extraction of its runtime.</p>
+<p>The Node 26 job also runs the Playwright data-dashboard suite with Chromium.
+Its browser downloads are cached by dashboard lockfile; the browser/system
+dependency installation step still runs on every build. The suite selects the
+full <code>chromium</code> channel, so <code>--no-shell</code> omits the unused Chrome Headless Shell.
+The browser cache uses a separate layout version instead of restoring the old
+archive containing both browsers. npm caches include
+both dashboard and Electron lockfiles where both are installed. Neither
+<code>npm ci</code>, dependency audits, nor desktop/browser tests are skipped on cache hits.
+Synthetic container fixtures cover bounded stdout/stderr streams, cancellation,
+copy/filter controls, running/stopped/read-only files, confirmed mutations and
+downloads, recent resource counters, and sensitive metadata. These browser
+tests do not connect to a user's daemon or require a workload shell.
+Storage fixtures also cover exact category/object confirmation, referenced
+volume protection, visible mount ownership, backup-policy edits, cancellation
+and importing before a volume exists. Storage Center layout checks use synthetic
+resources at 1440px, 1024px and 390px in both themes, with the volume inspector
+open and closed. They capture screenshots and check aligned controls,
+keyboard-scrollable tables, focus restoration, explicit cleanup scopes,
+filter/selection resets, unavailable measurements and changed protections.
+Run <code>npm --prefix ui test -- storage.spec.ts</code> for this focused coverage.
+Linux unit tests verify authoritative
+metadata allocation and stable native volume identity across data replacement.
+Migration fixtures additionally verify source-bound retry selections, reset
+sensitive/helper consent, exact image dependencies, IPv6/exposed-port fidelity,
+stale metadata, conflicting destinations and durable per-object interruption
+outcomes. Native-access fixtures cover resource-bound write consent, unavailable
+or replaced bridges, explicit failed-detach states, escaped host paths, recovery,
+confined long/non-ASCII paths and connection loss. Unit/SFTP/browser fixtures do
+not count as successful OS-native mounts for every platform/backend row; see
+the <a href="data-management.html#real-runtime-acceptance">real-runtime matrix</a>.</p>
+<h3 id="required-acceptance-and-optional-platform-integration">Required acceptance and optional platform integration<a class="anchor" href="#required-acceptance-and-optional-platform-integration" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>PR CI separates backend correctness, native filesystem behavior, and full
+desktop-VM integration instead of making every signal depend on two emulated
+VMs booting and remaining responsive.</p>
+<div class="table" role="region" aria-label="Table: Required acceptance and optional platform integration" tabindex="0"><table>
+<thead><tr><th scope="col">Coverage</th><th scope="col">Default PR gate</th><th scope="col">Execution</th></tr></thead>
+<tbody>
+<tr><td>Real runtime data</td><td>Yes, 7 jobs</td><td>Native Linux x64/ARM64 containerd; KVM-backed x64 Lima; migration/native phases plus the accelerated Lima engine lifecycle</td></tr>
+<tr><td>Native filesystem drivers</td><td>Yes, 4 jobs</td><td>Actual macOS Intel/Apple Silicon WebDAV and Windows x64/ARM64 WinFsp mounts, with confined synthetic SFTP sources and no guest VM</td></tr>
+<tr><td>Software-emulated Lima integration</td><td>No, 15 opt-in cells</td><td>Linux ARM64, macOS Intel/Apple Silicon and Windows x64/ARM64; migration, native, and engine phases</td></tr>
+</tbody>
+</table></div>
+<p>The <code>Native filesystem</code> jobs exercise real host-mounted files, not an in-memory
+filesystem mock. Windows builds the current native helper and installs the
+checksum-pinned WinFsp driver. macOS uses its built-in WebDAV driver. These
+checks retain direct edits, read-only behavior, confinement, and owned cleanup;
+the macOS suite also exercises delayed readiness, owner-process death, and detach
+recovery. They run independently of guest provisioning. Existing packaged
+Windows-helper checks in <code>Native installers</code> remain required as well.</p>
+<p>Required VM-backed acceptance checks for <code>/dev/kvm</code> before provisioning; it
+must not silently fall back to a software-emulated destination. Linux ARM64's
+native containerd migration and native-resource tests remain required. Those
+local-backend fixtures may use an isolated emulated Docker source VM, but do
+not qualify the host's Lima destination/restart behavior.</p>
+<p>The Linux ARM64 and macOS/Windows Lima cells live in the manually dispatched
+<code>Emulated runtime acceptance</code> workflow. This is a virtualization boundary,
+not just an OS-name distinction: the hosted Linux ARM64 runner also lacks KVM,
+and its restart case exhausted the 85-minute job budget. Hosted-runner TCG
+timing, guest kernel timer panics, and repeated SSH startup made those
+VM-backed cells an unreliable PR gate.
+Deferring this matrix is an explicit coverage tradeoff, not a fix for those upstream or
+timing problems. Passing the default gate does <strong>not</strong> establish full
+software-emulated Lima migration, native-resource integration, or engine-restart
+acceptance. Those results require a separate successful run on the selected
+revision and platform. Only the flaky <code>windows-11-arm</code> cells use
+<code>continue-on-error</code> (see <a href="#ci-details">CI details</a>); their failures are still
+failures, not acceptance.</p>
+<p>Once the manual workflow is available on the repository's default branch, run
+one platform/phase against an explicit branch or tag:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">gh workflow run emulated-runtime.yml --ref &lt;branch-or-tag&gt; \
+  -f platform=windows-11-arm -f phase=migration</code></pre></div>
+<p>Use <code>platform=all</code> and <code>phase=all</code> for all 15 cells, or select
+<code>platform=ubuntu-26.04-arm</code> for the unaccelerated Linux Lima row. Manual failures remain
+failures, and canceled or unrun cells never count as accepted.
+Select <code>platform=macos-latest</code> for Apple Silicon or <code>platform=macos-26-intel</code>
+for Intel macOS; the input choices and full matrix use the same runner labels.</p>
+<p>Both runtime workflows share <code>.github/actions/runtime-data/action.yml</code>, retain
+workload-scoped Go and verified-download caches, and use fail-fast within their
+own matrices. No cache contains fixture runtime state. Runtime phases run in
+parallel on separately owned runtimes through
+<code>scripts/test-docker-clients.sh &lt;local|lima&gt; data</code>;
+<code>PORTO_RUNTIME_DATA_PHASE=migration|native|engine</code> selects a phase, while an unset value
+or <code>all</code> retains the combined opt-in local suite. The migration phase runs every
+round-trip, failure and interruption assertion. The native phase creates its
+real resources through the same verified migration round trip, then runs every
+mount, workload and standalone-VM lifecycle assertion. The engine phase also
+performs the verified migration round trip, then runs all owned-engine
+update, restart, identity-preserving reattachment and shutdown assertions.
+Separate restart phases avoid combining both restart scenarios in one
+executable. Local-containerd cells have no Lima engine to restart; selecting the
+dedicated engine phase without an independently owned CI Lima runtime is an error.
+No job waits for another phase's artifacts. The 85-minute job, 55-minute
+executable, 40-minute acceptance and 20-minute setup/boot caps are unchanged.
+The source setup budget ends when its VM, Docker daemon and transport are ready.
+Synthetic image/resource seeding uses the existing acceptance budget instead of
+the last few seconds left after a slow emulated source boot and Docker install.
+Normal development-client jobs retain their existing scope. Linux installs
+FUSE3, <code>qemu-utils</code>, and only the host-architecture QEMU package:
+<code>qemu-system-x86</code> on x64 or <code>qemu-system-arm</code> on ARM64. All source and destination
+fixtures retain their host-architecture guests. Linux builds checksum-pinned
+SSHFS 3.7.6 with the required symlink containment fixes instead of the older
+distribution binary. It grants the runner
+access to an available KVM device. A fresh KVM-group process retains access in both destination and source
+QEMU children. Rootful jobs explicitly forward the CI identity, temporary directory,
+architecture, toolchain, phase and download-cache environment across elevation, including Ubuntu 26's
+sudo-rs. Windows checksum-verifies the explicitly selected WinFsp driver; macOS
+uses its built-in WebDAV driver without macFUSE.
+Disposable CI destinations start the normal container inventory and borrow its
+healthy runtime connection, matching daemon behavior instead of opening a new
+containerd SSH channel for each file or migration operation.
+Container creation, exec and network SDK adapters borrow that same connection
+without closing the inventory-owned client when an individual operation finishes.
+An authoritative empty native inventory never invokes the compatibility CLI:
+there are no container fields to enrich. Deleting the final container also
+clears old compatibility metadata before any later container recreation.
+Compatibility CLI calls can reuse that connection's exact engine origin, with
+ownership checked inside the actual guest command before executing nerdctl.
+They do not spawn separate Lima status and ownership processes for each
+individual API operation. Streamed filesystem helper requests use the same
+owned origin and check ownership inside the guest before consuming transfer
+input. This avoids repeating discovery for each WebDAV request while retaining
+fresh resource-identity checks for every request and the 15-second mount-readiness
+budget. A changed owner, instance or disconnected inventory
+requires normal discovery again. Cold compatibility starts/restarts have a
+one-minute task/shim/network startup budget instead of the generic 20-second
+metadata budget; stricter caller deadlines still win.
+Already-bound remote volumes verify their pinned metadata generation through
+the existing guest identity helper instead of repeating nerdctl volume discovery.
+Every concurrent request still makes its own fresh identity query; changed
+generations, invalid helper identities and helper failures remain errors.
+Initial volume path, driver and option validation is unchanged.
+If a software-emulated CI volume listing reaches that metadata deadline, a
+separate read-only diagnostic measures an SSH no-op and the same guest listing
+under one 30-second diagnostic budget. It retains the original ownership
+wrapper, reports guest execution time, and still returns the original failure.
+The original read also records when guest start and finish markers reach the
+host, rather than relying only on timings from a later successful diagnostic.
+Timing markers are removed from metadata output, and the original deadline and
+exit status are preserved. Fixture cleanup logs each resource's elapsed time
+and remaining aggregate budget; exhausting that two-minute budget is reported
+separately from an individual metadata timeout.
+Successful requests, mutations, arbitrary shell commands, and caller
+cancellation are never replayed by the post-failure probes.</p>
+<p>The production migration/native APIs operate on uniquely labelled fixture
+images, volumes, networks and stopped/running containers. A separate
+Porto-managed, no-host-mount standalone VM supplies a real Docker Engine source
+and managed-VM native-file acceptance. Real Unix/named-pipe forwarding and
+Docker context discovery are exercised without changing the active context
+or credentials. Original source configuration and data are retained.
+The Docker source proxy reuses HTTP connections over its owned SSH transport,
+rather than starting a new SSH process for every API request. Two sequential
+real Docker pings must share one tunnel, and cleanup closes both HTTP pools.
+An actual 8 MiB tmpfs checks staged low-space failure; a killed migration worker
+checks durable per-object outcomes and never-started helper recovery.
+The worker initializes the same inventory-owned runtime as the daemon before
+transfer and reports explicit readiness or failure JSON; test-runner failure
+text must never be mistaken for an actual helper-backed transfer checkpoint.
+Native tests check actual workload-visible host edits, permissions, links, case,
+concurrent changes, deletion/reused identities, connection loss and explicit
+reconnect. Only disposable CI engines are stopped for update/shutdown tests.
+The macOS native-driver suite also kills an actual mount-owner process and
+checks exact owned recovery and retryable detach failure. A real delayed mount
+exceeds the former shared 30-second startup watchdog without exceeding either
+phase's limit: SFTP initialization and mounting each have an independent
+30-second budget, followed by 15-second readiness. Successful initialization
+disarms its watchdog; stalled initialization or readiness still cancels the
+owned transport, and caller cancellation remains active throughout setup.
+Source provisioning has a separate 20-minute setup budget; the unchanged
+40-minute acceptance budget starts only after its real Docker fixtures are ready.
+The executable's overall 55-minute deadline still bounds setup and acceptance
+within each phase job.
+Before destination engine update/restart, the now-unused disposable source VM
+is stopped rather than consuming emulated host resources. In the engine phase
+this follows the verified migration; combined <code>all</code> runs first complete the
+standalone-VM reconnect cases as well.
+Fixture cleanup visits each exact destination once, removing containers before
+volumes/networks and image aliases last. Repeated alias lookups must not consume
+the unchanged two-minute cleanup budget on software-emulated runners.
+Freshly inspected stopped containers use ordinary removal, avoiding unnecessary
+forced teardown and its extra identity lookup and ten-second finalization loop.
+Running, paused, or ambiguous states still require force removal. Both paths
+keep the production native-attachment and managed-container guards.
+Independent volume and network removals overlap with at most two in flight,
+while containers and image aliases remain serial. Each removal still performs
+fresh ownership checks through the production APIs, and all failures are retained.
+This keeps slow Windows SSH startup from serializing unrelated cleanup work past
+the same deadline.
+Temporary-volume rollback and fixture volume cleanup also reuse their freshly
+verified inspection through the normal removal guards. They do not cache
+ownership or repeat the same SSH inspection within the operation; the production
+rollback still has its 30-second budget.</p>
+<p>For local acceptance against an already-running, ownership-verified Porto
+Lima destination, compile this revision's Linux helper beside a compiled test
+executable as <code>runtime/bin/porto-runtime-helper</code>, matching the guest architecture.
+Run that test executable with <code>PORTO_RUNTIME_DATA_ACCEPTANCE=1</code>,
+<code>PORTO_RUNTIME_DATA_USE_CURRENT_HELPER=1</code> and
+<code>-test.run '^TestRuntimeDataAcceptance$' -test.timeout=45m -test.v</code>.
+It creates/removes its own separately owned source VM and fixture resources;
+the destination engine and its installed helper are never replaced or stopped.</p>
+<p>For an optional synthetic round trip against an <strong>already running, owned</strong>
+Lima engine, cross-build the current Linux helper and set
+<code>PORTO_STORAGE_INTEGRATION=1</code> / <code>PORTO_STORAGE_TEST_HELPER=&lt;absolute-helper-path&gt;</code>
+before running <code>go test ./internal/docker -run '^TestStorageVolumeLifecycleIntegration$' -count=1</code>. Match the helper architecture
+to the guest. The fixture uploads a private temporary helper, creates uniquely
+named synthetic volumes and cleans only identity-proven fixture resources; it
+never starts/stops the engine or replaces its installed helper. It uses the
+production runtime connector, not a test-only transport override.
+<code>PORTO_STORAGE_RUNTIME_TEST=&lt;absolute-cross-built-runtimefiles-test-path&gt;</code> also
+runs the Linux-specific metadata/identity tests in the guest.</p>
+<p><code>PORTO_DOCKER_TUNNEL_INTEGRATION=1 go test ./internal/docker -run '^TestLimaContainerdProductionConnectionIntegration$' -count=1</code> separately checks
+the real production connector on an already-running owned Lima engine without
+reading workload data. It connects twice, cancels completed dial contexts,
+checks containerd's health, and proves that closing each connection leaves
+Lima's shared shell usable. Unit fixtures reject independent SSH forwarding
+and cover helper failure diagnostics, pending cancellation and subprocess reaping.</p>
+<p>The log stress case renders all 5,000 retained rows after a 6,000-record burst,
+checks the discard count and locale-formatted timestamps, and keeps the same
+assertion deadlines. Log rendering shares one time formatter per render rather
+than creating one for every record.</p>
+<p>The desktop lockfile keeps patched <code>brace-expansion</code> releases in both dependency
+branches, <code>fast-uri</code> 3.1.9, and node-gyp's <code>undici</code> 6.29.1. Electron uses
+45.0.0; development-client fixtures use patched <code>undici</code>
+8.12.3. Dependency audits remain enforced; only the unpatched advisories listed in
+<code>scripts/npm-audit-policy.cjs</code> are accepted.
+A downloader override makes <code>app-builder-lib</code> use the same fetch-based
+<code>@electron/get</code> 5.x downloader as Electron and Electron Packager, removing its
+legacy <code>got</code>/<code>http-cache-semantics</code> dependency chain without downgrading
+electron-builder or changing Electron. The installer script enables that
+downloader's proxy support so <code>HTTP_PROXY</code>, <code>HTTPS_PROXY</code>, and <code>NO_PROXY</code> remain
+effective. Remove the override when electron-builder adopts the maintained
+downloader itself.</p>
+<p>Native runtime packaging executes <code>scripts/lima-runtime-smoke.cjs</code> against the
+actual bundled Lima executable. It uses an isolated <code>LIMA_HOME</code> with synthetic
+VM files to check dead-PID recovery, live-PID preservation, malformed-PID
+diagnostics, and disk/configuration preservation without booting a VM. It first
+launches <code>limactl --version</code> once within three minutes and logs how long that
+took, because a freshly built or installed <code>limactl.exe</code> has stalled past the
+30-second check deadline on its first Windows launch with no output.
+Upstream Docker, Lima and synchronization source patches use an isolated Git
+discovery boundary and reverse-application check. This prevents <code>git apply</code>
+from silently skipping archive-relative changes when a build's <code>TMPDIR</code> is
+inside the Porto checkout; the enclosing repository and index are not used.
+Windows CI repeats these checks against the installed package in a path with
+spaces, rather than only checking that its binaries exist. It also starts
+synthetic consoleless processes and verifies that a forced stop terminates the
+host agent and its descendants, releases the log files, and preserves VM data.
+A failed termination must return an error without removing the PID files.
+Fixture removal is asynchronous with bounded filesystem retries, so pending
+process-close callbacks can run before Windows releases copied executables and
+directories. Persistent removal failures still fail the check; process-exit,
+log-release and VM-preservation assertions are unchanged.
+The same job runs the Windows update helper against that installed package,
+covering silent in-place replacement and NSIS installation paths containing
+spaces without launching the updated desktop.
+These checks do not boot a guest or prove guest-kernel compatibility.</p>
+<p>Native installers build in four independent, architecture-matched host jobs.
+Each job verifies exactly one installer; each macOS job also verifies its
+matching desktop archive and DMG checksum. Both Windows architectures run the
+installed-package, WinFsp, logging, blocked-update, in-place-update and
+uninstall checks. The two Linux toolchain jobs also build and install their
+native desktop archive rather than treating an ARM64 cross-build as execution.</p>
+<p>The <a href="installed-acceptance.html">installed-package gate</a> runs the shipped desktop,
+daemon, Docker, Compose and Buildx from real paths containing spaces and
+non-ASCII characters. It requires real Compose/Buildx workflows, safe refusal
+to update a running workload, and byte-checked preservation through replacement
+and removal. Hosted fixtures explicitly select QEMU TCG; their evidence does
+not qualify default hardware-accelerated drivers. Test definitions, package
+builds, native host execution and actual successful runtime results remain
+distinct evidence.</p>
+<p>CI and CodeQL matrices use fail-fast: a failed member cancels queued and
+running siblings instead of spending more time on an already-failed matrix.
+Successful runs still execute every platform, architecture, and validation
+step. Go test invocations stop starting tests after a failure, and Playwright
+stops after its first failed test. Existing cleanup, timeouts, and bounded
+download retries remain in place.</p>
+<p>Hosted <code>windows-11-arm</code> runners are inherently flaky, so every Windows ARM64
+row (platform networking, native filesystem, native installers and emulated
+runtime) uses job-level <code>continue-on-error</code>. A failed Windows ARM64 row neither
+fails the workflow nor cancels fail-fast siblings. It still runs every step and
+is reported as failed, so it never counts as Windows ARM64 qualification
+evidence. All other rows remain blocking.</p>
+<p>Installers are retained for three days as
+<code>desktop-installers-&lt;darwin|windows&gt;-&lt;amd64|arm64&gt;</code> CI artifacts. Artifact
+compression is disabled because DMGs, EXEs, and desktop tarballs are already
+compressed; file-integrity validation and retention remain unchanged.
+They use the application version with <code>+ci.&lt;run-number&gt;</code> build metadata, so a
+test build is not immediately considered older than the same stable version.
+These are unsigned PR/test builds, not published releases.</p>
+<p>Superseded pull-request CI and CodeQL runs are canceled independently.
+Push, scheduled, and manually triggered runs retain their existing behavior.</p>
+<p>The development-client matrix runs real Docker SDK/CLI, Dev Containers 0.89.0,
+and Testcontainers 12.2.0 workflows against disposable local Linux containerd
+and native macOS/Windows Lima backends. Windows exercises Porto's named pipe.
+The Linux runtime is checksum-pinned nerdctl-full 2.4.1 with separate
+containerd/BuildKit sockets and state; Lima jobs use isolated <code>LIMA_HOME</code> and
+<code>PORTO_HOME</code> roots. Only their own processes and VM are removed.
+Hosted macOS and Windows runners use small host-architecture Ubuntu 26.04 QEMU
+guests with no host mounts and a bounded 20-minute startup budget. Hosted macOS
+requires software emulation because nested Virtualization.framework support is
+unavailable; matching the host architecture keeps its guest agent/runtime helper
+aligned without cross-architecture x86 emulation. The first <code>docker run</code> keeps
+a one-minute budget, raised to five minutes only for that software-emulated
+fixture, inside the unchanged 20-minute suite deadline. Windows ARM64 hosted runners
+also use TCG through Lima's QEMU command override because nested WHPX cannot
+provide the required physical address width. This affects only disposable CI
+guests, not packaged runtime defaults or native WinFsp mounting. Windows x64
+retains WHPX, but its disposable Ubuntu guest boots with the documented
+<a href="https://docs.kernel.org/arch/x86/shstk.html" rel="noopener"><code>nousershstk</code> kernel parameter</a>.
+Some hosted Hyper-V CPUs advertise user shadow stacks without the CET XSAVE
+state needed to context-switch them, causing return-instruction shadow-stack
+page faults in systemd and leaving later container or SSH operations stalled.
+This matches the <a href="https://github.com/ericcurtin/agenticlinux/pull/15" rel="noopener">WHPX guest fault documented in ericcurtin/agenticlinux#15</a>.
+The fixture updates only its fresh guest's GRUB configuration, restarts it with
+the unchanged 20-minute boot budget, and requires both the effective boot
+argument and the absence of <code>user_shstk</code> before recording ownership or running
+the full client suite. It neither switches to software emulation nor changes
+installed guest defaults, rootless provisioning, or any acceptance assertion.
+Windows also
+avoids unused SSHFS home-folder mounts and their startup probes. Short temporary
+directory names keep both guest SSH socket paths within macOS's Unix-socket
+length limit. The test harness records
+ownership only inside the isolated runner temporary directory, including native
+Windows paths. Windows disables CGO for the daemon/test build, as the client
+suite does not require WinFsp. The compiled client-test executable sits beside
+the bundled <code>runtime</code> directory, matching desktop helper discovery instead of
+asking Windows executable lookup to find a Linux ELF binary on <code>PATH</code>.
+Before package installation, each disposable Ubuntu guest uses the
+<a href="https://snapshot.ubuntu.com/" rel="noopener">official Ubuntu snapshot service</a> at midnight UTC
+from three completed UTC days before the run, allowing more time for snapshot
+publication and cache population rather than requiring a recent endpoint.
+It trades three days of guest dependency freshness for a less time-sensitive
+fixture input; production guest update policy is unchanged.
+PR #173 exhausted APT's retry
+budget on same-day snapshot HTTP 503 responses, then reported missing
+<code>newuidmap</code> during rootless containerd setup. The snapshot ID is logged
+and reused for the destination, source VM, and restarts. Ubuntu source URIs
+change, while suites, components, archive signing keys, signature verification,
+and package hashes remain intact. Direct immutable URIs avoid mixing indexes
+from out-of-sync live mirrors; APT snapshot selectors alone still fetch live
+indexes. CI requires APT's supported <code>Acquire::By-Hash &quot;force&quot;</code> mode for
+content-addressed index downloads. A temporary hash-URI failure must not
+silently switch to a named <code>Packages</code> URL that the snapshot service does not
+provide. Signed release hashes remain authoritative.</p>
+<p><code>scripts/ci-ubuntu-snapshot.cjs</code> now prepares those immutable inputs on the host
+<strong>before</strong> starting any guest or installed desktop. It downloads the original
+signed InRelease files, verifies compressed package indexes against their
+SHA-256 entries, and prefetches the package/dependency superset needed by Lima,
+QEMU binfmt and disposable migration sources. Preparation is limited to the
+fixture's actual Ubuntu release: Resolute for development/data and Unix
+installed guests, Noble for installed Windows guests. Guest-free local client
+jobs do not prepare a repository. A read-only loopback repository
+serves only those prepared bytes through <code>host.lima.internal</code>; it is not an
+on-demand proxy and cannot switch to a live mirror. Guest APT still performs
+archive-signature verification, dependency/version selection and package-hash
+verification with the image's existing Ubuntu keyring. It prefers gzip indexes
+to avoid unnecessary XZ decompression under TCG. No package is installed or
+declared present by the host.</p>
+<p>This removes external snapshot availability from the 20-minute VM boot and
+five-minute engine-configuration paths. Repeated snapshot HTTP 5xx failures had
+consumed both deadlines, including after successful client workflows. An
+unavailable input now fails preparation before launching an expensive guest,
+with its exact failed artifact reported. Hosted runners can receive the
+largest 25-40 MB packages at well under 100 KB/s, so a fixed five-minute
+per-object deadline aborted slow but progressing transfers. Each object now
+retries only after 60 seconds without received bytes, resumes the verified
+partial download with an HTTP range, and keeps a 15-minute per-object bound.
+The first failed object stops its sibling transfers. The anonymous snapshot
+service answers HTTP 401, 403 or 429 when it sheds load from many parallel CI
+jobs, so those responses retry like 5xx and 416: up to ten attempts with
+jittered exponential backoff capped at 60 seconds, honoring <code>Retry-After</code> up
+to two minutes. Other 4xx responses, such as 404, still fail at once. Snapshot paths change
+daily, and the service answers uncached objects far more slowly, so the
+client/data harness waits up to 30 minutes for a cold preparation; the
+development-client job allows 75 minutes for it. Job caches contain only
+immutable snapshot inputs, keyed by snapshot day, host/guest architecture and
+fixture target, not incidental bootstrap-source edits. Restore falls back to
+the newest earlier snapshot day for the same target, then to any target on the
+same runner OS and architecture, so a cold default-branch push, which cannot
+read pull-request caches, fetches only new signed releases, changed indexes
+and changed packages. Entries unused for a day are pruned after successful
+preparation, bounding cache growth. Index and package content is reverified on
+reuse, and newly required content is fetched by its authoritative hash.
+Corrupt cached inputs fail rather
+than being silently accepted or repaired. The owned repository closes during
+fixture cleanup, including failed installed-desktop startup.
+The shell-owned server uses a private stop marker and verifies its exit, so
+Git Bash on Windows does not need <code>SIGTERM</code> delivery that Node cannot receive
+through Windows <code>TerminateProcess</code>. An unexpected server exit still fails
+cleanup rather than being ignored.</p>
+<p>APT retries transient download failures, including HTTP 503 responses,
+up to ten times per file, with exponential backoff capped at 30 seconds and
+30-second HTTP/HTTPS transport timeouts. Retry delays are logged for both index
+and package downloads. An unavailable snapshot or failed index fetch remains
+an error after the retry budget is exhausted, with no fallback to mutable
+mirrors or relaxed checks. Multi-platform QEMU setup honors an explicitly
+configured APT retry policy instead of shortening CI's ten retries to three;
+guests without a configured policy retain the existing three-retry default.
+Reading that configuration must succeed before package setup continues.
+Source-VM preparation records package-index and Docker-install progress so an
+exhausted setup deadline retains the failing download or installation stage
+rather than an empty quiet-command result. The setup and acceptance deadlines
+are unchanged. Disposable CI guests disable automatic APT updates
+and mask their daily/upgrade timers and services before explicit dependency
+installation. This prevents background package work from competing with TCG
+acceptance or hanging <code>unattended-upgrades.service</code> during owned-engine shutdown;
+snapshot-pinned installs remain explicit. Production guest update policy,
+Porto's shutdown budgets and acceptance assertions are unchanged.
+The 20-minute boot deadline, five-minute multi-platform setup deadline and all
+installed-runtime/rendering assertions are unchanged. Only disposable CI
+fixtures use the prepared repository; installed user environments are not
+reconfigured.
+On software-emulated hosts, the host prepares Lima's pinned default containerd
+archive before boot: it verifies the downloaded gzip, decompresses it natively,
+and pins the resulting tar with its own SHA-256. The guest retains the same
+runtime version, rootless services, architecture, and 20-minute boot deadline,
+without repeatedly decompressing the large payload under QEMU. Failed boots
+print bounded kernel/device-discovery records, read-only QMP disk/CPU state,
+and host logs before the owned fixture is removed. When SSH is reachable, the
+same diagnostic attempt records the guest fstab, block labels, mounted devices,
+udev properties and unit timings, plus bounded udev and cloud-init logs.
+Cloud-init module durations and the systemd critical chain distinguish early
+network/SSH setup from later package and rootless provisioning. Both macOS
+architectures report host load, memory, swap, and owned-runner QEMU process names
+and usage while acceptance runs; guest CPU pressure alone is not a host capacity
+measurement. Periodic sampling reads fixed process fields, not every process's
+argument memory, so diagnostics do not add that expensive host-wide scan.
+Unavailable diagnostics are reported without replacing the original failure;
+diagnostics never repair mounts, change guest state or create engine ownership.
+Failed Lima starts also retain bounded kernel fault/stack context before a
+configuration rollback can restart the guest and replace its serial log.
+Fresh Lima fixtures fail immediately if that helper is unavailable.
+Linux runners without <code>/dev/kvm</code> use the same host-side archive preparation.
+Software-emulated ARM64 guests select <code>neoverse-n1</code> for both the destination and
+source VM, avoiding the EDK2 LPA2 boot hang reported in
+<a href="https://github.com/tianocore/edk2/issues/11962" rel="noopener">tianocore/edk2#11962</a>.
+Explicit ARM64 TCG executable overrides also retain Lima's full multi-threaded
+TCG profile and 512 MiB translation cache instead of overriding only the machine
+accelerator. This reduces avoidable translation-cache pressure during native
+ARM64 software emulation without extending installation or readiness deadlines.
+The 20-minute guest startup budget and resource assertions remain unchanged.
+The isolated Ubuntu guests omit APT translation, AppStream and
+command-not-found indexes and the post-install <code>needrestart</code> scanner; signed
+package indexes and normal dependency resolution remain enabled. Source Docker
+installation omits optional recommendations. This keeps software-emulated setup
+from spending its boot budget on unrelated desktop/package-search metadata or
+restart suggestions for a disposable guest.
+macOS data jobs lower the fixture process priority, inherited by both QEMU
+guests, to leave scheduling priority for the hosted runner's heartbeat.
+Intel macOS data jobs use two vCPUs per fixture VM, 1.5 GiB for the destination
+and 1 GiB for the source, keeping the two-guest allocation within hosted RAM.
+They select Lima's complete TCG fallback configuration: multi-threaded execution,
+a 512 MiB translation cache per VM, disabled unsupported S3/S4 power states and
+a supported emulated CPU. Forcing just the accelerator while Lima selects its
+HVF configuration bypasses these TCG defaults. Serializing both guest vCPUs and
+reducing the translation cache slows the CPU-bound device discovery and rootless
+provisioning. The guest retains its two vCPUs and normal clock handling, without
+instruction counting. Intel macOS TCG fixtures explicitly opt into Lima's
+<a href="https://github.com/lima-vm/lima/pull/2541" rel="noopener">upstream CI workaround</a> for the
+<a href="https://github.com/lima-vm/lima/issues/84" rel="noopener">intermittent IO-APIC timer panic</a>.
+They boot the same checksum-pinned Ubuntu 26.04 image as Lima's <code>ubuntu-26.04</code> template,
+with its matching dated-release kernel and initrd also pinned by SHA-256, and
+append only <code>no_timer_check</code> and <code>systemd.default_device_timeout_sec=600</code> to
+the guest command line. The first disables the guest kernel's hardware-timer
+sanity check in those emulated fixtures, not a Porto assertion. The second
+raises systemd's 90-second
+<a href="https://www.freedesktop.org/software/systemd/man/latest/kernel-command-line.html" rel="noopener">device timeout</a>
+so slow emulated udev can still publish the <code>LABEL=BOOT</code> and <code>LABEL=UEFI</code> links:
+on a slow hosted Intel runner those device units expired, <code>local-fs.target</code>
+failed and the guest stopped in emergency mode. The mounts stay required, and
+the change stays well inside the 20-minute engine start budget. Both source and
+destination use the same override. CI emits an
+explicit notice; packaged runtime defaults, non-Intel fixtures and native
+hardware acceptance are unchanged. Keep all three dated image/kernel/initrd pins
+aligned when updating this fixture. Raising Lima's outer timeout does not repair an
+emergency-mode boot.
+The Intel runtime-data phases verify that both destination and source retain
+the image's <code>LABEL=BOOT</code> and <code>LABEL=UEFI</code> fstab entries, resolve those labels to
+the actual mounted <code>/boot</code> and <code>/boot/efi</code> devices, and reach <code>local-fs.target</code>.
+The image, required mounts, rootless runtime and all boot/acceptance caps remain
+unchanged. See <a href="https://www.qemu.org/docs/master/devel/tcg-icount.html" rel="noopener">QEMU's instruction-counting design</a>.
+A reported <code>kern.hv_support=1</code> does not establish supported nested
+HVF: GitHub does not support nested virtualization on macOS runner images
+(<a href="https://github.com/actions/runner-images/issues/13277" rel="noopener">actions/runner-images#13277</a>).
+Both source and destination inherit this CI-only QEMU override; packaged runtime
+defaults are unchanged.
+They remove the Go build cache after compiling the fixture, leaving disk space
+for both guest disks, and emit periodic free-disk, RAM/swap and QEMU RSS/CPU
+samples as job notices to aid lost-runner diagnosis when normal logs are
+unavailable. Software-emulated data fixtures also log runtime
+command durations so slow guest work can be distinguished from host process
+startup and repeated discovery. Failed compatibility starts also retain nerdctl
+debug output and the exact synthetic workload's observed task state. Guest boot
+and acceptance thresholds are unchanged.
+Porto forwards its selected boot budget to Lima's own <code>--timeout</code> as well as
+the parent process context: first boots and recorded standalone restarts retain
+20 minutes, while Kubernetes-node restarts remain five minutes. Lima's internal
+ten-minute default must not silently shorten the recorded budget.
+Porto-owned Docker engine installation, explicit restart and ownership recovery
+likewise use the same 20-minute VM boot budget, without changing shorter caller
+deadlines or the separate Kubernetes-node restart policy.</p>
+<p>Ubuntu 26.04 avoids a <a href="https://github.com/lima-vm/lima/issues/5570" rel="noopener">systemd v255 logind deadlock</a>
+that affects Ubuntu 24.04: Lima's first-boot <code>loginctl terminate-user</code> can race an SSH login,
+leaving rootless provisioning waiting indefinitely for the user systemd socket.
+An <code>engine.json</code> missing during cleanup after a failed boot is secondary: the
+client test records Porto ownership only after Lima finishes starting.</p>
+<p>Linux bundles tools as the runner user and elevates only the isolated
+containerd/BuildKit workload.
+CPU counter assertions remain enabled and average a fixed five-interval window.
+Every interval checks available, monotonic backend counters; each window must
+report finite, positive busy-workload activity and has a two-minute deadline.
+Linux, Windows, and hardware-accelerated macOS retain the existing CPU ceiling
+with its 5% quantization allowance. When macOS reports <code>kern.hv_support=0</code>, CI
+emits an explicit notice and gates only that physical ceiling for its software-emulated
+fixture: cgroup nanoseconds can outpace guest <code>/proc/stat</code> ticks even across a
+longer window. Linux documents these
+<a href="https://docs.kernel.org/admin-guide/cpu-load.html" rel="noopener">tick-based CPU-accounting limitations</a>.
+Raw counters are never clamped or rescaled, and synthetic SDK/unit-conversion
+tests still enforce exact percentages. A real accelerated Mac is required to
+validate the physical ceiling on that platform.
+The workload verifies busy-container CPU percentages, exec, valid/corrupt image
+archives, ordinary tag/push to a disposable registry, and client-owned cleanup.
+It uses a named Dev Containers workspace volume and disables Ryuk while the
+harness owns cleanup; it does not grant an untrusted guest a host control socket.</p>
+<p>Client dependencies live under <code>scripts/docker-clients</code>, separate from the
+shipped dashboard/desktop. Both package roots use npm overrides for glob 14.0.3
+and minimatch 11.0.3 in their configured installs to fix
+<a href="https://github.com/advisories/GHSA-3g3m-2fjr-6pw4" rel="noopener">glob's cancellation bypass</a>
+and <a href="https://github.com/advisories/GHSA-g3hv-75wg-m249" rel="noopener">minimatch's pattern amplification</a>
+without downgrading Testcontainers or the Electron packaging tools.
+The desktop overrides target glob 9+ and minimatch 5+, preserving the
+callback-based glob 7/minimatch 3 peer tree used by Windows Squirrel tooling.
+The existing desktop <code>.npmrc</code> omits optional and peer dependencies, and Porto's
+Windows packages use NSIS rather than Squirrel. That omitted peer tree still has
+a minimatch advisory; a peer-inclusive Squirrel build needs separate dependency
+modernization, not a forced override that breaks glob's internal matcher API.
+Optional protobuf/native SSH installation scripts are explicitly disabled;
+these tests use Unix sockets/named pipes, not SSH clients. Dependency installation
+and audit are required before these jobs run; only unpatched advisories listed in
+<code>scripts/npm-audit-policy.cjs</code> are accepted.</p>
+<p>The Windows installer job also checksum-verifies and installs the official
+WinFsp 2.1 driver on its disposable runner, then tests the <strong>installed</strong>
+<code>porto-files-mount.exe</code> against synthetic confined SFTP roots. Container,
+image, volume and VM fixtures cover real host paths, direct editor
+write/rename, concurrent guest changes, read-only image rejection, spaces/
+non-ASCII paths and owned detach without source deletion. Normal desktop
+installation never silently installs WinFsp; users explicitly install it
+before enabling native host folders.</p>
+<p>Desktop logging tests run natively on Windows and macOS. The Windows installer
+check also starts the installed daemon against a deliberately invalid,
+isolated test database to verify that early failures reach <code>logs/porto.log</code>
+at the default debug level, without duplicate records when stderr already
+points at that file. No user database or running daemon is used.</p>
+<p>macOS CI and DMG releases also run
+<code>scripts/macos-startup.test.cjs</code>. It forces a failed power-registration call in
+an isolated Electron process and verifies that the unmodified locked Electron
+runtime still loads a sandboxed renderer and exits cleanly. The former native
+workaround and crash-expecting negative control have been removed.
+It also runs the production packager against an isolated synthetic source tree
+and replaces the resulting application archive with a synthetic fixture before
+launching it. Previous <code>Porto-&lt;platform&gt;-&lt;architecture&gt;</code> build directories must
+not enter the archive when the packaging destination changes; ordinary app
+resources and both icon formats remain included. The packaged executable
+must render and exit cleanly with failed power registration without an
+external guard, preserve Electron Node mode and its executable path, and
+repair closed standard streams. <code>PORTO_TEST_MACOS_APP=/path/to/Porto.app</code>
+runs these checks on a temporary copy of an already-built app instead;
+the original bundle and user data are never modified.
+The same suite prepares the cached source-development app, forces failed power
+registration, and checks rendering and reopening without a command-line app
+path. <code>ui/electron/dev-launcher.test.cjs</code> checks normal argument-free reopen,
+preserved development-mode behavior, unchanged npm runtime files, cache reuse,
+and Windows/Linux source arguments.
+Synthetic macOS launches pass <code>-ApplePersistenceIgnoreState YES</code> so saved state
+from earlier abnormal exits cannot open AppKit's modal reopen-windows prompt. This
+affects only those test processes, not user defaults or normal Porto launches.
+The test-only failure injector clears its loader environment before child
+processes start. No native guard is linked or injected. Startup deadlines stay
+unchanged, and failures include captured stdout/stderr plus the fixture's current
+startup phase. Successful probes verify rendering, the locked runtime version,
+and the normal quit event instead of accepting a deliberate crash.
+The native tests are skipped on Windows and Linux; no macOS library is built
+or added to their packages.
+Startup checks resolve Xcode's <code>otool</code> once, then inspect each executable
+directly within the existing ten-second inspection budget. Repeated <code>xcrun</code>
+SDK discovery must not consume that executable-inspection deadline.</p>
+<p>Both macOS DMGs and desktop tar archives are built on macOS from the same
+app, retaining Electron's original fuse-aware Node dispatch and stdio
+initialization. Packaging uses an invocation-private temporary directory so
+parallel builds cannot remove one another's staged icon catalog or application.
+After resource finalization, including icon compilation and symlink normalization,
+<code>scripts/package-desktop-installer.sh</code> seals the app with
+<code>scripts/macos-signing.cjs</code> before electron-builder creates the DMG. The
+<code>--prepackaged</code> builder path does not sign the app itself. The same sealed app
+enters the desktop tar archive, which omits AppleDouble metadata and retains
+the existing release layout.</p>
+<p>The default signature is explicitly ad-hoc on both Intel and Apple Silicon.
+Nested Electron code is signed inside-out with JIT, unsigned executable memory,
+and library-validation entitlements required by the hardened Electron runtime.
+Bundled daemon/runtime binaries stay byte-for-byte unchanged: their original
+signatures, executable permissions, portable symlinks, and checksum/version
+manifests are preserved and sealed as resources. Signing never patches the
+npm-installed Electron runtime.</p>
+<p>A valid existing certificate signature is verified and preserved rather than
+replaced with the ad-hoc fallback. To sign final prepackaged input with an
+already-imported Developer ID identity, set <code>CSC_NAME</code> and optionally
+<code>CSC_KEYCHAIN</code>. Explicit signing failures abort packaging; they never fall back
+to ad-hoc. <code>CSC_LINK</code> alone cannot import a certificate on the prepackaged path
+and is rejected instead of silently downgraded. Certificate provisioning and
+notarization remain separate, credentialed release setup.</p>
+<p>Both native installer CI architectures and both release DMGs run
+<code>macos-signing.cjs --verify-dmg &lt;image.dmg&gt; &lt;amd64|arm64&gt; &lt;version&gt;</code>.
+It verifies the image, mounts it read-only without opening Finder, and requires
+<code>codesign --verify --deep --strict</code> on the extracted <code>Porto.app</code>, matching
+application/daemon architectures, bundle identity, release version, executable
+permissions, runtime manifest, and portable symlinks. Its owned mount is detached
+on success and failure. <code>node --test scripts/macos-signing.test.cjs</code> additionally
+tests both architectures with synthetic native bundles, certificate-preservation
+policy, unchanged runtime bytes, metadata-free tar extraction, and rejected
+tampering/version/architecture mismatches without launching Porto or a daemon.
+DiskImages can briefly return <code>Resource temporarily unavailable</code> when verifying
+a newly created image. The verifier retries only that explicit resource-busy
+result, at most four times with bounded backoff inside the original two-minute
+command deadline. Each retry is reported. Corrupt-image and code-signature
+failures are not retried or accepted, and persistent resource unavailability
+still fails. The native tamper test continues to require the actual sealed-app
+signature rejection, not an unrelated image-tool failure.</p>
+<p>Ad-hoc sealing detects corruption but is not Developer ID authentication or
+notarization and does not remove Gatekeeper warnings. Installers do not clear
+quarantine or weaken Gatekeeper. Release checksums and provenance are generated
+from final installer/archive bytes. Existing published releases remain immutable;
+consumers such as the verified Homebrew updater need a new release containing
+this packaging fix, not replacement assets under an existing tag.</p>
+<p>macOS packages include a native Icon Composer <code>.icon</code> asset made from Porto's
+existing artwork, with glass effects disabled, alongside the unchanged <code>.icns</code>
+fallback. Electron Packager compiles the modern icon into <code>Assets.car</code>; native
+smoke tests check both icon resources and their <code>Info.plist</code> entries. Building
+macOS packages requires macOS 26 or newer and Xcode 26 or newer with <code>actool</code>
+available. Command Line Tools alone cannot compile the modern icon. Install full
+Xcode and complete its first-launch setup before running the macOS desktop tests
+or preparing a release. Source development still uses the <code>.icns</code> icon and
+prepares its cached bundle without compiling a native entry point.
+That isolated development copy is ad-hoc signed with its nested helpers,
+including unsigned helpers in upstream Intel archives. The npm-installed
+Electron runtime and its native entry point are never modified.</p>
+<p>Packaging honors an explicit <code>DEVELOPER_DIR</code>, otherwise checks the active Xcode
+and then <code>/Applications/Xcode.app/Contents/Developer</code>. It selects tools only for
+the current command, without changing the global <code>xcode-select</code> setting. A custom
+or versioned Xcode installation can be selected explicitly:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer ./release.sh 0.2.0 --mock</code></pre></div>
+<p><code>node scripts/macos-toolchain.cjs</code> checks Xcode and <code>actool</code> and prints the selected
+developer directory. The asset-compiler probe allows up to two minutes for cold
+Xcode service startup; developer-directory and Xcode-version probes retain their
+30-second limits. Failed or timed-out probes still reject the toolchain.
+On macOS, a normal <code>release.sh</code> run switches to <code>main</code> and
+fast-forward pulls <code>origin/main</code> and tags before this preflight, then checks the
+toolchain before changing release versions or running validation. <code>--mock</code> runs
+the preflight without switching or pulling. The native installer script also
+checks before building or downloading runtime inputs. Missing or unsupported tools
+fail with setup instructions rather than a late packaging assertion.</p>
+<p>Dependency updates arrive through <code>.github/dependabot.yml</code>, which puts Go modules, dashboard packages, desktop packages, and GitHub Actions (workflows and the composite actions under <code>.github/actions/</code>) into one weekly multi-ecosystem pull request. Separate per-ecosystem pull requests each started a full CI matrix at once, and the stacked runs exhausted shared upstreams such as the Ubuntu snapshot service.</p>
+<p>The Go module currently uses gRPC <code>v1.86.0-dev</code>, which includes the upstream
+fix for the missing-authority server panic,
+<a href="https://pkg.go.dev/vuln/GO-2026-6443" rel="noopener">GO-2026-6443</a>. Prefer a stable release
+containing the fix when updating this dependency; keep the vulnerability
+scan enabled.</p>
+<p>The main module and bundled synchronization CLI/Linux agents use
+<code>github.com/klauspost/compress</code> at <code>v1.20.3</code>, including the two-block-frame
+decompression panic fix in <code>v1.20.2</code>,
+<a href="https://pkg.go.dev/vuln/GO-2026-6865" rel="noopener">GO-2026-6865</a>. Uploaded Docker build
+contexts reach this dependency through containerd; keep <code>v1.20.2</code> or newer.</p>
+<p>The module graph keeps <code>golang.org/x/net</code> at <code>v0.62.0</code> or newer for the HTTP/2
+and HTML namespace/text-coalescing security fixes. Standard-library fixes, including compromised intermediate
+certificate distrust (<a href="https://pkg.go.dev/vuln/GO-2026-6809" rel="noopener">GO-2026-6809</a>),
+are included in the minimum supported Go <code>1.27.3</code>; use that release or a newer
+security-patched toolchain for local builds and vulnerability scans.</p>
+<h2 id="management-and-packaging-validation">Management and packaging validation<a class="anchor" href="#management-and-packaging-validation" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The desktop lockfile also overrides build-only glob/minimatch dependencies to
+patched glob 14 and minimatch 11 releases. EJS retains its existing renderer API
+while its build-only Jake dependency uses the maintained FileList 2 chain.
+<code>desktop-dependency-compat.test.cjs</code> exercises the actual archive matcher,
+FileList and EJS contracts; do not use audit's suggested obsolete packager or
+builder downgrades. Desktop and dashboard <code>npm audit</code> should remain clean.
+The development-client fixture has the same patched glob/minimatch floors;
+its independent <code>scripts/docker-clients</code> lockfile is also audited in CI.</p>
+<p>Remote-management coverage includes synthetic distinct TLS hosts, an external
+Kubernetes API, outbound Edge reconnect/revocation, escaped-path authorization,
+redirect rejection, immutable fleet targets, terminal cleanup and native-sized
+OS credential records. Extension coverage includes real Go-built WASI reference
+execution, explicit grants, cancellation, provenance, update rollback and opaque
+UI/desktop-bridge boundaries. <code>go test -race ./internal/environments ./internal/extensions ./internal/credentials</code> and
+<code>npm --prefix ui test -- phase-six.spec.ts</code> provide focused checks.</p>
+<p><code>golang.org/x/crypto/openpgp</code> has an upstream unmaintained-package advisory with
+no fixed version. Porto does not import it. Keep reachable-package vulnerability
+scanning enabled and distinguish that module-level notice from an affected
+package rather than suppressing checks or removing the maintained SSH packages.</p>
+<h2 id="cutting-a-release">Cutting a release<a class="anchor" href="#cutting-a-release" aria-hidden="true" tabindex="-1">#</a></h2>
+<ol>
+<li><p>Make sure <code>main</code> is green and tracks <code>origin/main</code>, and the working tree is
+clean. Normal runs switch to <code>main</code> automatically. If <code>main</code> is checked out in
+another worktree, run the script in that checkout instead; it never takes over
+another worktree or discards local changes.</p></li>
+<li><p>Optionally run the complete release validation without changing tracked files or Git history:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">./release.sh 0.2.0 --mock</code></pre></div>
+<p>Mock runs require <code>main</code> to be checked out. For a new release it must match
+the cached <code>origin/main</code> ref; an existing local tagged release can be checked
+before retrying its push. Mock runs do not switch branches, pull or fetch,
+update versions, create commits or tags, or push. Update <code>main</code> yourself before
+the trial if needed.</p></li>
+<li><p>Prepare and publish the release:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">./release.sh 0.2.0</code></pre></div>
+<p>The script accepts <code>0.2.0</code> or <code>v0.2.0</code> and validates strict SemVer before any
+Git changes. It switches to <code>main</code> and runs
+<code>git pull --ff-only --tags origin main</code> before toolchain checks, version
+changes, or validation. Diverged branches and unrelated local commits stop
+the release rather than being merged or published.</p>
+<p>It then updates the Go CLI version plus the dashboard and Electron package
+manifests and lockfiles, runs the local checks, creates a
+<code>chore(release): v0.2.0</code> commit when release metadata changed, and creates an
+annotated tag. It atomically pushes <code>main</code> and the tag by default, so the
+release workflow cannot start from a tag without its release commit.
+<code>--push</code> remains accepted for compatibility but is no longer required.
+Only <code>--mock</code> selects a trial, even when combined with <code>--push</code>; the old
+<code>--dry-run</code> flag is rejected.</p>
+<p>If the atomic push fails, rerun the same command to validate and publish the
+existing local release commit and annotated tag. Already-published matching
+releases are detected without creating another commit or tag.</p></li>
+<li><p>The <code>Release</code> workflow runs the Go test suite, lints and builds the dashboard, packages CLI/web and standalone desktop archives for every target, creates macOS DMGs and Windows NSIS EXE installers on native runners, and publishes a GitHub release with generated notes.</p></li>
+</ol>
+<p>Tags must contain a strict SemVer prefixed with <code>v</code>. A suffix such as
+<code>v1.2.3-rc.1</code> is published as a pre-release. Release assets are assembled and
+verified while the GitHub release is still a draft, then published together.
+Re-running a failed job can refresh that draft safely. A published release is
+immutable: reruns fail instead of replacing assets that update clients may
+already be downloading. A manual run from the Actions tab still requires the
+tag to exist.</p>
+<p>Release tag resolution checks out the explicit tag reference, validates SemVer,
+and pins all three packaging jobs to that tag's resolved commit. The archive/test
+job and the macOS and Windows installer jobs then run concurrently, keeping their
+existing native builds, architecture loops, dependency installations, audits and
+startup checks. Installers can finish even if the independent archive/test job
+fails, but publication requires every job to succeed. Per-tag release concurrency
+never cancels an in-progress publication.</p>
+<p>Each producer uploads its existing artifact with seven-day retention and no
+additional compression of the already-compressed archives, DMGs and EXEs.
+The publisher downloads the three exact artifact IDs from those jobs in parallel
+into the existing <code>dist</code> layout, rather than selecting arbitrary artifacts by a
+wildcard. The sixteen-asset gate, checksum verification, provenance attestations,
+draft recovery and immutable published-release checks are unchanged. This reduces
+release serialization and transfer overhead without reusing PR-built packages or
+skipping cold-install/build checks.</p>
+<h2 id="release-artifacts">Release artifacts<a class="anchor" href="#release-artifacts" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Each target produces a CLI/web archive named <code>porto_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;</code>
+(<code>.tar.gz</code>, or <code>.zip</code> for Windows) with this layout:</p>
+<div class="code" data-lang="text"><pre tabindex="0"><code class="language-text">porto_1.2.3_darwin_arm64/
+  porto            # porto.exe on Windows
+  ui/dist/         # dashboard assets
+  README.md
+  LICENSE</code></pre></div>
+<p>The daemon resolves the dashboard from <code>$PORTO_UI_DIR</code>, <code>ui/dist</code> in the working directory, then <code>ui/dist</code> or <code>dist</code> next to the executable, so keep <code>ui/dist</code> beside the binary when installing. Release binaries are built with <code>CGO_ENABLED=0 -trimpath</code>; linker flags strip debug data and inject the release SemVer into <code>porto --version</code>.</p>
+<p>Each target also produces <code>porto-desktop_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;</code>. Desktop
+archives bundle the matching Porto binary, dashboard, icon, <code>kubectl</code>, Lima,
+<code>k9s</code>, Docker CLI, Compose, Buildx, Dive, and supported <code>kind</code> clients. The app prepends those bundled tools to
+the daemon's <code>PATH</code>, so they do not need separate installation.</p>
+<p>The Docker CLI is rebuilt from the checksum-pinned official <code>v29.7.2</code> source
+with one packaged-path patch:
+<code>scripts/patches/docker-cli-29.7.2-bundled-plugins.patch</code>. The patch adds the
+adjacent <code>runtime/docker/cli-plugins</code> directory as the highest-priority plugin
+location without changing the user's Docker config directory. Compose <code>v5.5.1</code>
+and Buildx <code>v0.37.1</code> are downloaded from their upstream releases with exact
+per-platform SHA-256 pins. Their licenses/notices, the Docker patch, asset
+names, versions, and digests ship under <code>runtime/licenses</code> and
+<code>runtime/VERSIONS</code>.</p>
+<p>Dive <code>v0.13.1</code> is checksum-pinned for every supported desktop architecture.
+Its MIT license and version metadata ship beside the other runtime tools, and
+native packaging smoke tests execute <code>dive --version</code>.</p>
+<p>For Windows Lima 2.3.0, the bundler checksum-verifies the stable source archive,
+applies <code>scripts/patches/lima-2.3.0-windows-stop.patch</code>,
+<code>scripts/patches/lima-2.2.0-windows-graceful-stop.patch</code>,
+<code>scripts/patches/lima-2.2.0-windows-arm64-cpu.patch</code>,
+<code>scripts/patches/lima-2.2.1-windows-wsl-mount.patch</code>,
+<code>scripts/patches/lima-2.3.0-logind-opening.patch</code>,
+<code>scripts/patches/lima-2.2.1-guestagent-probe.patch</code> and
+<code>scripts/patches/lima-2.3.0-windows-quiet-path.patch</code>, and rebuilds only
+<code>limactl.exe</code> as <code>v2.3.0+porto.1</code>. Each file name records the Lima version the
+patch was last rebased on. Lima 2.3.0 already contains the earlier PID backport
+and native Windows OpenSSH version parsing, so those patches were removed. The
+quiet-path patch logs Lima 2.3's QEMU/MSYS2 <code>PATH</code> update at Debug level: at
+Info it went to stderr on every call, including container output relayed
+through <code>limactl shell</code>, and the runtime smoke check now requires
+<code>limactl --version</code> to write nothing to stderr. The
+force-stop change makes Windows SIGKILL terminate the selected process tree
+with a bounded, hidden <code>taskkill.exe</code> call and waits for the target to exit.
+It stops the host-agent tree before the driver can exit and orphan children.
+If <code>taskkill.exe</code> reports an already-exited target, its process handle must
+confirm termination before the stop succeeds; other failures block PID cleanup,
+restart, and deletion. Graceful QEMU stops use the owned QMP socket's ACPI
+powerdown command instead of an unavailable console event, then wait for normal
+host-agent exit and actual stopped state. The real Windows resource suite
+exercises VM loss/reconnect and engine update/shutdown through that path.
+The ARM64 fix reads the Windows-populated <code>x/sys/cpu</code> feature bits even when
+its <code>Initialized</code> flag is false, matching that library's platform behavior.
+Native ARM64 packaging checks that AES detection agrees with the OS feature bit.
+Native Windows packaging also verifies that only WSL UNC provider
+<code>ERROR_INVALID_FUNCTION</code> is classified as a temporarily unavailable root.
+Other signals keep upstream behavior. All patches and the Apache-2.0 license
+ship in <code>runtime/licenses</code>, and <code>runtime/VERSIONS</code> records the patched version.
+Other platforms keep their verified upstream binaries. Remove each patch
+when moving to a stable Lima version containing its fix; keep the runtime
+smoke checks as the release gate.</p>
+<p>macOS releases additionally contain architecture-specific <code>.dmg</code> installers,
+and Windows releases contain architecture-specific NSIS <code>.exe</code> installers.
+The one-line install scripts select these native packages automatically;
+portable archives remain available for manual and headless setups.
+The desktop updater consumes these same exact asset names through the GitHub
+Releases API; Linux updates use the portable desktop <code>.tar.gz</code> archive.
+Every desktop package also embeds the complete release SemVer separately from
+OS version metadata, so a release candidate can still detect the matching
+stable release.</p>
+<p>A <code>SHA256SUMS</code> file covers every archive and installer, and each asset gets a
+signed build provenance attestation. The assets themselves are not
+code-signed. Verify a download with:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">sha256sum --check --ignore-missing SHA256SUMS  # shasum -a 256 --check on macOS
+gh attestation verify porto_1.2.3_linux_amd64.tar.gz --repo porto-containers/porto</code></pre></div>
+<p>Releases up to 1.11.5 were built before the repository moved to
+<code>porto-containers</code>; their attestations name the old source repository, so
+verify them with <code>--repo mbianchidev/porto</code>.</p>
+<h2 id="running-the-checks-locally">Running the checks locally<a class="anchor" href="#running-the-checks-locally" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">gofmt -l .
+go mod tidy -diff
+go vet ./...
+go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+go test ./...
+go build ./cmd/porto
+npm --prefix ui ci
+npm --prefix ui run lint
+npm --prefix ui run build</code></pre></div>
+<p>Apple-native Kubernetes acceptance is opt-in on an Apple silicon Mac with
+macOS 26+, stable <code>container</code> 1.7.1+ (Homebrew 1.7.1 needs revision <code>_1</code>), a
+running Apple container system, and <code>kubectl</code>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PORTO_APPLE_CLUSTER_INTEGRATION=1 \
+  go test -v ./internal/kubernetes -run '^TestAppleClusterIntegration$' -count=1 -timeout 90m</code></pre></div>
+<p>It keeps an independent native control cluster and an unrelated Apple container
+running while single-node and multi-node target clusters repeatedly stop/start.
+Peak requested fixture resources are approximately 7 vCPUs and 8 GiB plus 256 MiB
+RAM. It verifies exact native budgets, native image import with
+<code>imagePullPolicy: Never</code>, a PVC-backed StatefulSet and actual Service/Gateway
+traffic. Workload preStop markers prove kubelet-controlled graceful shutdown.
+Address changes, datastore cluster/member identity, CA/node/PVC identity,
+desired replicas, completed Jobs, paused
+workloads, partial worker-start failure and recovery through a new provisioner
+instance are checked. The other cluster/container must retain their start
+timestamps and data throughout. Scaling/version upgrades remain rejected.
+Only explicitly owned fixture resources are removed; failed cleanup retains
+ownership records for inspection. Downloaded base images remain cached.
+Ordinary Go/provider tests and dashboard lifecycle tests cover host/version
+gating, private kubeconfigs, changed ownership, ordered/idempotent stop,
+persisted partial failure/cancellation, pending guest shutdown, uncertain
+deletion acknowledgements/residual backing data, cross-application operation
+states, TLS-preserving address repair,
+completed/paused workload handling, streamed image-import failure, capability-
+driven Apple controls and unchanged Lima choices without starting native VMs.</p>
+<p>An opt-in multi-platform integration test uses an already running, Porto-owned
+Lima engine on macOS or Linux. It applies engine emulation provisioning, then
+runs uncached Dockerfile commands for eight Linux targets through a temporary
+Porto Docker API socket and checks the exported architecture for each target.
+It uses synthetic build inputs and does not restart or recreate the VM:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PORTO_DOCKER_MULTIPLATFORM_INTEGRATION=1 \
+  go test ./internal/docker -run '^TestDockerMultiPlatformBuildIntegration$' -count=1 -v</code></pre></div>
+<p>Workflow files can be validated before pushing with:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">go run github.com/rhysd/actionlint/cmd/actionlint@latest .github/workflows/*.yml</code></pre></div>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/ci-cd.md" rel="noopener"><code>docs/ci-cd.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="kill-switch.html" rel="prev"><span class="pager-label">Previous</span> KillSwitch</a>
+    <a class="pager-next" href="installed-acceptance.html" rel="next"><span class="pager-label">Next</span> Installed-package acceptance</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

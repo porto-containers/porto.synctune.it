@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Branch management | Porto docs</title>
+  <meta name="description" content="Branch switching, concurrent instances, managed worktrees and cleanup.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/branch-management.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Branch management | Porto docs">
+  <meta property="og:description" content="Branch switching, concurrent instances, managed worktrees and cleanup.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/branch-management.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html" aria-current="page">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#projects">Projects and runtimes</a></p>
+  <article class="prose" aria-label="Branch management">
+<h1 id="branch-management">Branch management</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">3 sections</span></summary>
+    <ol>
+      <li><a href="#switch-branches">Switch branches</a></li>
+      <li><a href="#run-concurrent-branch-instances">Run concurrent branch instances</a></li>
+      <li><a href="#clean-up-merged-branches">Clean up merged branches</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto can switch the branch used by a project, run multiple branches at once, and remove branches that Git can prove are fully merged.</p>
+<h2 id="switch-branches">Switch branches<a class="anchor" href="#switch-branches" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Each project card has a searchable picker for local and remote-tracking branches. The default branch, <code>main</code>, and <code>master</code> are pinned first when available.</p>
+<p>Selecting a different branch for a running project stops the process, switches the worktree, updates its HTTPS hostname, and restarts it. Porto refuses to switch when the worktree is dirty or the target branch is already checked out elsewhere.</p>
+<p>The equivalent CLI command is:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto branch &lt;project&gt; &lt;branch&gt;</code></pre></div>
+<h2 id="run-concurrent-branch-instances">Run concurrent branch instances<a class="anchor" href="#run-concurrent-branch-instances" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Use <strong>New instance</strong> to run another branch without disturbing the original checkout. Porto creates a <code>worktrees</code> directory under its platform-specific user configuration directory, or <code>$PORTO_HOME/worktrees</code> when <code>PORTO_HOME</code> is set. It then runs the detected dependency setup so ignored artifacts such as <code>node_modules</code> are available.</p>
+<p>Each instance receives an independent process, port, logs, and controls. The dashboard groups these runtimes under their source project.</p>
+<p>The default branch keeps the base hostname. Other branches use compact labels: <code>copilot/improve-elemental-resistances-system</code> becomes <code>cop-imp-ele-res-sys</code>, so a project named <code>2dnd</code> receives <code>https://2dnd-cop-imp-ele-res-sys.porto.localhost/</code>. Porto shortens long labels and adds a deterministic suffix when needed to keep hostnames valid and unique.</p>
+<p>Project listings reuse each repository's resolved default branch for up to 30 seconds to avoid extra Git processes on every dashboard refresh. Switching branches, listing branches, creating an instance, or pulling on start refreshes it immediately; other remote HEAD changes appear within 30 seconds.</p>
+<p>Managed instances can be removed from their project card after their worktree is clean. Porto stops the process, removes the Git worktree, and deletes only that instance's runtime metadata and logs.</p>
+<h2 id="clean-up-merged-branches">Clean up merged branches<a class="anchor" href="#clean-up-merged-branches" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Open the dashboard's <strong>Branch hygiene</strong> panel to enable automatic local or remote cleanup. Porto checks every 10 seconds and removes only branches whose complete Git history is already reachable from the repository's default branch.</p>
+<p>The current branch, default branch, unmerged branches, and configured protected names or glob patterns are never removed.</p>
+<p>Remote cleanup is disabled by default and requires confirmation because it permanently deletes branches from the primary Git remote. Optional pruning runs <code>git fetch --prune</code> with interactive credential prompts disabled. Squash-merged and rebase-merged branches are left alone unless Git can prove their complete history is merged.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/branch-management.md" rel="noopener"><code>docs/branch-management.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="project-management.html" rel="prev"><span class="pager-label">Previous</span> Project management</a>
+    <a class="pager-next" href="runtimes.html" rel="next"><span class="pager-label">Next</span> Local runtimes</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

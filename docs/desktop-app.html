@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Desktop app source | Porto docs</title>
+  <meta name="description" content="The Electron host: security model, daemon startup and packaging.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/desktop-app.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Desktop app source | Porto docs">
+  <meta property="og:description" content="The Electron host: security model, daemon startup and packaging.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/desktop-app.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute" aria-current="page">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html" aria-current="page">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#develop">Develop and release</a></p>
+  <article class="prose" aria-label="Porto desktop app">
+<h1 id="porto-desktop-app">Porto desktop app</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">4 sections</span></summary>
+    <ol>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#run">Run</a></li>
+      <li><a href="#package">Package</a></li>
+      <li><a href="#updates">Updates</a></li>
+    </ol>
+  </details>
+</nav>
+<p>A native Porto host around the daemon's web UI. It does not implement any
+Porto functionality itself — it opens a window pointed at
+<code>http://127.0.0.1:37623</code> (the Porto daemon's default address) and starts
+<code>porto daemon start</code> unless the address exposes a compatible API and confirms
+that its dashboard assets are ready.</p>
+<h2 id="security">Security<a class="anchor" href="#security" aria-hidden="true" tabindex="-1">#</a></h2>
+<ul>
+<li><code>contextIsolation: true</code> and <code>nodeIntegration: false</code> (plus <code>sandbox: true</code>)
+on the desktop window, so the loaded page has no access to Node or desktop
+runtime APIs.</li>
+<li><code>preload.js</code> exposes only narrow desktop-preference and application-update
+operations. The main process rejects calls from pages outside the local Porto
+dashboard origin.</li>
+<li>Update downloads come only from the stable release returned by GitHub's
+<code>porto-containers/porto</code> Releases API. Porto selects the exact installer for the
+current OS and architecture and verifies it against the release's
+<code>SHA256SUMS</code> entry before offering a restart.</li>
+<li>The daemon is started detached and un-ref'd. Closing the window never stops
+it — Porto keeps managing projects, containers, clusters, and VMs in the
+background exactly as it does when driven from a browser tab.</li>
+</ul>
+<h2 id="run">Run<a class="anchor" href="#run" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">npm install   # installs the desktop runtime; only needed once
+npm start</code></pre></div>
+<p>Development runs require the daemon binary (<code>porto</code>) on <code>PATH</code>. Release
+packages bundle the daemon and portable runtime clients, so users do not need a
+separate Porto, Docker CLI, Compose, Buildx, Dive, Lima, <code>kubectl</code>, or <code>kind</code> installation. Windows
+packages also bundle QEMU for the managed container runtime and virtual machines.
+Windows ARM64 excludes KinD because upstream does not publish a native binary;
+Porto builds Docker CLI from its pinned official source and bundles native
+Compose and Buildx plugins.</p>
+<h2 id="package">Package<a class="anchor" href="#package" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>From the repository root, build the dashboard and a matching Porto binary,
+then package the branded Porto application:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">npm --prefix ui run build
+go build -o ui/electron/porto ./cmd/porto
+bash scripts/bundle-desktop-runtime.sh darwin arm64 runtime
+npm --prefix ui run desktop:package -- \
+  --platform=darwin \
+  --arch=arm64 \
+  --porto-release-version=1.0.0 \
+  --extra-resource=porto \
+  --extra-resource=../dist \
+  --extra-resource=../../runtime</code></pre></div>
+<p>Release automation performs this for every supported operating system and
+architecture. Native macOS and Windows hosts can build the final DMG or NSIS
+EXE package with:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">bash scripts/package-desktop-installer.sh darwin arm64 1.0.0 dist
+# Use: windows amd64 1.0.0 dist on Windows.</code></pre></div>
+<p>macOS installer packaging ad-hoc seals the final app and its nested Electron
+code before creating the DMG and desktop archive. This is not Developer ID
+signing or notarization. See <a href="ci-cd.html">release signing and verification</a>
+for the credentialed signing path and read-only DMG checks.</p>
+<p>The assisted Windows installer leaves the desktop-shortcut option unchecked by
+default. Silent installs do not create a desktop shortcut.</p>
+<p>Packaged apps compare the bundled daemon's SHA-256 identity with the identity
+cached by the running process and replace it when they differ, including
+same-version rebuilds installed at the same path. They automatically provision
+the bundled Porto container runtime on first launch and reconcile its
+provisioning on later launches, including QEMU/binfmt setup for multi-platform
+builds in already-running managed engines. Packaged apps always start
+the daemon executable embedded in their resources; they never require
+<code>PORTO_BINARY</code> or a separate <code>porto</code> executable on <code>PATH</code>.</p>
+<p><code>scripts/bundle-desktop-runtime.sh</code> creates the runtime directory used by
+releases. Packaged apps resolve the bundled binary and tools from Porto's
+resources directory before falling back to <code>PORTO_BINARY</code> or <code>PATH</code>. Packages
+also contain a statically linked Linux <code>porto-runtime-helper</code>; Porto
+installs it only inside the Porto-owned Lima instance and uses it for guest-local
+CNI operations and runtime capability probes.</p>
+<h2 id="updates">Updates<a class="anchor" href="#updates" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Installed builds check GitHub Releases shortly after launch and every 12 hours.
+<strong>Help &gt; Check for updates</strong>, the tray's <strong>Check for updates</strong>, and the Settings
+button request an immediate check through the same updater. Native menu checks
+show a result/error, respect automatic downloads, and let users reopen a prompt
+they dismissed earlier. Checks are disabled while checking, downloading, or
+installing, and in unsupported source builds.
+When a newer stable version exists, Porto prompts before downloading it. The
+Settings page can enable automatic downloads; installation still waits for the
+user to choose <strong>Restart and update</strong>.</p>
+<p>The restart replaces only the packaged desktop application and, when required,
+its detached daemon. It does not delete or recreate VMs, Kubernetes clusters,
+containers, images, or volumes. After the updated app launches, the existing
+daemon is reused when its bundled binary identity still matches, or replaced so
+the new dashboard can reconnect to the same managed resources.</p>
+<p>Windows updates stop the Porto-owned container engine cleanly before replacing
+the bundled runtime, then startup reconnects it to the same containers, images,
+and volumes. The installer helper refuses to force-kill QEMU; if another Porto
+VM or Kubernetes cluster is still using the bundled runtime, stop it before
+retrying the update.</p>
+<p>Updates require Porto to run from a user-writable installation. The standard
+installers use <code>~/Applications/Porto.app</code>, <code>%LOCALAPPDATA%\Programs\Porto</code>, and
+<code>~/.local/opt/porto</code>, which satisfy that requirement. A read-only or
+administrator-owned installation reports an error and leaves the downloaded
+package available instead of quitting.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/ui/electron/README.md" rel="noopener"><code>ui/electron/README.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="dashboard.html" rel="prev"><span class="pager-label">Previous</span> Dashboard source</a>
+    <a class="pager-next" href="product.html" rel="next"><span class="pager-label">Next</span> Product overview</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

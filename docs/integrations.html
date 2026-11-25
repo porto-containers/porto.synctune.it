@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Optional integrations | Porto docs</title>
+  <meta name="description" content="sql-not-so-lite, Etcqlite, KillSwitch and Sendbox.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/integrations.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Optional integrations | Porto docs">
+  <meta property="og:description" content="sql-not-so-lite, Etcqlite, KillSwitch and Sendbox.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/integrations.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html" aria-current="page">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#integrations">Environments and integrations</a></p>
+  <article class="prose" aria-label="Optional integrations">
+<h1 id="optional-integrations">Optional integrations</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">4 sections</span></summary>
+    <ol>
+      <li><a href="#sql-not-so-lite">sql-not-so-lite</a></li>
+      <li><a href="#etcqlite">Etcqlite</a></li>
+      <li><a href="#killswitch">KillSwitch</a></li>
+      <li><a href="#sendbox">Sendbox</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto's optional integrations are disabled until explicitly enabled. Project
+integrations additionally require their compatible managed-project inputs.
+Etcqlite has a separate, explicit datastore lifecycle and never scans projects.</p>
+<p>Separately installed tooling uses the <a href="extensions.html">permission-scoped extension system</a>.
+Those packages have independent verification, explicit grants and isolated
+execution; they do not replace or automatically activate the built-in
+integrations below. Local image analysis remains its own
+<a href="image-inspection.html">Syft/Grype workflow</a>, not a duplicate scanner extension.</p>
+<h2 id="sql-not-so-lite">sql-not-so-lite<a class="anchor" href="#sql-not-so-lite" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Enable <a href="https://github.com/mbianchidev/sql-not-so-lite" rel="noopener">sql-not-so-lite</a> from the dashboard's <strong>Optional integration</strong> panel. Porto checks managed project roots for files with SQLite extensions and validates the SQLite file header before doing external work.</p>
+<p>If no orchestrated project contains a valid SQLite database, Porto does not install or run anything. When an eligible project exists, Porto uses an existing <code>sqnsl</code> binary from <code>PATH</code>, or installs the pinned integration revision with Go, then runs:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">sqnsl scan &lt;project-path&gt;...</code></pre></div>
+<p>Daemon activation and rescans run in the background and expose their current state in the dashboard. Offline <code>porto scan</code> commands run the integration synchronously. Output and failures are recorded in eligible project logs under the <code>sqnsl</code> stream.</p>
+<p>Removed project roots and database candidates that disappear during discovery
+are skipped and logged, so a deleted worktree or build directory does not block
+other projects. Missing paths do not trigger installation or an error state
+when no databases remain. Permission failures and other I/O errors are still
+reported; Porto does not delete or recreate stale project directories.</p>
+<h2 id="etcqlite">Etcqlite<a class="anchor" href="#etcqlite" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><a href="https://github.com/mbianchidev/etcqlite" rel="noopener">Etcqlite</a> is an opt-in native datastore
+integration on <strong>macOS and Linux</strong>. It supports a standalone member or three
+host-local quorum members, plus the external-etcd endpoint contract for
+<strong>new k3s clusters only</strong>. Three members on one host do not provide independent
+failure domains. This is a local-development profile, not a production HA claim.
+Windows native lifecycle, kind/k0s datastore integration, live migration,
+membership changes and automatic engine/schema upgrades are not advertised.</p>
+<p>Install matching <code>etcqlite</code> and <code>etcqlite-snapshot</code> binaries separately. Keep the
+snapshot helper beside the resolved native executable, including when the main
+binary is reached through a symlink. Porto does not download, build or patch them.
+Expose the main binary in the <strong>daemon's</strong> <code>PATH</code>, or set
+<code>PORTO_ETCQLITE_BINARY</code> to its absolute path before launching Porto. The optional
+<code>PORTO_ETCQLITE_SNAPSHOT_BINARY</code> override must resolve to that same sibling helper,
+because the native CLI's offline snapshot commands use the sibling too.</p>
+<p>Open <strong>Settings &gt; Optional Etcqlite datastore</strong>, or run:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto etcqlite enable
+porto etcqlite create local-db --members 1
+porto etcqlite start local-db
+porto etcqlite status
+porto etcqlite logs local-db --stream stderr --tail 100
+porto etcqlite backup local-db
+porto etcqlite backups</code></pre></div>
+<p>Enabling only saves the gate. Initialization does not start a member, and
+selecting a datastore for k3s does not enable, install or start it. While disabled,
+inventory is an empty disabled response and native actions fail before binary
+lookup, filesystem discovery or execution. No cluster is scanned or retargeted.
+Other integrations, existing clusters and provider datastore defaults remain
+unchanged.</p>
+<h3 id="identity-storage-and-restart-behavior">Identity, storage and restart behavior<a class="anchor" href="#identity-storage-and-restart-behavior" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Each instance has a persistent random nonzero 64-bit cluster ID and individual
+member IDs. Identity-bearing control requests use decimal <strong>strings</strong>, preserving
+all 64 bits in browsers. Three-member genesis uses a shared configuration with
+distinct member/PID assignments and separate private <code>members/&lt;member&gt;/data</code>
+directories. The runtime never shares a live SQLite/WAL directory between nodes.</p>
+<p>Use an absolute, node-local <code>PORTO_HOME</code>. State, certificates and stdout/stderr
+files live under <code>PORTO_HOME/etcqlite/instances/&lt;opaque-name-token&gt;</code>. Directory
+components use Porto's SHA-256-derived file tokens rather than user-provided path
+text; metadata preserves the display name and immutable IDs. macOS requires a local
+filesystem; Linux accepts ext, XFS, Btrfs, ZFS, overlay, tmpfs and ramfs and rejects
+other/shared/network/FUSE filesystems. tmpfs/ramfs are suitable only for disposable
+fixtures, not persistent datastores. Missing or symlinked node data is not
+reinitialized. Interrupted initialization stays failed with its existing data.</p>
+<p>Porto generates a separate per-instance CA, private client credentials and
+member certificates, without adding trust to the OS or changing Porto's web CA.
+All managed client connections use mTLS, including loopback; three-member peer
+traffic uses loopback mTLS and
+<code>spiffe://etcqlite/&lt;16-digit-hex-cluster-id&gt;/&lt;16-digit-hex-member-id&gt;</code> identities.
+Certificates remain persistent. Expired or invalid credentials produce visible
+readiness errors; they are not replaced behind a pinned k3s binding.</p>
+<p>Native members outlive a daemon/desktop exit. Direct private file stdio prevents
+broken pipes, and enabled restart reconciliation checks PID <strong>plus kernel birth
+identity and executable path</strong> before reusing or signaling a process. It never
+signals an unrelated reused PID or clears occupied ports. Only already requested
+running instances are reconciled; existing data is never passed through <code>init</code>
+again. Readiness requires authenticated discovery with the expected cluster and
+member identities and a successful quorum/read <code>/readyz</code> barrier. A <code>started</code>
+log line is not readiness. Member failures, bounded log tails and process resource
+usage are visible through the integration API.</p>
+<h3 id="new-k3s-clusters">New k3s clusters<a class="anchor" href="#new-k3s-clusters" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Loopback client advertisements stay local. For a guest-reachable Lima endpoint,
+explicitly opt into a reachable host listener and advertisement:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto etcqlite create k3s-db --members 3 \
+  --advertise-host host.lima.internal --listen-host 0.0.0.0
+porto etcqlite start k3s-db
+porto kubernetes cluster create new-dev --provider k3s --etcqlite k3s-db</code></pre></div>
+<p>Host firewall and Lima DNS/routing must permit the connection. Porto does not
+rewrite a loopback endpoint, proxy the datastore or move data into a VM mount.
+Only the new k3s server receives private CA/cert/key files and
+<code>--datastore-endpoint</code>, <code>--datastore-cafile</code>, <code>--datastore-certfile</code> and
+<code>--datastore-keyfile</code>; worker setup is unchanged. A bounded guest-side mTLS
+readiness check runs before the k3s installer.</p>
+<p>The selected cluster ID, endpoints and CA fingerprint are pinned in the existing
+cluster metadata. Restart refuses changed bindings rather than changing a running
+cluster's datastore. There is no existing-cluster migration or datastore-edit
+operation. A datastore referenced by any managed k3s cluster cannot be stopped,
+disabled or removed through the integration, even while that cluster is stopped.
+Explicitly removing the k3s cluster releases the binding but leaves Etcqlite running
+and its data intact.</p>
+<h3 id="native-recovery-and-reversible-removal">Native recovery and reversible removal<a class="anchor" href="#native-recovery-and-reversible-removal" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Backups are <strong>native recovery images</strong>, not inspector projections or volume tar
+archives. A running member must advertise <code>native-snapshot-v1</code> through
+<code>/etcqlite/v1/discovery</code>. Porto pins the exact quoted identity ETag as <code>If-Match</code>
+when posting <code>{}</code> to <code>/etcqlite/v1/snapshots</code>; missing/stale preconditions,
+authorization, identity or readiness failures never fall back to projections.
+If native etcd authentication has been enabled separately, launch the daemon with
+<code>PORTO_ETCQLITE_TOKEN</code> containing its raw opaque authorization token, not a Bearer
+prefix. Tokens and private keys are not returned in integration inventory.</p>
+<p>Each private, no-overwrite image is checked by <code>etcqlite snapshot status</code>,
+including native integrity/protected-record checks. Porto also checks expected
+IDs, revision/schema agreement, byte count and the SHA-256 payload/trailer.
+Native format 1 ends in a 32-byte SHA-256 trailer; status <code>sha256</code> excludes that
+trailer and <code>bytes</code> includes it. Compaction revision is signed: <code>-1</code> means not
+compacted; values below <code>-1</code> or above the current revision are rejected.
+The supported image limit is 8 GiB per member and actions have a two-minute budget.
+Only completed <code>verified.json</code> records appear as backups. Failed/unverified
+private staging never replaces or advertises an earlier verified image.</p>
+<p>Cluster deletion, upgrades and worker removal for selected k3s datastores require
+verified native images before destructive VM changes. Completed k3s clusters also
+require preserving their private server recovery token. Incomplete new bootstrap
+may have no token yet; that limitation is logged and recorded as
+<code>tokenPreserved: false</code> in its recovery metadata before fresh VM cleanup.
+These images do not back up application volumes, and there is no automatic k3s
+disaster restore or live cutover. Keep the native images, credentials, k3s token
+and recovery metadata privately together.</p>
+<p>For an unbound instance:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto etcqlite stop local-db
+porto etcqlite delete local-db --confirm
+# Use the original decimal cluster ID from inventory or verified backup metadata:
+porto etcqlite restore local-db --cluster-id ORIGINAL_ID --confirm
+porto etcqlite start local-db
+porto etcqlite stop local-db
+porto etcqlite disable</code></pre></div>
+<p>Removal first verifies native images, then stops only ownership-verified members
+and moves the original directory to
+<code>PORTO_HOME/etcqlite/retained/&lt;opaque-name-and-ID-token&gt;</code>.
+It never recursively purges data or backup history. It opens the <strong>existing</strong>
+private <code>data/node.lock</code> without creating/truncating/replacing it, holds the same
+nonblocking exclusive <code>flock</code> through retention/restoration and refuses a current
+writer. Restoration moves the same retained identity/data back without overwrite
+or startup. Stop the restored instance before disabling; disabling does not stop
+running members. Native recovery-image import/rebootstrap remains an explicit
+Etcqlite operation into isolated node-local directories, not this reversible
+directory restoration.</p>
+<h3 id="local-api">Local API<a class="anchor" href="#local-api" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>The routes use Porto's existing loopback-only control API and strict JSON decoder;
+they are not granted to remote environments or extensions by this integration.</p>
+<div class="table" role="region" aria-label="Table: Local API" tabindex="0"><table>
+<thead><tr><th scope="col">Method and path</th><th scope="col">Request / result</th></tr></thead>
+<tbody>
+<tr><td><code>GET /api/integrations/etcqlite</code></td><td>Disabled empty inventory, or explicit instance/member state.</td></tr>
+<tr><td><code>POST /api/integrations/etcqlite/enable</code> or <code>/disable</code></td><td>Persist gate only; disabling refuses active or bound instances.</td></tr>
+<tr><td><code>POST /api/integrations/etcqlite/instances</code></td><td>`{name, members: 1</td></tr>
+<tr><td><code>POST /api/integrations/etcqlite/instances/{name}/start</code> or <code>/stop</code></td><td><code>{clusterID: &quot;decimal ID&quot;}</code>; identity-bound lifecycle.</td></tr>
+<tr><td><code>POST /api/integrations/etcqlite/instances/{name}/backup</code></td><td><code>{clusterID}</code>; verified native recovery artifacts.</td></tr>
+<tr><td><code>GET /api/integrations/etcqlite/backups</code></td><td>Completed verified backup records only.</td></tr>
+<tr><td><code>GET /api/integrations/etcqlite/instances/{name}/logs?stream=stderr&amp;tail=100</code></td><td>Bounded stdout/stderr tails, maximum 1,000 lines / last 1 MiB per file.</td></tr>
+<tr><td><code>DELETE /api/integrations/etcqlite/instances/{name}</code></td><td><code>{clusterID, confirm: true}</code>; verified backup and reversible retention.</td></tr>
+<tr><td><code>POST /api/integrations/etcqlite/instances/{name}/restore</code></td><td>Original <code>{clusterID, confirm: true}</code>; no overwrite, startup or identity rewrite.</td></tr>
+<tr><td><code>POST /api/kubernetes/clusters</code></td><td>Optional <code>etcqlite: {name, clusterID?}</code> on a <strong>new k3s</strong> request; server pins the verified identity/fingerprint.</td></tr>
+</tbody>
+</table></div>
+<p>Errors retain the existing <code>{message}</code> shape: invalid requests <code>400</code>, missing
+owned records <code>404</code>, stale identities/bindings/occupied listeners <code>409</code>,
+disabled/unavailable integration <code>503</code> and unsupported native platform <code>501</code>.
+Native verification or storage failures are explicit, not successful empty results.</p>
+<h2 id="killswitch">KillSwitch<a class="anchor" href="#killswitch" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>On macOS, enable <a href="https://github.com/mbianchidev/kill-switch" rel="noopener">KillSwitch</a> to share the active ports owned by processes managed by the current Porto daemon. KillSwitch keeps those source-owned ports separate from its own configured ports.</p>
+<p>Installation is always explicit. Use <strong>Install KillSwitch</strong> in the dashboard or run:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kill-switch install</code></pre></div>
+<p>Porto can then sync active ports automatically and delegate cleanup to KillSwitch. Cleanup follows KillSwitch's auto-kill, age, runtime, indicator, and exclusion settings.</p>
+<p>See the <a href="kill-switch.html">KillSwitch integration guide</a> for requirements, commands, port ownership, and troubleshooting.</p>
+<h2 id="sendbox">Sendbox<a class="anchor" href="#sendbox" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Install <a href="https://github.com/mbianchidev/sendbox" rel="noopener">Sendbox</a> on a compatible macOS 26 Apple Silicon machine, then initialize each project that should expose the integration:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">sendbox init --project /path/to/project</code></pre></div>
+<p>This creates <code>.sendbox.yaml</code>. Enable <strong>Sendbox</strong> in Porto's dashboard, then use <strong>Run in Sendbox</strong> and <strong>Stop Sendbox</strong>, or:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto sendbox start &lt;project&gt;
+porto sendbox stop &lt;project&gt;</code></pre></div>
+<p>Porto runs <code>sendbox run --config &lt;project&gt;/.sendbox.yaml --project &lt;project&gt;</code> and captures its output in the project's existing logs under the <code>sendbox</code> and <code>sendbox-stderr</code> streams. Porto does not install, require, or run Sendbox when no managed project contains <code>.sendbox.yaml</code>.</p>
+<p>Sendbox sessions are independent from normal Porto processes. They do not receive Porto's automatic port assignment and are not routed through Porto's local hostnames. Avoid running both modes simultaneously when they would bind the same host port.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/integrations.md" rel="noopener"><code>docs/integrations.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="windows-integration.html" rel="prev"><span class="pager-label">Previous</span> Windows integration</a>
+    <a class="pager-next" href="kill-switch.html" rel="next"><span class="pager-label">Next</span> KillSwitch</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

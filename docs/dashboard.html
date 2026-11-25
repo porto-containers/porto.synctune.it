@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Dashboard source | Porto docs</title>
+  <meta name="description" content="The React control surface: routes, structure and development.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/dashboard.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Dashboard source | Porto docs">
+  <meta property="og:description" content="The React control surface: routes, structure and development.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/dashboard.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute" aria-current="page">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html" aria-current="page">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#develop">Develop and release</a></p>
+  <article class="prose" aria-label="Porto control surface">
+<h1 id="porto-control-surface">Porto control surface</h1>
+<p>The React app is a dense, hash-routed operations desk with a stable left rail,
+a central ranked inventory per section, and a right-hand inspector for the
+selected item (an accessible full-screen overlay on narrow widths):</p>
+<ul>
+<li><strong>Local development</strong> — <code>#/localhost-ing</code> (default route) is the Porto
+project control board: fleet health, compact channel rows, quick actions,
+and an inspector with routing, branch, maintenance, and log console detail.</li>
+<li><strong>Containers</strong> — <code>#/containers</code>, <code>#/images</code>, <code>#/builds</code>, <code>#/volumes</code>,
+<code>#/networks</code> inventory and operate the local Docker engine; the container
+inspector includes state-aware lifecycle controls and application/debug
+terminal modes.</li>
+<li><strong>Kubernetes</strong> — <code>#/kubernetes</code> (overview + context picker), <code>#/pods</code>
+(Overview/Logs/Terminal/Files/Stats/Events/Manifest inspector tabs),
+<code>#/services</code>, <code>#/storage</code> (PVs/PVCs), <code>#/gateways</code> (GatewayClasses,
+Gateways, and HTTPRoutes), <code>#/configs</code>, <code>#/secrets</code>, and <code>#/nodes</code>; every
+resource view can switch context directly.</li>
+<li><strong>Virtual machines</strong> — <code>#/machines</code> lists the Lima-backed VM image catalog
+and instances, with a create form and terminal/snapshot inspector tabs.</li>
+<li><strong>System</strong> — <code>#/activity</code> shows recent client-side actions and errors for
+this session; <code>#/settings</code> keeps branch cleanup, integrations, desktop
+behavior, and application updates.</li>
+</ul>
+<p>Every runtime section (Docker, Kubernetes, VMs) reports a clear "unavailable"
+state instead of inventing data when the underlying engine, cluster, or
+hypervisor cannot be reached.
+Polled inventories retain their last successful data across route changes and
+refresh in the background without replacing the current view with a loading
+state.</p>
+<h2 id="development">Development<a class="anchor" href="#development" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">npm install
+npm run dev</code></pre></div>
+<p>The Vite development server proxies <code>/api</code> and WebSocket upgrades to a Porto
+daemon running at <code>127.0.0.1:37623</code>.</p>
+<p>Run <code>npm run lint</code> and <code>npm run build</code> before submitting changes.</p>
+<h2 id="desktop-app">Desktop app<a class="anchor" href="#desktop-app" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><code>electron/</code> contains the Porto desktop app. It loads this UI from the Porto
+daemon (<code>http://127.0.0.1:37623</code>) and starts the daemon only when it is
+unreachable. Install and run Porto from the <code>ui</code> directory:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">npm run desktop:install
+npm run desktop</code></pre></div>
+<p>See <code>electron/README.md</code> for packaging.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/ui/README.md" rel="noopener"><code>ui/README.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="installed-acceptance.html" rel="prev"><span class="pager-label">Previous</span> Installed-package acceptance</a>
+    <a class="pager-next" href="desktop-app.html" rel="next"><span class="pager-label">Next</span> Desktop app source</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

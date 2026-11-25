@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Windows integration | Porto docs</title>
+  <meta name="description" content="Selected WSL tooling, shared paths, native credentials and native Windows containers.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/windows-integration.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Windows integration | Porto docs">
+  <meta property="og:description" content="Selected WSL tooling, shared paths, native credentials and native Windows containers.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/windows-integration.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html" aria-current="page">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#integrations">Environments and integrations</a></p>
+  <article class="prose" aria-label="Windows development integration">
+<h1 id="windows-development-integration">Windows development integration</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">6 sections</span></summary>
+    <ol>
+      <li><a href="#bundled-qemu-and-unicode-paths">Bundled QEMU and Unicode paths</a></li>
+      <li><a href="#native-windows-setup">Native Windows setup</a></li>
+      <li><a href="#select-a-distribution">Select a distribution</a></li>
+      <li><a href="#shares-and-file-changes">Shares and file changes</a></li>
+      <li><a href="#credentials-repair-and-removal">Credentials, repair and removal</a></li>
+      <li><a href="#embedded-terminals-and-supported-boundaries">Embedded terminals and supported boundaries</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto keeps <strong>Linux containerd and BuildKit in its owned Lima/QEMU VM</strong> as the
+default Windows-hosted engine. Selected WSL distributions remain development
+clients of that engine. Native Windows containers use a separately owned
+containerd/runhcs backend, selected explicitly through the <code>porto-windows</code>
+Docker context or the dashboard's <strong>Container backend view</strong>.</p>
+<p>These are separate endpoints and stores, not an image conversion or a switch to
+Lima's WSL driver. Both API endpoints report their actual backend OS.</p>
+<h2 id="bundled-qemu-and-unicode-paths">Bundled QEMU and Unicode paths<a class="anchor" href="#bundled-qemu-and-unicode-paths" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The Windows bundle adds a per-process UTF-8 manifest to <code>qemu-img.exe</code> and its
+architecture-matched <code>qemu-system-*.exe</code> before packaging or signing. This lets
+their narrow Windows file APIs open firmware and disks in paths containing
+non-ASCII characters on Windows 10 version 1903 or later, without changing the
+host's locale/code-page settings or substituting an ASCII installation path.
+See Microsoft's <a href="https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page" rel="noopener">UTF-8 process code-page documentation</a>.</p>
+<p>The downloaded vendor archive is checksum-verified and left unchanged; only
+isolated build copies are edited. Native code, image addressing, version/icon
+resources and unrelated data are verified unchanged. Editing removes the
+vendor Authenticode signature, which would otherwise be invalid; any signing
+of these modified copies must happen after bundling. <code>runtime/VERSIONS</code> records
+the change, and its manifest/build helper are retained under <code>runtime/licenses</code>.
+A matching native Windows build also creates a Unicode-path image and opens
+Unicode-path firmware in a paused, network-free QEMU process, then requires a
+clean QMP exit. This quick probe does not replace full installed-runtime CI.
+Before its 10-second deadlines, the build runs <code>--version</code> once on each rewritten
+executable with a three-minute bound and logs the time: Windows scans a newly
+written executable on first launch, and that scan has stalled the QMP greeting
+with no output on hosted runners.</p>
+<p>The bundled Lima also recognizes the native OS client's
+<code>OpenSSH_for_Windows_</code> version banner. Otherwise it treats that client as version
+zero and never applies its existing CPU-aware cipher preferences. The patch
+retains the upstream OpenSSH 8.1 minimum for cipher reordering and the actual
+Windows processor feature check; it does not force AES on unsupported CPUs.</p>
+<p>Windows ARM64 runtime-data CI explicitly selects the trusted native OS OpenSSH
+client through Lima's supported <code>SSH</code> setting, checking the ARM64 executable
+headers of <code>ssh</code>, <code>scp</code>, and <code>ssh-keygen</code> before boot. This avoids Git's Cygwin
+client and repeated path-conversion subprocesses in metadata requests. Missing
+or non-native clients fail setup instead of falling back to emulation. The
+20-second metadata budget and all guest/acceptance deadlines are unchanged.
+This selection is confined to the disposable CI fixture.
+Installed-package fixtures likewise put the trusted native OpenSSH directory
+ahead of inherited toolchains, so the packaged daemon and Buildx bridge use
+the same OS client instead of depending on the runner's Git PATH ordering.</p>
+<p>The bundle also keeps a stricter variant of
+<a href="https://github.com/lima-vm/lima/commit/396604e38baf2645a4fa23b4bb4f012ef41ddb85" rel="noopener">Lima's opening-session guard</a>
+for the Ubuntu 24.04/systemd v255 first-boot <code>terminate-user</code> race documented in
+<a href="https://github.com/lima-vm/lima/issues/5570" rel="noopener">lima-vm/lima#5570</a>. Upstream Lima
+2.3 waits up to 30 seconds and then resets anyway; Porto's Windows build waits
+within the existing boot budget before refreshing the guest environment.
+Unavailable session inspection or sessions still opening after 30 seconds fail
+explicitly, without an unsafe reset or an SSH-ready success marker.
+Sessions that finish between enumeration and inspection are accepted only after
+a fresh list confirms removal. Unknown state for a still-listed session remains
+an error. Source-patch regression tests run on the build host, including when
+cross-packaging a Windows target.
+Runtime patch application forces LF locally to that Git invocation, independent
+of a Windows host's <code>core.autocrlf</code> setting. Embedded Linux script bytes are
+checked before building; CRLF shebangs must never reach the guest.</p>
+<p>This upstream mitigation is not atomic: a new login after the last snapshot
+can still race. The definitive fixes are in newer guest systemd versions
+(<a href="https://github.com/systemd/systemd/commit/0ae9073f15209b6e0acfbd23ec146c4a29b7abbe" rel="noopener">0ae9073f</a>,
+<a href="https://github.com/systemd/systemd/commit/b2a4109031c1bd79c498f8642df150deeebe1708" rel="noopener">b2a41090</a>).
+The existing Windows Ubuntu 24.04 image selection and existing guest disks are
+unchanged; no systemd binary, kernel, PAM policy or host configuration is patched.</p>
+<p>The standalone Windows updater uses native process executable/creation metadata,
+not the CIM provider. It explicitly loads its required system modules from the
+running interpreter's <code>$PSHOME</code> with command autoload disabled, avoiding unbounded
+cold command discovery or inherited third-party module resolution. A failed
+module import reports an error without signaling readiness or asking Porto to
+exit. Installed executable names only select candidates; the
+complete installation path establishes ownership, and PID creation time and path
+are rechecked before stopping a process. A running owned QEMU executable still
+refuses the update before readiness. Unknown inspection fails explicitly, and
+the existing 15-second helper-readiness limit is unchanged.
+Both native Windows CI rows exercise cold <code>-File</code> launches and the actual helper
+with CIM unavailable, an owned QEMU-shaped synthetic process, and an unrelated
+same-name executable. The fixture checks the real readiness handshake and
+preserves the unrelated process before the separate full NSIS update/uninstall
+acceptance runs. The helper's adjacent installer log timestamps path validation,
+executable cataloging, native process inspection and readiness. A failed installed
+readiness gate retains its bounded log and error message without dumping settings
+or credentials.</p>
+<h2 id="native-windows-setup">Native Windows setup<a class="anchor" href="#native-windows-setup" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>In <strong>Settings &gt; Native Windows containers</strong>, inspect host capabilities and
+explicitly install the native runtime. Setup requests administrator permission
+for its protected service, binaries and named pipe. The ordinary desktop/project
+daemon remains unprivileged. Missing Windows Containers or Hyper-V features
+require explicit OS setup and any requested reboot; Porto does not enable
+features or reboot automatically.</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto docker windows status
+porto docker windows install
+porto docker windows context --confirm
+docker --context porto-windows info
+docker --context porto-windows pull mcr.microsoft.com/windows/nanoserver:ltsc2025
+docker --context porto-windows run --name synthetic-windows --isolation process mcr.microsoft.com/windows/nanoserver:ltsc2025 cmd.exe /c echo synthetic-windows
+docker --context porto-windows logs synthetic-windows
+docker --context porto-windows inspect synthetic-windows
+docker --context porto-windows rm synthetic-windows</code></pre></div>
+<p>Choose an image compatible with the inspected host, not merely one labelled
+<code>windows/amd64</code>. Process isolation requires a matching supported Windows build;
+different patch revisions are not different builds. Hyper-V isolation requires
+the actual feature and usable hardware/nested virtualization. Unsupported
+architectures, editions, image versions, host-process isolation and unverified
+virtualization fail before native workload mutation.</p>
+<p>Docker image configuration IDs and native runtime manifest digests are distinct.
+Porto resolves full or short image IDs before native creation, tagging and
+removal, and uses the validated immutable manifest for creation. Image inspection
+retains the actual Windows <code>os.version</code> from the matching OCI configuration.</p>
+<p>Native creation prepares the Windows snapshot and container metadata through the
+maintained containerd/runhcs SDK, without executing the workload. Only an
+explicit start allocates its owned network endpoint and starts the task. Native
+logs, exec and TTY streams use protected Windows named pipes and the runhcs
+console, not the experimental Windows <code>nerdctl create</code> implementation.
+The dashboard WebSocket terminal uses the same maintained SDK exec path,
+including console resize, actual exec exit codes and disconnect reaping.
+Closing it does not stop container init or a different interactive exec.</p>
+<p><code>porto docker windows context</code> explicitly selects the native CLI context.
+Changing <strong>Container backend view</strong> only changes the dashboard view: open
+inspectors/terminals disconnect, but neither engine nor its running workloads
+are stopped. Opted-in WSL wrappers continue using the original Linux endpoint.
+Native inventory, request caches and live streams are separated from Linux;
+native terminals select Windows shells such as <code>cmd.exe</code>, not a Linux toolbox.</p>
+<p>Native bind mounts use explicit Windows host/container paths. Spaces and
+non-ASCII paths remain argument values. Native networking uses its supported
+Windows NAT/HCS integration; it does not substitute Linux CNI or create a public
+Docker TCP listener. Treat access to the native control pipe as privileged host
+access and grant it only to the owning user and administrators.</p>
+<p>Workload mounts currently require existing directory bind sources. Managed or
+anonymous volume mounts, pause/resume and automatic restart policies are rejected
+explicitly rather than translated into different behavior.</p>
+<p>Stop/remove the owned integration explicitly:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto docker windows stop --confirm
+porto docker windows remove --confirm</code></pre></div>
+<p>Active native workloads prevent unsafe stop/update/removal. Removal keeps
+native images, containers and volume data, and does not delete or interrupt the
+Linux engine, WSL distributions or unrelated services/networks. A conflicting
+service identity or ownership marker is an error, not permission to adopt it.
+The disposable Windows development-client gate keeps an actual Linux workload
+and binary volume dataset alive during native installation, an independently
+built changed-binary update, repair, context changes and removal. It checks
+unchanged Linux PID/start identity and new workload reads/writes, not only an
+engine metadata sentinel.</p>
+<p>Native registry proxy and CA settings cross the owned pipe from the owning
+user and are DPAPI-encrypted at rest. See
+<a href="networking.html#native-windows-registry-networking">native Windows registry networking</a>
+for explicit apply and repair commands.</p>
+<p>The Windows AMD64 package includes checksum-pinned source builds of containerd,
+the maintained runhcs shim, nerdctl and Windows CNI plugins. They use a patched
+Go compiler and official crypto/network dependencies rather than shipping old
+upstream prebuilt executables with known advisories. Build metadata and licenses
+are retained in the runtime bundle. Native ARM64 Windows-container payloads are
+not substituted with AMD64 binaries.</p>
+<p>Linux BuildKit, CRIU, cgroup metrics, Linux file helpers, and the existing
+Linux backup/migration workflows are not advertised as native Windows features.
+Switch to the Linux view for those workflows instead of applying them to a
+Windows store.</p>
+<h2 id="select-a-distribution">Select a distribution<a class="anchor" href="#select-a-distribution" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Install WSL and the distributions you want explicitly through Windows.
+<code>wsl --list --verbose</code> shows their current versions. Porto requires WSL 2 and
+never converts WSL 1 distributions, changes the default distribution, edits
+<code>.wslconfig</code>/<code>wsl.conf</code>, or enables Windows virtualization features for you.
+The selected user needs Windows executable interoperability, <code>wslpath</code>,
+<code>sh</code>, <code>tar</code>, <code>realpath</code> and ordinary POSIX user-profile tooling.</p>
+<p>In <strong>Settings &gt; Selected WSL distributions</strong>, enable exactly the distribution
+you want. Equivalent CLI commands are:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto wsl list
+porto wsl enable &quot;Ubuntu-24.04&quot;
+porto wsl status</code></pre></div>
+<p>Porto installs owned native Linux Docker, Compose, Buildx and <code>porto-wsl</code>
+binaries only in that distribution user's <code>~/.local/share/porto/wsl</code>.
+Its owned shell hooks update <code>.profile</code> and existing <code>.bashrc</code>/<code>.zshrc</code> files;
+regular profile files are required. Symbolic links and unrelated tooling
+directories are rejected before replacement. Open a new shell afterward.
+Neither the distribution's existing Docker binaries nor <code>~/.docker/config.json</code>
+are overwritten.</p>
+<p>Linux clients use a mode-<code>0600</code> Unix socket in an owned mode-<code>0700</code> directory
+under <code>/tmp</code>. A supervised-on-use user bridge relays Docker HTTP, upgrades and
+Buildx streams through the installed Windows <code>porto.exe</code> to the private
+<code>\\.\pipe\porto_docker_engine</code>. It opens <strong>no TCP Docker or control API</strong>.
+The integration is tied to the distribution's registration ID and a generated
+ownership token. Replaced registrations, missing tools and stopped
+distributions are errors, not reasons to mutate or start other distributions.
+Windows' UNC file provider can itself restart a distribution while existing
+shared-file consumers keep reading it. Pause/stop those consumers or release
+the selected shares before expecting the distribution to remain stopped.
+Status inspection only lists registrations and running state; it does not
+execute a command inside the distribution.</p>
+<h2 id="shares-and-file-changes">Shares and file changes<a class="anchor" href="#shares-and-file-changes" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The selected Linux home and the Windows user home exposed inside that
+distribution become explicit share roots. Additional roots are optional:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto wsl enable --mount-root /workspace &quot;Ubuntu-24.04&quot;
+porto wsl apply-mounts --restart-engine</code></pre></div>
+<p>Linux filesystem roots use the selected distribution's <code>\\wsl.localhost</code> share.
+Windows-drive roots use their native Windows paths instead of a UNC round trip
+through WSL, which can deny access to mounted Windows drives. Each selected root
+gets a distinct guest mount point; existing Lima host-home mounts and their
+permissions/options remain unchanged.</p>
+<p>The second command is a separate, explicit maintenance action. It verifies
+the existing engine's ownership, preserves unrelated Lima mount options and
+restarts only Porto's owned Linux engine. Save running work first. It does not
+replace the VM, delete images/containers/volumes, or change standalone VMs.
+New engine creation includes selected roots; an existing engine is never
+restarted implicitly by WSL enablement.</p>
+<p>Bind paths are translated from selected absolute Linux roots, including
+Windows-drive locations, into their owned guest mount points. Spaces, quotes
+and non-ASCII characters stay in argument arrays rather than shell command
+interpolation. Unknown roots and missing guest mounts fail with setup guidance.
+Named volumes are not treated as host paths. Device passthrough from a different
+WSL kernel is unsupported.</p>
+<p>These are direct shared files, not a cached copy-back workspace. Native inotify
+does not cross the Windows/Lima shared-filesystem boundary reliably. WSL bind
+containers receive <code>CHOKIDAR_USEPOLLING=true</code> and <code>WATCHPACK_POLLING=true</code> defaults;
+explicit application values are preserved. Other watch libraries must select
+their polling mode explicitly. Rootless guest ownership and the source
+filesystem still determine which writes are permitted.</p>
+<p>Inside the opted-in shell:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">docker info
+docker compose up --detach
+docker buildx build --no-cache --load --tag synthetic-wsl-app .</code></pre></div>
+<p>The wrapper defaults to Porto, clears inherited Docker connection overrides and
+uses its own persistent <code>~/.config/porto/wsl-docker</code> configuration. Explicit Docker
+connection flags retain Docker's normal meaning. Build contexts originate in
+the selected Linux filesystem and travel through the private Buildx session.</p>
+<h2 id="credentials-repair-and-removal">Credentials, repair and removal<a class="anchor" href="#credentials-repair-and-removal" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The scoped <code>docker-credential-porto</code> helper stores Docker login secrets in the
+current Windows user's native credential vault. Only an opted-in, currently
+registered distribution can call it. Linux configuration contains the helper
+name, not the secret. Vault errors are visible and never fall back to plaintext.
+Existing unrelated Docker credentials and contexts are not imported or changed.</p>
+<p>Repeat <code>porto wsl enable</code> to repair tools after changing the installed Windows
+executable location or upgrading Porto. Repair retains the integration identity,
+existing additional roots when none are supplied, and persistent CLI/Buildx
+configuration. Partial provisioning restores previous tools and owned hooks.</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto wsl disable &quot;Ubuntu-24.04&quot;
+porto wsl apply-mounts --restart-engine</code></pre></div>
+<p>Removal stops only the owned distribution bridge and removes only its tools and
+hooks. Windows vault credentials, persistent scoped CLI configuration and Linux
+engine data remain. Apply mount changes separately to release old shares.
+The bridge flushes its complete ownership-bound stop acknowledgement before
+closing connections. A successful stop also waits for its serving lease to
+be released within the existing one-second shutdown budget, so immediate
+repair does not race the previous bridge. Other owners remain refused.
+<strong>Disable and release shares before externally deleting, renaming or reimporting
+a distribution.</strong> Registration-identity mismatches are refused rather than
+automatically adopting a replacement distribution.</p>
+<h2 id="embedded-terminals-and-supported-boundaries">Embedded terminals and supported boundaries<a class="anchor" href="#embedded-terminals-and-supported-boundaries" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Windows 10 1809 and newer provide ConPTY. Porto uses the maintained Charm
+ConPTY implementation for Linux container, pod, VM, k9s and Dive terminals. Resize,
+disconnect, cancellation and exit codes use the same WebSocket contract as
+Unix PTYs. The terminal waits for and reaps its own command; it does not
+terminate unrelated host agents or the shared engine to close a console.
+Background tools continue using consoleless Windows subprocesses.
+Native Windows-container terminals use the runhcs console and protected named-pipe
+I/O, with the same resize, disconnect and exit-code contract.</p>
+<div class="table" role="region" aria-label="Table: Embedded terminals and supported boundaries" tabindex="0"><table>
+<thead><tr><th scope="col">Windows capability</th><th scope="col">x64 validation</th><th scope="col">ARM64 validation</th></tr></thead>
+<tbody>
+<tr><td>Private Docker named pipe and existing Lima/QEMU Linux engine</td><td>Native client/runtime acceptance</td><td>Cross-build plus native platform/unit coverage</td></tr>
+<tr><td>Linux Docker, Compose, Buildx and WSL helper artifacts</td><td>Native Linux ELF checked and exercised in WSL 2</td><td>Native ARM64 Linux ELF checked, never replaced with x64 artifacts</td></tr>
+<tr><td>Selected-distribution Compose/build/bind/watch/credential workflow</td><td>Real WSL 2 acceptance with an independent owned QEMU engine and an untouched control distribution</td><td>Requires a real WSL 2-capable ARM64 host; hosted ARM64 runners do not provide that kernel capability</td></tr>
+<tr><td>Native trusted portless HTTPS and embedded ConPTY</td><td>Dedicated native service/browser/console acceptance</td><td>Dedicated native service/browser/console acceptance</td></tr>
+<tr><td>Native Windows containers</td><td>Separately selected containerd/runhcs; native acceptance targets supported Windows Server 2025 process-isolated workloads; other host/isolation combinations remain capability-gated</td><td>Native WCOW image/runtime support is unavailable; Linux/WSL ARM64 tooling remains separate and supported</td></tr>
+<tr><td>KinD binary</td><td>Bundled x64 binary</td><td>Upstream native binary unavailable; reported separately</td></tr>
+</tbody>
+</table></div>
+<p>The acceptance rows are executable CI contracts, not a claim of universal VPN,
+browser or Windows-edition compatibility. See <a href="networking.html">networking</a> for
+HTTPS setup, native trust, proxy settings and backend-specific direct-IP limits.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/windows-integration.md" rel="noopener"><code>docs/windows-integration.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="extensions.html" rel="prev"><span class="pager-label">Previous</span> Extensions</a>
+    <a class="pager-next" href="integrations.html" rel="next"><span class="pager-label">Next</span> Optional integrations</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

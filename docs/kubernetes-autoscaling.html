@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Autoscaling | Porto docs</title>
+  <meta name="description" content="Local Karpenter workers, KEDA triggers, budgets and ownership.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/kubernetes-autoscaling.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Autoscaling | Porto docs">
+  <meta property="og:description" content="Local Karpenter workers, KEDA triggers, budgets and ownership.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/kubernetes-autoscaling.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html" aria-current="page">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#kubernetes">Kubernetes</a></p>
+  <article class="prose" aria-label="Local Kubernetes autoscaling">
+<h1 id="local-kubernetes-autoscaling">Local Kubernetes autoscaling</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">5 sections</span></summary>
+    <ol>
+      <li><a href="#enable-controllers">Enable controllers</a></li>
+      <li><a href="#capacity-and-lifecycle-safety">Capacity and lifecycle safety</a></li>
+      <li><a href="#configure-event-driven-workloads">Configure event-driven workloads</a></li>
+      <li><a href="#api">API</a></li>
+      <li><a href="#development-checks">Development checks</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Open a running managed cluster's <strong>Autoscaling</strong> tab. Node supply and workload
+replicas are independent options:</p>
+<div class="table" role="region" aria-label="Table: Local Kubernetes autoscaling" tabindex="0"><table>
+<thead><tr><th scope="col">Controller</th><th scope="col">Purpose</th><th scope="col">Supported distributions</th></tr></thead>
+<tbody>
+<tr><td>Karpenter 1.15.1 with Porto's provider</td><td>Create real local Lima worker VMs for unschedulable pods</td><td>k3s, k0s</td></tr>
+<tr><td>KEDA 2.21.0</td><td>Scale workload replicas from event triggers</td><td>k3s, k0s, kind</td></tr>
+</tbody>
+</table></div>
+<p>KEDA does not create nodes. Karpenter does not choose replica counts. Combining
+them lets KEDA increase demand and Karpenter add capacity when fixed nodes cannot
+schedule the resulting pods. kind topology remains immutable; its node option is
+explicitly unavailable rather than backed by simulated nodes.</p>
+<h2 id="enable-controllers">Enable controllers<a class="anchor" href="#enable-controllers" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh"># Enable both with up to three additional worker VMs.
+porto kubernetes cluster autoscaling dev --nodes --max-nodes 3 \
+  --cpus 2 --memory 2048 --disk 20 --keda
+
+# Inspect desired configuration, controller readiness and reserved capacity.
+porto kubernetes cluster autoscaling dev
+
+# Change only KEDA; omitted options preserve the existing configuration.
+porto kubernetes cluster autoscaling kind-dev --keda
+
+# Stop node provisioning without removing its existing VMs.
+porto kubernetes cluster autoscaling dev --nodes=false</code></pre></div>
+<p>Saving configuration installs the pinned upstream CRDs/controller manifests and
+waits for readiness. Porto refuses to take over foreign autoscaler installations
+or resources. It uses a private kubeconfig and explicit context; neither
+<code>KUBECONFIG</code> nor the user's current global context can redirect the controller.</p>
+<p>The node controller runs in the Porto daemon on the host, using upstream
+Karpenter scheduling and lifecycle controllers with a real Porto CloudProvider.
+Its <code>PortoNodeClass</code> maps a machine shape to a managed Lima worker. It does not
+expose a privileged host API inside the cluster and does not use KWOK or synthetic
+Node objects. KEDA runs in the cluster's <code>keda</code> namespace.
+Fresh k3s clusters wait for their bundled storage class to register before addon
+discovery, avoiding a second local-path provisioner with conflicting shared RBAC.</p>
+<p>The daemon must remain running for new node provisioning and consolidation.
+KEDA continues operating in the cluster when the host node controller is paused.
+Settings and claim reservations persist under the private Kubernetes state
+directory's <code>autoscaling/&lt;cluster&gt;</code> subdirectory, separate from cluster metadata.</p>
+<h2 id="capacity-and-lifecycle-safety">Capacity and lifecycle safety<a class="anchor" href="#capacity-and-lifecycle-safety" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The minimum autoscaled worker count is zero. The control plane and fixed worker
+groups are not adopted or removed by Karpenter. Existing fixed capacity is used
+first when it satisfies scheduling constraints; enabling node autoscaling does
+not immediately allocate the maximum worker count.</p>
+<p>One managed <code>NodePool</code> and <code>PortoNodeClass</code>, both named <code>porto-local</code>, define
+the automatic workers. To require an autoscaled worker for a workload, use:</p>
+<div class="code" data-lang="yaml"><pre tabindex="0"><code class="language-yaml">spec:
+  template:
+    spec:
+      nodeSelector:
+        karpenter.sh/nodepool: porto-local</code></pre></div>
+<p>Set resource requests and normal Kubernetes scheduling constraints accurately.
+Impossible requests, incompatible labels/taints, storage affinity, or exhausted
+budgets cannot be repaired by increasing replicas.</p>
+<p>Bounds apply to automatic workers independently of fixed nodes:</p>
+<ul>
+<li>At most 32 workers, each with 1-32 CPUs, 1024-131072 MiB memory and 10-1024 GiB disk.</li>
+<li>Aggregate automatic-worker ceilings of 128 CPUs, 262144 MiB memory and 4096 GiB disk.</li>
+<li>The configured maximum counts persisted reservations, including uncertain failed
+creates, so retries and concurrent claims cannot bypass it.</li>
+</ul>
+<p>These are safeguards, not a guarantee that the host has that much free capacity.
+Choose a budget that leaves headroom for Porto, the engine, fixed clusters and
+other applications. A maximum cannot be reduced below already reserved workers.</p>
+<p>Worker installation pins the controller's actual full k3s/k0s release, including
+legacy clusters created without a version pin. It does not follow a moving
+installation channel or allow workers to silently jump ahead of the control plane.</p>
+<p>Consolidation is conservative (<code>WhenEmpty</code>), not active-workload packing.
+Persistent-volume and ephemeral-local-data protections prevent disposal of nodes
+whose data would be lost. Disruption respects the controller's Kubernetes
+eviction/PDB handling. Missing ownership or uncertain creation/deletion fails
+closed and retains reservations rather than deleting a potentially foreign VM.
+Check the Autoscaling status and daemon diagnostics when provisioning or cleanup
+is blocked.</p>
+<p>Start, stop, upgrade, recovery, rename and delete first pause and join the host
+controller, then use the same mutation gate as normal cluster operations.
+Successful start/upgrade/recovery resumes it. Stop leaves it paused.
+Rename moves its host state; delete forgets host settings only after cluster
+removal. Disabling the Kubernetes runtime pauses its node controllers without
+removing cluster resources.</p>
+<h2 id="configure-event-driven-workloads">Configure event-driven workloads<a class="anchor" href="#configure-event-driven-workloads" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Use <strong>Event-driven workload</strong> in the inspector to create or update a Porto-owned
+KEDA ScaledObject. Select a Deployment or StatefulSet, set minimum/maximum
+replicas, and supply a JSON trigger array using the schema for KEDA 2.21.0.</p>
+<p>Alternatively, save this synthetic request as <code>workload-scaling.json</code>:</p>
+<div class="code" data-lang="json"><pre tabindex="0"><code class="language-json">{
+  &quot;namespace&quot;: &quot;default&quot;,
+  &quot;name&quot;: &quot;daytime-workers&quot;,
+  &quot;targetName&quot;: &quot;workers&quot;,
+  &quot;targetKind&quot;: &quot;Deployment&quot;,
+  &quot;targetAPIVersion&quot;: &quot;apps/v1&quot;,
+  &quot;minReplicas&quot;: 0,
+  &quot;maxReplicas&quot;: 5,
+  &quot;pollingInterval&quot;: 30,
+  &quot;cooldownPeriod&quot;: 300,
+  &quot;triggers&quot;: [
+    {
+      &quot;type&quot;: &quot;cron&quot;,
+      &quot;metadata&quot;: {
+        &quot;timezone&quot;: &quot;Etc/UTC&quot;,
+        &quot;start&quot;: &quot;0 8 * * *&quot;,
+        &quot;end&quot;: &quot;0 18 * * *&quot;,
+        &quot;desiredReplicas&quot;: &quot;2&quot;
+      }
+    }
+  ]
+}</code></pre></div>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kubernetes cluster workload-scale dev --file workload-scaling.json
+porto kubernetes cluster workload-unscale dev default daytime-workers --confirm</code></pre></div>
+<p>The target must already exist. Use a single replica-management owner for each
+workload. Configure authentication through existing <code>TriggerAuthentication</code> or
+<code>ClusterTriggerAuthentication</code> resources, referenced in each trigger's
+<code>authenticationRef</code>; do not embed credentials in trigger metadata.</p>
+<p>Removing a scaler stops event-driven replica control; it does not remove the
+workload. Disabling KEDA refuses to proceed while ScaledObjects or ScaledJobs
+remain, including foreign ones. It does not silently delete their configuration.
+Remove or transfer workload scaling deliberately before disabling the controller.</p>
+<h2 id="api">API<a class="anchor" href="#api" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><code>GET /api/kubernetes/clusters/{name}/autoscaling</code> returns desired <code>nodes</code>/<code>keda</code>
+configuration plus controller versions, <code>nodeSupported</code>, <code>running</code>, <code>paused</code>,
+<code>managedNodes</code>, <code>kedaReady</code>, and an optional diagnostic message.</p>
+<p><code>POST</code> to the same URL accepts the complete configuration:</p>
+<div class="code" data-lang="json"><pre tabindex="0"><code class="language-json">{
+  &quot;nodes&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;maxNodes&quot;: 3,
+    &quot;machine&quot;: {&quot;cpus&quot;: 2, &quot;memoryMiB&quot;: 2048, &quot;diskGiB&quot;: 20}
+  },
+  &quot;keda&quot;: true
+}</code></pre></div>
+<p><code>POST /api/kubernetes/clusters/{name}/autoscaling/workloads</code> accepts the
+ScaledObject request shown above. <code>DELETE</code> its
+<code>/autoscaling/workloads/{namespace}/{scaler}?confirm=true</code> URL to remove a
+Porto-owned scaler.</p>
+<h2 id="development-checks">Development checks<a class="anchor" href="#development-checks" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Mocked tests cover ownership, idempotent claims, reservation bounds,
+controller cancellation, failure recovery, installation conflicts, workload
+scalers, and actual-controller version pinning:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">go test -race ./internal/autoscaling ./internal/kubernetes ./internal/daemon</code></pre></div>
+<p>The isolated kind preservation smoke uses only synthetic workload data and a
+uniquely named cluster against an explicitly selected local Porto Docker endpoint:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PORTO_KUBERNETES_TEST_DOCKER_HOST=&quot;$(docker context inspect porto --format '{{.Endpoints.docker.Host}}')&quot; \
+PORTO_KUBERNETES_UPGRADE_INTEGRATION=1 \
+  go test ./internal/kubernetes -run '^TestKindUpgradeVolumeIntegration$' -count=1 -timeout=70m -v</code></pre></div>
+<p>Set <code>PORTO_KUBERNETES_UPGRADE_SOURCE_ENGINE=1</code> instead of providing a Docker host
+to create a separate, invocation-private Lima engine and exercise the current
+source Docker API. This costs an additional VM but never replaces or stops the
+installed engine. Both modes verify stdin forwarding before attempting kind
+creation, so an older daemon cannot consume the full node-creation timeout on
+an input-bridge failure.</p>
+<p>It creates Kubernetes 1.36.4, writes a marker only in the source PVC, upgrades to
+1.37.0, and checks that the redeployed application reads the original marker.
+Its cleanup targets only the exact source and replacement runtime names recorded
+by that test; it never stops or removes another cluster.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/kubernetes-autoscaling.md" rel="noopener"><code>docs/kubernetes-autoscaling.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="kubernetes-upgrades.html" rel="prev"><span class="pager-label">Previous</span> Cluster upgrades</a>
+    <a class="pager-next" href="kubernetes-gitops.html" rel="next"><span class="pager-label">Next</span> GitOps delivery</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>
