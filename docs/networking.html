@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Local networking | Porto docs</title>
+  <meta name="description" content="Project hostnames, HTTP and HTTPS routing, certificates and DNS.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/networking.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Local networking | Porto docs">
+  <meta property="og:description" content="Project hostnames, HTTP and HTTPS routing, certificates and DNS.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/networking.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html" aria-current="page">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#projects">Projects and runtimes</a></p>
+  <article class="prose" aria-label="Local networking">
+<h1 id="local-networking">Local networking</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">7 sections</span></summary>
+    <ol>
+      <li><a href="#endpoints">Endpoints</a></li>
+      <li><a href="#trusted-portless-https">Trusted portless HTTPS</a></li>
+      <li><a href="#certificates">Certificates</a></li>
+      <li><a href="#dns-and-custom-forwarding">DNS and custom forwarding</a></li>
+      <li><a href="#container-http-names">Container HTTP names</a></li>
+      <li><a href="#addresses-direct-connectivity-and-vpns">Addresses, direct connectivity and VPNs</a></li>
+      <li><a href="#proxies-and-trusted-registries">Proxies and trusted registries</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto assigns stable ports to projects and routes friendly local hostnames over HTTP and HTTPS.</p>
+<h2 id="endpoints">Endpoints<a class="anchor" href="#endpoints" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="table" role="region" aria-label="Table: Endpoints" tabindex="0"><table>
+<thead><tr><th scope="col">Purpose</th><th scope="col">Default endpoint</th></tr></thead>
+<tbody>
+<tr><td>Dashboard and API</td><td><code>http://127.0.0.1:37623</code></td></tr>
+<tr><td>Project HTTP router</td><td><code>http://127.0.0.1:37680</code></td></tr>
+<tr><td>Project HTTPS router</td><td><code>https://127.0.0.1:37681</code></td></tr>
+<tr><td>Portless HTTPS helper</td><td><code>https://127.0.0.1:443</code></td></tr>
+</tbody>
+</table></div>
+<p>Use <code>http://&lt;project&gt;.porto.localhost:37680</code> without any setup. Managed
+Kubernetes Service ports use the same router with stable names such as
+<code>api-8080.default.dev.porto.localhost</code>. With the platform HTTPS helper installed,
+use the equivalent <code>https://...porto.localhost/</code> URL without a port.</p>
+<p>Project names retain valid dots. For example, <code>devoidofbeauty.com</code> is routed as <code>devoidofbeauty.com.porto.localhost</code>, not <code>devoidofbeauty-com.porto.localhost</code>.</p>
+<h2 id="trusted-portless-https">Trusted portless HTTPS<a class="anchor" href="#trusted-portless-https" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Install the trusted HTTPS helper once:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto https install
+porto https status</code></pre></div>
+<p>The same controls are in <strong>Settings &gt; Trusted local HTTPS</strong>. Installation requests
+administrator authorization only for the OS integration that needs it. The
+forwarder accepts <strong>IPv4 and IPv6 loopback only</strong>, forwarding raw TCP to the
+unprivileged TLS router at <code>127.0.0.1:37681</code>. It never reads certificate keys,
+opens Porto's database, or launches workloads.</p>
+<div class="table" role="region" aria-label="Table: Trusted portless HTTPS" tabindex="0"><table>
+<thead><tr><th scope="col">Platform</th><th scope="col">Forwarder and ownership</th><th scope="col">Certificate trust</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td>Existing root-owned <code>dev.porto.https-forwarder</code> launchd helper</td><td>Current user's login keychain</td></tr>
+<tr><td>Windows</td><td>Automatically started <code>PortoHTTPS</code> service running as <code>NT AUTHORITY\LocalService</code>; administrator-protected copy under <code>%ProgramData%\PortoHTTPS</code></td><td>Current user's native Windows Root store, not the machine-wide store</td></tr>
+<tr><td>systemd Linux</td><td>Owned <code>porto-https.socket</code> and <code>porto-https.service</code>; systemd binds both loopbacks and runs <code>systemd-socket-proxyd</code> with <code>DynamicUser=yes</code>, no capabilities and loopback-only egress</td><td>Distribution CA store plus the current user's Chromium NSS shared database</td></tr>
+</tbody>
+</table></div>
+<p>Windows can display a separate native security confirmation for adding or
+removing a root CA. Approve the current Porto CA when requested. Porto respects
+the protected-root list and does not silently bypass that confirmation or
+install the CA machine-wide.</p>
+<p>On Debian/Ubuntu, install <code>ca-certificates</code> and <code>libnss3-tools</code> first. Fedora uses
+<code>ca-certificates</code> and <code>nss-tools</code>. Linux also requires a running systemd host,
+<code>systemd-socket-proxyd</code>, and the distribution's <code>update-ca-certificates</code> or
+<code>update-ca-trust</code> integration. GUI authorization uses Polkit when available;
+otherwise run the command in a terminal for its scoped <code>sudo</code> prompt. Never
+start the daemon with <code>sudo</code>.</p>
+<p>Linux uses Chromium's existing <code>~/.pki/nssdb</code> SQL database when present,
+otherwise its current <code>~/.local/share/pki/nssdb</code> location. It initializes only an
+empty database and adds a SHA-256-fingerprint-named CA with SSL-only trust.
+Identity checks read only the SQL store's public certificate labels and DER
+values, because NSS exports can include every certificate sharing a subject.
+Native <code>certutil</code> still performs trust changes and validation; the private-key
+database is not opened.
+Legacy or incomplete databases are rejected rather than reset. Firefox,
+Snap/Flatpak browsers, custom profiles, Java and applications with private trust
+stores can require explicit CA import. Restart an already-open browser after
+changing trust. No browser or client is told to ignore TLS errors.</p>
+<p>Re-run installation after upgrading Porto to repair or refresh the owned
+integration. Occupied port 443, unavailable IPv6 loopback, denied authorization,
+trust failures and ownership conflicts are errors, not reasons to take over a
+foreign listener, service or certificate. New partial installations roll back.
+Linux uses protected system tools rather than user <code>PATH</code> commands for elevated
+actions.</p>
+<p><code>porto https status</code> reports installation, both listeners, native/browser trust
+and repair guidance. <code>porto https uninstall</code> removes the owned forwarder and URL
+marker, <strong>leaving trust in place intentionally</strong>. Remove the current Porto CA
+separately with <code>porto cert untrust</code>. Other certificates, including certificates
+with the same subject but different fingerprints, are preserved. HTTP remains
+available throughout.</p>
+<h2 id="certificates">Certificates<a class="anchor" href="#certificates" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The daemon creates a persistent ECDSA local certificate authority and a renewable server certificate in the <code>certificates</code> folder under Porto's platform-specific user configuration directory. On Linux, the default paths are:</p>
+<div class="code" data-lang="text"><pre tabindex="0"><code class="language-text">~/.config/porto/certificates/porto.local.pem
+~/.config/porto/certificates/porto.local-key.pem
+~/.config/porto/certificates/porto-root-ca.pem
+~/.config/porto/certificates/porto-root-ca-key.pem</code></pre></div>
+<p>Use <code>porto cert path</code> to print the active paths or <code>porto cert generate</code> to replace the base server certificate. Renewal updates a running daemon immediately, and the daemon checks daily for certificates within 30 days of expiry.</p>
+<p>The base certificate covers <code>porto.local</code>, <code>*.porto.local</code>, <code>porto.localhost</code>,
+<code>*.porto.localhost</code>, <code>localhost</code>, and loopback IP addresses. Dotted project
+names and Kubernetes service routes receive isolated in-memory certificates
+containing only their exact hostname, selected through TLS SNI. Server
+certificate renewal keeps the same trusted local authority, so browser trust
+persists. Private keys are written with owner-only permissions on Unix.</p>
+<h2 id="dns-and-custom-forwarding">DNS and custom forwarding<a class="anchor" href="#dns-and-custom-forwarding" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Prefer <code>&lt;project&gt;.porto.localhost</code>, which normally resolves to loopback without configuration. Porto also accepts <code>.porto.local</code>, but <code>.local</code> is reserved for mDNS and requires exact entries in local DNS or the hosts file:</p>
+<div class="code" data-lang="text"><pre tabindex="0"><code class="language-text">127.0.0.1 porto.local api.porto.local devoidofbeauty.com.porto.local</code></pre></div>
+<p>Hosts files do not support wildcards, so add each project hostname separately. For a one-off request without changing DNS:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">curl --resolve api.porto.local:37681:127.0.0.1 https://api.porto.local:37681</code></pre></div>
+<p>The HTTP router accepts both <code>&lt;name&gt;.porto.localhost</code> and
+<code>&lt;name&gt;.porto.local</code> for project and Kubernetes service mappings. Without the
+portless helper, HTTPS remains available on port <code>37681</code>. Use
+<code>PORTO_TLS_ADDR</code> and <code>PORTO_TLS_PUBLIC_PORT</code> for custom forwarding. The installed
+platform helper deliberately has a fixed, private target at <code>127.0.0.1:37681</code>;
+installation refuses a different <code>PORTO_TLS_ADDR</code> rather than advertise a
+nonfunctional portless URL.</p>
+<p>Never run the Porto daemon with <code>sudo</code>, because managed projects inherit the daemon's privileges.</p>
+<h2 id="container-http-names">Container HTTP names<a class="anchor" href="#container-http-names" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Individual containers opt in to HTTP routing with a label selecting one
+<strong>published TCP container port</strong>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto docker run --detach --name synthetic-api \
+  --publish 127.0.0.1:18080:80 \
+  --label dev.porto.http-port=80 nginx:alpine</code></pre></div>
+<p>The route is <code>http://synthetic-api.docker.porto.localhost:37680/</code>, or
+<code>https://synthetic-api.docker.porto.localhost/</code> after HTTPS setup.
+<code>dev.porto.hostname</code> optionally chooses a valid lowercase DNS name, including
+dots. Compose can set the same labels. Existing project and Kubernetes routes
+retain precedence; raw TCP mappings are not converted into HTTP routes.</p>
+<p>Only an opted-in, running container with a fresh inventory and a current
+loopback-reachable mapping is routed. Duplicate hostnames, stopped containers,
+stale inventory and changed container/port identities are not proxied to a
+possibly unrelated listener. Exact dotted SNI certificates use the same
+persistent CA as projects.</p>
+<h2 id="addresses-direct-connectivity-and-vpns">Addresses, direct connectivity and VPNs<a class="anchor" href="#addresses-direct-connectivity-and-vpns" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Use <strong>Inspect connectivity</strong> in Settings or <code>porto networking inspect</code> for
+current container/VM addresses, published endpoints, resolver results, host
+interfaces, split routes and IPv4/IPv6 subnet overlap candidates.</p>
+<div class="table" role="region" aria-label="Table: Addresses, direct connectivity and VPNs" tabindex="0"><table>
+<thead><tr><th scope="col">Backend</th><th scope="col">Direct private IP from the host</th><th scope="col">Supported connection</th></tr></thead>
+<tbody>
+<tr><td>Rootful local Linux containerd</td><td>Supported through its existing CNI bridge routes, subject to firewall/VPN policy</td><td>Container IP or published loopback port</td></tr>
+<tr><td>Rootless local Linux containerd</td><td>Not host-routed</td><td>Published ports and opted-in HTTP routes</td></tr>
+<tr><td>Lima/QEMU container engine on Windows, macOS or Linux</td><td>Guest container IPs remain private to the guest</td><td>Existing published loopback ports, HTTP routes and TCP forwards</td></tr>
+<tr><td>Native Windows containerd/runhcs</td><td>Direct HNS-IP reachability is not advertised across host/VPN policies</td><td>Owned loopback NAT ports and opted-in HTTP/HTTPS names</td></tr>
+<tr><td>Standalone Lima VM</td><td>Reported guest addresses do not imply a host route</td><td>Reported loopback SSH port and explicitly configured forwards</td></tr>
+</tbody>
+</table></div>
+<p>Container HTTP names include both running Linux and native Windows inventories.
+Use distinct names when both engines run: a hostname claimed by both backends is
+disabled, not resolved by priority. Each request rechecks the selected backend's
+current container identity, published port and inventory freshness.</p>
+<p>An owned Linux bridge can overlap an inspected subnet intentionally. VPN
+routes, especially broader split routes, can also overlap. Review the actual
+interface and choose a non-conflicting Docker network subnet rather than
+deleting VPN routes. Porto does not add LAN bindings, install transparent
+tunnels, rewrite global DNS/WSL settings or claim universal VPN compatibility.
+The inspection is refreshed from the OS; it does not treat an old snapshot as
+proof of current reachability. Split-DNS and provider resolver problems remain
+actionable errors. <code>.localhost</code> resolution in a browser can differ from the
+host resolver; <code>curl --resolve</code> is a diagnostic, not a TLS bypass.</p>
+<h2 id="proxies-and-trusted-registries">Proxies and trusted registries<a class="anchor" href="#proxies-and-trusted-registries" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Porto retains inherited proxy environment settings until you explicitly save
+network settings. <strong>System and environment</strong> mode then reads current static
+macOS or Windows proxy settings when environment proxies are absent. Linux uses
+the process environment; enter desktop-specific proxy settings explicitly.
+PAC/WPAD evaluation is not implemented and produces a capability error instead
+of silently choosing a direct connection.</p>
+<p><strong>Settings &gt; Proxy and registry trust</strong> accepts HTTP, HTTPS and SOCKS5/SOCKS5h
+URLs, bypass rules, explicit public PEM registry CA uploads and proxy-off mode.
+Manual URL credentials go into the native credential vault, not the JSON
+configuration. Leave an unchanged URL to keep its credential, or choose
+<strong>Clear saved proxy credentials on save</strong>. Diagnostics redact URL userinfo.
+Native vault failures are errors; there is no plaintext host fallback.
+Local Porto domains, IPv4 loopback and IPv6 loopback always bypass proxies.</p>
+<p>For CLI setup, supply a JSON object on stdin rather than put passwords in
+command-line arguments or shell history:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto networking configure &lt;&lt;'JSON'
+{
+  &quot;mode&quot;: &quot;manual&quot;,
+  &quot;httpProxy&quot;: &quot;http://proxy.example:3128&quot;,
+  &quot;httpsProxy&quot;: &quot;http://proxy.example:3128&quot;,
+  &quot;socksProxy&quot;: &quot;&quot;,
+  &quot;noProxy&quot;: &quot;.internal.example,10.0.0.0/8&quot;,
+  &quot;registryCAs&quot;: []
+}
+JSON
+porto networking status
+porto networking apply</code></pre></div>
+<p>Host registry clients and outbound runtime commands read the saved settings.
+Explicitly configured registry pulls and pushes use Porto's maintained
+containerd client and owner-side resolver. Containerd's server-side transfer
+service cannot inherit a client's proxy credentials; Porto does not restart or
+reconfigure an external containerd service to work around that boundary.
+Ownership inspection, local cleanup and private transport do not depend on
+proxy credential lookup. Applying to the existing, identity-verified Lima
+engine requires idle BuildKit and restarts only its owned user service.
+Proxy values enter the guest over private stdin, never subprocess arguments.
+The guest's proxy environment and private CA bundle are owner-only files under
+<code>~/.config/porto/network</code>; access to that VM is administrator-equivalent.
+An unchanged CA is not replaced during server certificate renewal.</p>
+<p>Host loopback HTTP/SOCKS proxies use <code>host.lima.internal</code> from the guest. A
+TLS-encrypted loopback proxy needs a guest-reachable hostname covered by its
+certificate; Porto does not repair a name mismatch by disabling verification.
+Re-apply after changing OS proxy settings. External/local containerd and
+BuildKit services remain administrator-owned: configure their builder
+environment explicitly rather than letting Porto alter unrelated services.</p>
+<p>Import a public CA through the file selector, or use
+<code>porto networking ca-import &lt; public-registry-ca.pem</code> and place its returned
+<code>sha256:...</code> reference in the <code>registryCAs</code> array. The API accepts only imported
+references, never caller-supplied host paths.</p>
+<p>Registry CAs are validated, copied into a confined owned store and added to registry-client
+or owned-builder trust only. They are not injected into containers, Kubernetes
+pods or standalone VMs. Even Porto's development CA requires an explicit
+selection. Remove the selected references, save and apply again to reverse that
+owned trust change. Workload trust propagation remains a separate user action.</p>
+<h3 id="native-windows-registry-networking">Native Windows registry networking<a class="anchor" href="#native-windows-registry-networking" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Saving settings also applies them to a running, verified native worker.
+Native install/start resolves credentials as the owning user and sends the
+resolved settings and public CA bytes over its verified private pipe. The
+LocalSystem worker never reads the user's vault or project configuration.
+Its recoverable copy is Windows DPAPI-encrypted, bound to its owner identity,
+and protected by the runtime's administrator/System ACL. It is not a plaintext
+proxy file or command-line argument.</p>
+<p>Select the Windows dashboard view to inspect or apply native networking.
+Equivalent commands are:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto networking status --windows
+porto networking inspect --windows
+porto networking apply --windows</code></pre></div>
+<p>Apply again after an OS proxy change when using the native CLI without the
+dashboard. Registry operations are blocked with repair guidance if the worker's
+saved networking cannot be decrypted or validated; existing workloads remain
+available. Removing selected CAs and applying again revokes their registry trust.
+Linux settings and native settings do not change a workload's own trust store.
+Raw bearer-token registry overrides remain unsupported for configured registry
+preflight; use the owning user's supported registry credential flow.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/networking.md" rel="noopener"><code>docs/networking.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="resource-management.html" rel="prev"><span class="pager-label">Previous</span> Resource management</a>
+    <a class="pager-next" href="kubernetes-upgrades.html" rel="next"><span class="pager-label">Next</span> Cluster upgrades</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

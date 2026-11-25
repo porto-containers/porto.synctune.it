@@ -1,0 +1,79 @@
+{
+  "repository": "porto-containers/porto",
+  "ref": "v1.11.6",
+  "commit": "4b9dbdb0501c2d515c524108dde04d7c98f30c2c",
+  "version": "1.11.6",
+  "index": "docs/README.md",
+  "documents": {
+    ".github/skills/porto/SKILL.md": "9c5f57bef459757f92678b7dee5951fadbb796905cd448c50960e1354a25c928",
+    "AGENTS.md": "f2dcb27305b4ac6e120992df8c11248443dc88608a353321dedde781ac831fa0",
+    "docs/branch-management.md": "a0185478dd9d4529ffaad0917e28ebf1099b82fdd80dd137ad801f609a0e9035",
+    "docs/ci-cd.md": "9178a031038067a64149e5d0c6c3483ea3bb83ccb89f76634f0684c1cadff360",
+    "docs/daily-use.md": "943f8fbcc8ff4617addc07983bc17dae525bdab55f1cb5dcb6c59e09c79bb395",
+    "docs/data-compatibility.md": "a6e55984403256e1137503e246ca0f0aa5135cb80ce6cd01f8d14f14afef67bd",
+    "docs/data-management.md": "c82b5e3ffbcca737551b39f5aa980f48b6b23470bb3c2e046773f64fdb70588a",
+    "docs/design.md": "09559e7ac7e756c6f3b3de40ad04aef0cd7b60f585183fa043277ef4f46660df",
+    "docs/diagnostics.md": "9d399f457383206f995394c0e3d079f54d02ca0e7b2298fe46f7dab6a3423068",
+    "docs/docker-engine.md": "40379af80d3b8ae500b3edbd4932247a92f980ea6cf6ddff7d5ab6ce32c7da84",
+    "docs/extensions.md": "e62e3ed495c8c11f5b370ac8c78dafb7bb3f63ed2af5957f9c5b24bc1fcb1721",
+    "docs/image-inspection.md": "aa378e1e1b1f1a7ff2896e5ca40bd2b02f26bcee1d2c40b4a3ee1b57a15a7bfd",
+    "docs/installation.md": "76ded3a6c15f63ce6350301f2455a9c1c7df041bc25f48a717a8c65c445396c6",
+    "docs/installed-acceptance.md": "490ff8ed0214bb905d66a2299aa57f4756e504e516ecd70455d98f35ca68d96f",
+    "docs/integrations.md": "96c52d482ab7084773ccc7432229ff19cb81fbd714b7e06bf6ce8f00d51b5a60",
+    "docs/kill-switch.md": "f335b26ec8e581f9d554e880fb62fa92fd69c563012e45a34c15566c8ef5e61a",
+    "docs/kubernetes-autoscaling.md": "78f8ecfb147659be73de845c85e7c1b717d0025c52b9ce7a7eb6ec24cfd3709d",
+    "docs/kubernetes-gitops.md": "aa71feae9a53fbb2a83c5f01e79cb7f982efacfc7e1cbb91f5e171d82152b9c3",
+    "docs/kubernetes-upgrades.md": "f61585f2ac5846178c20e0674c52c80863603de8796f6b0460bed60a145686fe",
+    "docs/networking.md": "e0189d82a36f9d50bf079ce8a0dbb75baeab1c796c706175d499e1eb34f6ac19",
+    "docs/product.md": "4b3cb23aa5c4172536fa0f65363c8fe318f138385b28cf10579eb2faebce6255",
+    "docs/project-management.md": "cc0133f97f9dd22497d5958e03da9da353446018a0cfa0b7785de515294bc6d8",
+    "docs/README.md": "afafc0978d308cad42c0c436142e27d585ebb6eaca5b6058aeb6d9fcb78db9f6",
+    "docs/remote-environments.md": "81d43e07abb2c8d9be66516af671bea89a572dcc73e5f46a8610fb9b2cc5111a",
+    "docs/resource-management.md": "bc1a07252c4a8f9dd4389bd9f87a4cef678839dfa9103ec068fe4dd1f3238fbc",
+    "docs/runtimes.md": "fb182dc5d76d199459e3c9187031ec9a2882d0043eb1ce59bb72ab8c2223a09f",
+    "docs/windows-integration.md": "3c7620b2762f1ceb315c7aa5410350687f5a6c4032d662a142c9f189b61e203a",
+    "README.md": "bfc02e93c393e62f14ab07d79e58225587deb47672f8ed48edaf6721733d8c76",
+    "ui/electron/README.md": "acd54aed9327a3228119090c0496833b9b8d9138a1d3f8f4d32a2af557202014",
+    "ui/README.md": "564b06107a71081f041967454f3c154a67a17edfc3e2cfb2612eaf83f003fef5"
+  },
+  "links": {
+    "examples/extensions/resource-summary": "tree",
+    "examples/extensions/resource-summary/grants.json": "blob",
+    "internal/daemon/data_operations_test.go": "blob",
+    "internal/daemon/data_operations.go": "blob",
+    "internal/datafiles": "tree",
+    "internal/datafiles/archive_test.go": "blob",
+    "internal/datafiles/archive.go": "blob",
+    "internal/datafiles/types.go": "blob",
+    "internal/dataops/types.go": "blob",
+    "internal/store/data_operations_test.go": "blob",
+    "internal/store/data_operations.go": "blob",
+    "internal/store/migration_helpers_test.go": "blob",
+    "LICENSE": "blob"
+  },
+  "assets": {
+    "https://github.com/user-attachments/assets/abf50f78-349b-4210-a63a-a4dcf4b87ac2": {
+      "file": "assets/screenshots/dashboard.webp",
+      "width": 1728,
+      "height": 1117,
+      "note": "README.md dashboard screenshot, downloaded as a 3456x2234 PNG and resized to the README's display size as WebP",
+      "sha256": "b5be6f888a76d5674936b27b736dd36a1d02b58704097e2fbebe9dee46987176"
+    }
+  },
+  "derived": {
+    "assets/favicon.svg": {
+      "from": "ui/public/favicon.svg",
+      "note": "Unmodified copy of Porto's mark; matches the macOS Icon Composer asset",
+      "sha256": "7ba6acd9fc14e06a203f59d7a34b17dea24f0bdf070b5598da4e4c277e691cad"
+    },
+    "assets/apple-touch-icon.png": {
+      "from": "ui/electron/assets/porto.icon/Assets/porto.png",
+      "note": "Resized from 1024x1024 to 180x180",
+      "sha256": "348cb6f4242ab1475c8e9e0697c6d10dc722a325c83ab0734e255871a39ca392"
+    },
+    "assets/social.png": {
+      "from": "https://github.com/user-attachments/assets/abf50f78-349b-4210-a63a-a4dcf4b87ac2",
+      "note": "Top-left 2400x1260 crop of the README dashboard screenshot, resized to 1200x630"
+    }
+  }
+}

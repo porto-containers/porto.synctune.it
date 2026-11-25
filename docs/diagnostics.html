@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Diagnostics | Porto docs</title>
+  <meta name="description" content="Health checks, redacted support bundles and confirmed repairs.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/diagnostics.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Diagnostics | Porto docs">
+  <meta property="og:description" content="Health checks, redacted support bundles and confirmed repairs.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/diagnostics.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html" aria-current="page">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#start">Get started</a></p>
+  <article class="prose" aria-label="Diagnostics and repair">
+<h1 id="diagnostics-and-repair">Diagnostics and repair</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">3 sections</span></summary>
+    <ol>
+      <li><a href="#run-checks">Run checks</a></li>
+      <li><a href="#local-diagnostic-bundles">Local diagnostic bundles</a></li>
+      <li><a href="#scoped-repairs">Scoped repairs</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto provides the same diagnostics through the <strong>Diagnostics</strong> dashboard page
+and the <code>porto diagnose</code> command. The collector works inside the daemon and can
+also run directly from the CLI when the daemon or dashboard cannot start.</p>
+<h2 id="run-checks">Run checks<a class="anchor" href="#run-checks" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto diagnose
+porto diagnose --json</code></pre></div>
+<p>Checks are grouped across Porto, the host, networking, container runtimes,
+Kubernetes, virtual machines, and bundled tools. Results use five states:</p>
+<ul>
+<li><strong>healthy</strong>: available and consistent</li>
+<li><strong>neutral</strong>: intentionally not configured or owned by another selected tool</li>
+<li><strong>degraded</strong>: usable, but a capability or optional integration needs attention</li>
+<li><strong>unavailable</strong>: a required enabled component cannot be reached</li>
+<li><strong>unsafe</strong>: ownership, disk, socket, or package state makes automatic repair unsafe</li>
+</ul>
+<p>The command exits with <code>0</code> for healthy or degraded reports, <code>1</code> when required
+components are unavailable, and <code>2</code> when an unsafe condition is present.</p>
+<p>The current checks cover:</p>
+<ul>
+<li>daemon/API and dashboard availability</li>
+<li>Porto version, executable, bundled runtime manifest, state-directory writes,
+and free disk capacity</li>
+<li>daemon, HTTP router, and HTTPS router ports plus local hostname resolution</li>
+<li>certificate lifetime and optional portless HTTPS trust/listening state</li>
+<li>runtime feature gates and Lima, QEMU, kind, k9s, and k0s provider versions</li>
+<li>Docker CLI, Compose, and Buildx availability, packaged-version drift, and
+explicit unsupported-platform metadata</li>
+<li>bundled Dive image-layer inspection availability and version drift</li>
+<li>Docker socket, engine ownership marker, containerd inventory, BuildKit, and CNI</li>
+<li>kubeconfig parsing, Kubernetes API access, Metrics API, and Gateway API add-ons</li>
+<li>Lima VM provider availability</li>
+</ul>
+<h2 id="local-diagnostic-bundles">Local diagnostic bundles<a class="anchor" href="#local-diagnostic-bundles" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Preview a bundle before creating it:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto diagnose bundle --preview</code></pre></div>
+<p>Create a private, local ZIP:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto diagnose bundle
+porto diagnose bundle --output /path/to/porto-diagnostics.zip</code></pre></div>
+<p>The dashboard provides the same preview and download flow. Porto never uploads a
+bundle automatically. Bundles contain the structured report, settings without
+stored credentials, runtime ownership metadata, the bundled tool manifest,
+redacted kubeconfigs, and at most the last 256 KiB of <code>logs/porto.log</code>.</p>
+<p>Before writing an entry, Porto redacts common password, token, authorization,
+registry, proxy, Kubernetes key/certificate-data, private-key, home-directory,
+username, and hostname material. Source-code files are never collected.
+Unreadable optional sources become warnings in <code>bundle-warnings.txt</code>; they do
+not discard the rest of the bundle. Always review the preview and ZIP before
+sharing them.</p>
+<h2 id="scoped-repairs">Scoped repairs<a class="anchor" href="#scoped-repairs" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Repairs require explicit confirmation:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto diagnose repair restart-docker-runtime --confirm
+porto diagnose repair reinstall-docker-context --confirm
+porto diagnose repair repair-kubernetes-addons --target CLUSTER --confirm
+porto diagnose repair renew-certificates --confirm</code></pre></div>
+<p>The dashboard shows a repair button only on a check that advertises one and
+records the result in Activity.</p>
+<ul>
+<li><strong>restart-docker-runtime</strong> restarts Porto's Docker API, containerd event
+subscription, and owned tunnels. It does not delete the engine VM, images,
+containers, networks, or volumes.</li>
+<li><strong>reinstall-docker-context</strong> updates only the named <code>porto</code> Docker context.</li>
+<li><strong>repair-kubernetes-addons</strong> reapplies Porto-managed add-ons only after the
+cluster's ownership metadata is verified.</li>
+<li><strong>renew-certificates</strong> regenerates Porto-managed local TLS material.</li>
+</ul>
+<p>Porto refuses Docker repairs when the host engine metadata and guest ownership
+marker disagree. Diagnostics never adopt, reset, or delete ambiguous external
+state.</p>
+<p>Verify the named context independently from any canonical <code>/var/run/docker.sock</code>
+link:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">docker context inspect porto --format '{{ (index .Endpoints &quot;docker&quot;).Host }}'
+docker --context porto info --format 'Porto server {{.ServerVersion}}'</code></pre></div>
+<p>The first command must print Porto's endpoint. The second must return a server
+version. A canonical Docker socket owned by another runtime is reported as
+neutral and is not replaced by the context repair.</p>
+<p>For Porto's rootless Lima engine, CNI configuration is discovered from the
+containerd namespace under <code>~/.config/cni/net.d</code> before system paths. Porto
+retries an unavailable CNI capability probe every 30 seconds and the dashboard
+refreshes diagnostics automatically. Porto does not install or replace a host or
+cluster CNI globally.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/diagnostics.md" rel="noopener"><code>docs/diagnostics.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="daily-use.html" rel="prev"><span class="pager-label">Previous</span> Daily use</a>
+    <a class="pager-next" href="agent-skill.html" rel="next"><span class="pager-label">Next</span> Porto agent skill</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

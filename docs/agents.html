@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Agent instructions | Porto docs</title>
+  <meta name="description" content="Repository guidance for coding agents working on Porto.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/agents.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Agent instructions | Porto docs">
+  <meta property="og:description" content="Repository guidance for coding agents working on Porto.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/agents.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute" aria-current="page">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html" aria-current="page">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#develop">Develop and release</a></p>
+  <article class="prose" aria-label="Agent instructions">
+<h1>Agent instructions</h1>
+<h2 id="using-the-porto-cli">Using the Porto CLI<a class="anchor" href="#using-the-porto-cli" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Use the <a href="agent-skill.html">Porto agent skill</a> whenever a task needs
+Porto installed or asks to run projects, containers, Compose stacks, Kubernetes
+clusters or VMs through <code>porto</code>. Check <code>porto version</code> before installing, and ask
+before destructive or global changes. Users can install Porto and the skill for
+an agent in another project with this prompt:</p>
+<div class="code" data-lang="text"><pre tabindex="0"><code class="language-text">Read https://raw.githubusercontent.com/porto-containers/porto/main/.github/skills/porto/SKILL.md and follow it. If `porto version` fails, install Porto with PORTO_AGENT_SKILLS_DIR set to your personal skills directory; otherwise save that file as porto/SKILL.md in that directory. Make sure the daemon is running, then use the porto CLI for this task. Ask me before deleting anything or changing global Docker, HTTPS or Gatekeeper settings.</code></pre></div>
+<p>Keep the skill in sync with <code>porto help</code> (<code>cmd/porto/main.go</code>) and the docs when
+CLI commands, flags, installer variables or safety behavior change.</p>
+<h2 id="macos-startup-regression-coverage">macOS startup regression coverage<a class="anchor" href="#macos-startup-regression-coverage" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Electron 44.9.3 passes the unguarded, injected power-registration failure that
+previously required Porto's temporary macOS 27 workaround. The upstream fix is
+<a href="https://github.com/chromium/chromium/commit/69403d85b78bef2370cc9f8206dce84c5ff63ea4" rel="noopener">Chromium 69403d85</a>
+(<a href="https://issues.chromium.org/issues/562777834" rel="noopener">issue 562777834</a>).</p>
+<p>Run <code>node --test scripts/macos-startup.test.cjs</code> on macOS after upgrading Electron.
+The synthetic failure injector must still exercise <code>IORegisterForSystemPower</code>,
+and the unmodified runtime, cached source app, and packaged app must render and
+exit cleanly without a native guard. Do not restore expected crashes or weaken
+the injected-failure, rendering, executable-path, Node-mode, or closed-stdio
+assertions. Confine the test-only loader environment to the parent process.</p>
+<p>Source development retains a cached <code>Porto Dev.app</code> through
+<code>ui/electron/dev-launcher.cjs</code> and <code>scripts/macos-development-app.cjs</code>.
+Keep its embedded source entry and Electron executable name so argument-free
+reopening resolves the source checkout and development stays unpackaged.
+Never patch the npm-installed Electron runtime.</p>
+<p>Packages use Electron's original fuse-aware native entry point and standard
+stream repair. Make package resource changes before signing. Build macOS
+desktop archives and DMGs on macOS with the documented Icon Composer toolchain.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/AGENTS.md" rel="noopener"><code>AGENTS.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="design.html" rel="prev"><span class="pager-label">Previous</span> Design system</a>
+    
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

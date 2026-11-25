@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Cluster upgrades | Porto docs</title>
+  <meta name="description" content="Distribution-specific upgrades, volume restoration and recovery.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/kubernetes-upgrades.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Cluster upgrades | Porto docs">
+  <meta property="og:description" content="Distribution-specific upgrades, volume restoration and recovery.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/kubernetes-upgrades.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html" aria-current="page">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#kubernetes">Kubernetes</a></p>
+  <article class="prose" aria-label="Kubernetes cluster upgrades">
+<h1 id="kubernetes-cluster-upgrades">Kubernetes cluster upgrades</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">5 sections</span></summary>
+    <ol>
+      <li><a href="#k3s-and-k0s">k3s and k0s</a></li>
+      <li><a href="#kind-replacement-with-preservation">kind: replacement with preservation</a></li>
+      <li><a href="#recover-a-failed-kind-replacement">Recover a failed kind replacement</a></li>
+      <li><a href="#newer-kubernetes-releases">Newer Kubernetes releases</a></li>
+      <li><a href="#api">API</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Select a managed cluster in <strong>Kubernetes</strong>, open <strong>Upgrade</strong>, and enter a full
+distribution release. Porto requires explicit confirmation because upgrades
+interrupt cluster access and workloads. The API accepts upgrades only for
+Porto-owned clusters, never an unrelated global kube context.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kubernetes cluster upgrade dev --version v1.37.1+k3s1 --confirm
+porto kubernetes cluster upgrade k0s-dev --version v1.36.4+k0s.1 --confirm
+porto kubernetes cluster upgrade kind-dev --version v1.37.0 --confirm</code></pre></div>
+<p>Choose a release compatible with the currently installed version. Downgrades,
+prereleases, moving channels such as <code>latest</code>, and skipped Kubernetes minor
+versions are rejected. Repeat the operation one minor version at a time when
+crossing several minor releases. Porto checks the actual node inventory and
+kubelet versions before changing anything; every node must be owned and Ready.</p>
+<p>The cluster inventory reports <strong>upgrading</strong> and then the configured version
+only after completion. Operations have a two-hour bound and continue in the
+daemon if the inspector or requesting browser closes. Other mutations of the
+same cluster are locked. Explicit port forwards are stopped before upgrade;
+reopen them afterward. A daemon interruption is recorded as <strong>upgrade-failed</strong>.</p>
+<h2 id="k3s-and-k0s">k3s and k0s<a class="anchor" href="#k3s-and-k0s" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Porto upgrades the controller first, then one worker at a time. Each replacement
+binary is downloaded from the selected upstream release and verified against its
+published SHA-256 checksum before installation. Existing systemd arguments,
+join configuration, disks, labels, and taints remain intact.</p>
+<p>The single controller restarts in place, causing a brief API outage. Its
+workloads are not evicted. Worker drains respect PodDisruptionBudgets and do not
+force deletion of <code>emptyDir</code> data. A blocked drain fails visibly; adjust the
+workload or disruption budget before retrying. Workers return to Ready at the
+target Kubernetes version before the next node starts. Previously cordoned
+workers stay cordoned.</p>
+<p>If an upgrade fails, the old configured version and target/error remain in
+metadata, even if some nodes already upgraded. Restore node health, then choose
+<strong>Retry upgrade</strong> or repeat the same command. Porto does not attempt an unsafe
+automatic downgrade of an already upgraded Kubernetes datastore.</p>
+<h2 id="kind-replacement-with-preservation">kind: replacement with preservation<a class="anchor" href="#kind-replacement-with-preservation" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>kind does not offer an in-place Kubernetes version upgrade. Porto creates a
+replacement with a distinct runtime name and the same topology, leaving the
+original nodes stopped rather than deleting them.</p>
+<p>Before stopping the original cluster, Porto discovers application resources and
+checks storage support and intact Docker stdin forwarding. An older running
+daemon with a broken guest stdin bridge is rejected before replacement starts;
+restart with the updated Porto build first. It saves private application manifests
+and exportable application images. When kind has discarded an image's compressed
+cache layers, Porto records its immutable registry digest and restores that exact
+image using the workload's restored pull credentials instead of following a moving
+tag. After stopping the original nodes, it streams
+local persistent-volume data into checksummed archives. The original containers
+and their data remain available throughout replacement.</p>
+<p>Porto then:</p>
+<ol>
+<li>Creates the replacement at the requested version and imports application images.</li>
+<li>Copies volume data to the corresponding replacement nodes before workloads start.</li>
+<li>Restores namespaces, CRDs, configuration, credentials, PVs, PVCs, and application resources.</li>
+<li>Rewrites node-name constraints and owner references for the new cluster identities.</li>
+<li>Verifies node versions/readiness, PVC bindings, workload rollouts, and standalone pod readiness.</li>
+</ol>
+<p>Replica counts and suspended CronJob configuration are preserved. Controller-owned
+pods and ReplicaSets are recreated by their owners, not replayed as independent
+applications. Completed Jobs are not rerun. Services keep their names and desired
+ports but receive new cluster IPs; applications must use service DNS rather than
+hard-coded old cluster IPs. Service-account token Secret names are preserved,
+but their old token/CA/UID are cleared so the new cluster's controller can issue
+valid replacement credentials.</p>
+<h3 id="storage-and-consistency-boundaries">Storage and consistency boundaries<a class="anchor" href="#storage-and-consistency-boundaries" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Supported storage is a filesystem PV under <code>/var/local-path-provisioner/</code> with
+node affinity identifying exactly one Porto kind node. PVC names and data paths
+are preserved; the PV/PVC relationship is rebuilt with the new Kubernetes UIDs.</p>
+<p>Other PV backends and direct pod <code>hostPath</code>, inline CSI, NFS, or other unsupported
+volume sources block the replacement during preflight. Migrate these to supported
+local-path PVCs or use their storage provider's recovery procedure first.
+<code>emptyDir</code> remains ephemeral and is not carried into replacement pods.</p>
+<p>Each upgrade volume or image archive has a 2 GiB safety limit.
+A failed export leaves the original node data intact. Ensure sufficient free
+disk space for the original nodes, replacement nodes, and recovery archives.
+Images must already be available in the source nodes; missing image identities
+block preflight. Re-pulling discarded layers requires the original registry to
+remain reachable with valid workload credentials. <code>imagePullPolicy: Never</code> is
+never changed implicitly: if such an image is not exportable, preload it with
+<code>porto kubernetes cluster image-import</code> before retrying. The source cluster is
+not stopped for that preflight failure.</p>
+<p>Copies are crash-consistent after node shutdown, not database-aware backups.
+Short-lived, network-disabled copy helpers mount the node's persistent Docker
+volume directly, read-only for backup, so a stopped node does not need to run
+an exec process. Helpers use the already cached node image, preserve ownership,
+permissions and extended metadata, and are removed by exact newly created
+container ID without deleting the attached persistent volume.
+Quiesce applications and take application-specific backups when transactional
+consistency is required. Persistent volumes do not preserve external systems,
+in-flight requests, or process memory.</p>
+<h2 id="recover-a-failed-kind-replacement">Recover a failed kind replacement<a class="anchor" href="#recover-a-failed-kind-replacement" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Use <strong>Recover original cluster</strong> in the Upgrade tab, or:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kubernetes cluster upgrade-recover kind-dev --confirm</code></pre></div>
+<p>Recovery first stops a failed replacement, then restores the original kubeconfig
+and starts the original nodes. It never merges writes made inside the replacement
+back into the original cluster. The global kubeconfig entry is refreshed without
+changing unrelated entries or the user's current context.</p>
+<p>Successful upgrades retain both the original stopped kind nodes and a private
+<code>.upgrade-&lt;cluster&gt;-...</code> recovery directory under Porto's Kubernetes state
+directory. The Upgrade tab and API result show its exact path. The directory
+contains application Secrets and kubeconfig credentials: do not publish it or
+include it in an unredacted diagnostic bundle.</p>
+<p>No automatic retention deletes recovery material. After independently verifying
+the replacement and retaining any desired backup, the original runtime name is
+recorded in the directory's <code>recovery.json</code>; use kind against the Porto Docker
+endpoint to delete only that exact old runtime. Do not delete the replacement
+runtime named in the current cluster ownership metadata.</p>
+<h2 id="newer-kubernetes-releases">Newer Kubernetes releases<a class="anchor" href="#newer-kubernetes-releases" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Porto has no maximum Kubernetes version. A new minor release, such as 1.38,
+works as soon as the provider publishes a stable build for it. Use the
+provider's release format: <code>v1.38.0+k3s1</code> for k3s, <code>v1.38.0+k0s.0</code> for k0s,
+and <code>v1.38.0</code> for kind and Apple. Upgrades reject prereleases (<code>-alpha</code>,
+<code>-beta</code>, <code>-rc</code>) and moving channels. Cluster creation passes <code>--version</code> to the
+provider unchanged, so give it a published stable release.</p>
+<h3 id="new-clusters">New clusters<a class="anchor" href="#new-clusters" aria-hidden="true" tabindex="-1">#</a></h3>
+<div class="table" role="region" aria-label="Table: New clusters" tabindex="0"><table>
+<thead><tr><th scope="col">Provider</th><th scope="col">Without <code>--version</code></th><th scope="col">Select a newer release</th></tr></thead>
+<tbody>
+<tr><td>k3s</td><td>k3s <code>stable</code> channel at creation time</td><td><code>--version v1.38.0+k3s1</code></td></tr>
+<tr><td>k0s</td><td>k0s stable release at creation time</td><td><code>--version v1.38.0+k0s.0</code></td></tr>
+<tr><td>kind</td><td>Default node image of the bundled kind binary</td><td><code>--version v1.38.0</code> (a <code>kindest/node</code> tag)</td></tr>
+<tr><td>Apple</td><td>Porto's pinned <code>kindest/node</code> image</td><td><code>--version v1.38.0</code></td></tr>
+</tbody>
+</table></div>
+<p>k3s and k0s pick up a new minor version once their stable channel moves to it,
+which can take several weeks after the upstream Kubernetes release. Pass an
+explicit <code>--version</code> to use it before then. kind node images are built for a
+specific kind release, so a newer minor version can need a Porto release that
+bundles a newer kind.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kubernetes cluster create dev --provider k3s --version v1.38.0+k3s1</code></pre></div>
+<h3 id="existing-clusters">Existing clusters<a class="anchor" href="#existing-clusters" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Upgrade one minor version at a time. A 1.36 cluster reaches 1.38 in two steps:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto kubernetes cluster upgrade dev --version v1.37.1+k3s1 --confirm
+porto kubernetes cluster upgrade dev --version v1.38.0+k3s1 --confirm</code></pre></div>
+<p>Apple clusters can't be upgraded. Create a new cluster at the target version
+and move workloads to it.</p>
+<h3 id="maintainer-checklist-for-a-new-minor-version">Maintainer checklist for a new minor version<a class="anchor" href="#maintainer-checklist-for-a-new-minor-version" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Make these changes once the upstream release and the provider builds are
+published. Pinned components must still support the older cluster versions
+people run, not only the new one.</p>
+<ol>
+<li><strong>Bundled kubectl</strong>: <code>KUBECTL_VERSION</code> in
+<code>scripts/bundle-desktop-runtime.sh</code>. Porto runs kubectl for cluster
+operations, and kubectl supports servers only one minor version older or
+newer. Use the minor version before the newest one: kubectl 1.37 covers 1.36
+to 1.38 clusters. Update the bundled version in
+<a href="remote-environments.html">remote environments</a>.</li>
+<li><strong>Debug toolbox</strong>: <code>DebugToolboxImage</code> in <code>internal/kubernetes/debug.go</code>,
+pinned by digest. Its kubectl follows the same rule. Update the image
+reference in <a href="runtimes.html">runtimes</a>.</li>
+<li><strong>kind</strong>: <code>KIND_VERSION</code> in <code>scripts/bundle-desktop-runtime.sh</code>, once a kind
+release lists <code>kindest/node</code> images for the new minor version in its release
+notes.</li>
+<li><strong>Apple default image</strong>: <code>appleNodeImage</code> in
+<code>internal/kubernetes/apple_native.go</code>, pinned by digest. Update its version in
+<a href="runtimes.html">runtimes</a> after verifying a native cluster.</li>
+<li><strong>Go Kubernetes libraries</strong>: the <code>k8s.io/*</code> modules in <code>go.mod</code>, plus
+<code>sigs.k8s.io/controller-runtime</code> and <code>sigs.k8s.io/karpenter</code> when they need to
+match. Update the client-go version in
+<a href="remote-environments.html">remote environments</a>.</li>
+<li><strong>Cluster add-ons</strong>: check each project's Kubernetes compatibility matrix and
+bump if needed. Envoy Gateway is <code>envoyGatewayManifestURL</code> in
+<code>internal/kubernetes/provision.go</code>; Karpenter and KEDA are in
+<code>internal/autoscaling/types.go</code>; Flux, Argo CD and Helm are in
+<code>internal/kubeadmin/gitops_types.go</code> and <code>internal/kubeadmin/helm_types.go</code>.</li>
+<li><strong>Examples and tests</strong>: the version placeholders in
+<code>ui/src/pages/KubernetesOverview.tsx</code> and <code>ui/src/pages/ClusterUpgrade.tsx</code>,
+the examples in this document, and the source and target versions of the
+kind upgrade integration test (<code>internal/kubernetes/upgrade_integration_test.go</code>,
+described in <a href="kubernetes-autoscaling.html">Kubernetes autoscaling</a>). Move that
+test to upgrade from the previous minor version to the new one.</li>
+</ol>
+<p>k3s and k0s need no Porto change: Porto downloads the selected release from
+upstream when it installs or upgrades a node.</p>
+<h2 id="api">API<a class="anchor" href="#api" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><code>POST /api/kubernetes/clusters/{name}/upgrade</code> accepts
+<code>{&quot;version&quot;:&quot;v1.37.1+k3s1&quot;,&quot;confirm&quot;:true}</code>. Successful responses contain the
+version, message, and an optional recovery backup path.</p>
+<p><code>POST /api/kubernetes/clusters/{name}/upgrade-recover</code> accepts
+<code>{&quot;confirm&quot;:true}</code> and is restricted to failed kind upgrades with a matching
+Porto-owned recovery record.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/kubernetes-upgrades.md" rel="noopener"><code>docs/kubernetes-upgrades.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="networking.html" rel="prev"><span class="pager-label">Previous</span> Local networking</a>
+    <a class="pager-next" href="kubernetes-autoscaling.html" rel="next"><span class="pager-label">Next</span> Autoscaling</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

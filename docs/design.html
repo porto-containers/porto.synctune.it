@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Design system | Porto docs</title>
+  <meta name="description" content="Visual language, layout, components and interaction rules.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/design.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Design system | Porto docs">
+  <meta property="og:description" content="Visual language, layout, components and interaction rules.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/design.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute" aria-current="page">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html" aria-current="page">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#develop">Develop and release</a></p>
+  <article class="prose" aria-label="Design System: Porto">
+<details class="front-matter"><summary>Front matter</summary>
+<div class="code" data-lang="yaml"><pre tabindex="0"><code class="language-yaml">name: Porto
+description: A dense, neutral-graphite desktop control desk for supervising local apps, containers, clusters, and virtual machines
+colors:
+  canvas-dark: &quot;#141516&quot;
+  panel-dark-theme: &quot;#1b1c1e&quot;
+  panel-raised-dark-theme: &quot;#222326&quot;
+  line-dark-theme: &quot;#2b2d31&quot;
+  ink-dark-theme: &quot;#e7e8ea&quot;
+  canvas-light: &quot;#f3f4f5&quot;
+  panel-light-theme: &quot;#ffffff&quot;
+  line-light-theme: &quot;#e1e3e6&quot;
+  ink-light-theme: &quot;#17181a&quot;
+  instrument: &quot;#0f1011&quot;
+  olive-signal-dark: &quot;#8fa04f&quot;
+  olive-signal-light: &quot;#64703a&quot;
+  amber-signal-dark: &quot;#d58d33&quot;
+  amber-signal-light: &quot;#bd7725&quot;
+  fault-red-dark: &quot;#cf5a4c&quot;
+  fault-red-light: &quot;#b0443a&quot;
+typography:
+  display:
+    fontFamily: &quot;-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Inter, Roboto, Arial, sans-serif&quot;
+    fontSize: &quot;clamp(1.45rem, 2vw, 1.8rem)&quot;
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: &quot;-0.02em&quot;
+  headline:
+    fontFamily: &quot;-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Inter, Roboto, Arial, sans-serif&quot;
+    fontSize: &quot;17px&quot;
+    fontWeight: 600
+    lineHeight: 1.2
+    letterSpacing: &quot;-0.01em&quot;
+  body:
+    fontFamily: &quot;-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Inter, Roboto, Arial, sans-serif&quot;
+    fontSize: &quot;14px&quot;
+    fontWeight: 400
+    lineHeight: 1.45
+    letterSpacing: &quot;normal&quot;
+  label:
+    fontFamily: &quot;ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace&quot;
+    fontSize: &quot;10-12px&quot;
+    fontWeight: 400
+    lineHeight: 1.2
+    letterSpacing: &quot;0.05em&quot;
+rounded:
+  sm: &quot;4px&quot;
+  md: &quot;6px&quot;
+  lg: &quot;8px&quot;
+spacing:
+  xs: &quot;4px&quot;
+  sm: &quot;8px&quot;
+  md: &quot;12px&quot;
+  lg: &quot;20px&quot;
+  xl: &quot;32px&quot;</code></pre></div>
+</details>
+<h1 id="design-system-porto">Design System: Porto</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">8 sections</span></summary>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#themes">Themes</a></li>
+      <li><a href="#colors">Colors</a></li>
+      <li><a href="#typography">Typography</a></li>
+      <li><a href="#layout">Layout</a></li>
+      <li><a href="#elevation-and-shape">Elevation and shape</a></li>
+      <li><a href="#components">Components</a></li>
+      <li><a href="#dos-and-donts">Do's and don'ts</a></li>
+    </ol>
+  </details>
+</nav>
+<h2 id="overview">Overview<a class="anchor" href="#overview" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><strong>Creative North Star: "The Control Desk"</strong></p>
+<p>Porto is one dense, professional control desk for local apps, containers,
+images, builds, storage, networks, Kubernetes, and VMs. It uses a fixed
+instrument rail, fused fleet signal and control strips, ranked inventories,
+and a docked inspector. The palette is neutral graphite with three operational
+signal colors: olive, amber, and fault red. Porto deliberately avoids the
+identity accents of other desktop container tools; no pink, purple, or bright
+brand blue appears in the interface.</p>
+<p>The story order is deliberate: choose a workload family from the rail, read its
+fleet health, find the affected resource in the ranked inventory, act through
+visible controls, then inspect routing, runtime details, logs, terminals, files,
+metrics, or maintenance without losing the list.</p>
+<p><strong>Key characteristics:</strong></p>
+<ul>
+<li>Dark theme by default; a light theme and "Match system" are available in
+<strong>Settings &gt; Theme</strong>.</li>
+<li>Neutral graphite (dark) or cool off-white (light) working surfaces. No warm
+beige, putty, or paper tones.</li>
+<li>Instrument surfaces (navigation rail, fleet signal rail, drawer readouts,
+command strip, log console, terminals) stay dark in both themes.</li>
+<li>Status meaning is carried by exactly three signal colors.</li>
+<li>Monospace, uppercase, letter-spaced labels for machine-reported values.</li>
+<li>Hairline borders separate regions; shadows are soft and subtle.</li>
+</ul>
+<h2 id="themes">Themes<a class="anchor" href="#themes" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The theme is stored with the other experience preferences (<code>theme</code>: <code>dark</code>,
+<code>light</code>, or <code>system</code>; default <code>dark</code>). <code>public/experience-preferences.js</code>
+applies <code>html[data-theme]</code> before React renders so there is no flash, and the
+preferences provider keeps it in sync, following <code>prefers-color-scheme</code> when
+the theme is <code>system</code>. Every color in <code>App.css</code> is a token from <code>index.css</code>;
+theme-specific tokens live under <code>:root[data-theme=&quot;dark&quot;]</code> and
+<code>:root[data-theme=&quot;light&quot;]</code>, while instrument tokens are shared.</p>
+<h2 id="colors">Colors<a class="anchor" href="#colors" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="signals-both-themes">Signals (both themes)<a class="anchor" href="#signals-both-themes" aria-hidden="true" tabindex="-1">#</a></h3>
+<ul>
+<li><strong>Olive</strong> (dark <code>#8fa04f</code> / light <code>#64703a</code>): healthy, running, ready.</li>
+<li><strong>Amber</strong> (dark <code>#d58d33</code> / light <code>#bd7725</code>): in progress, attention, and the
+universal keyboard focus outline.</li>
+<li><strong>Fault red</strong> (dark <code>#cf5a4c</code> / light <code>#b0443a</code>): crashed, error,
+destructive.</li>
+</ul>
+<p>Each signal has <code>-soft</code> (tinted background) and <code>-text</code> (readable foreground)
+variants per theme.</p>
+<h3 id="neutrals">Neutrals<a class="anchor" href="#neutrals" aria-hidden="true" tabindex="-1">#</a></h3>
+<ul>
+<li><strong>Canvas</strong>: dark <code>#141516</code>, light <code>#f3f4f5</code>.</li>
+<li><strong>Panel / raised / hover / selected</strong>: dark <code>#1b1c1e</code> / <code>#222326</code> /
+<code>#27292c</code> / <code>#2c2e32</code>; light <code>#ffffff</code> / <code>#ffffff</code> / <code>#f4f5f6</code> / <code>#eceef0</code>.</li>
+<li><strong>Fields</strong>: dark <code>#101112</code>, light <code>#ffffff</code>.</li>
+<li><strong>Lines</strong>: dark <code>#2b2d31</code> / <code>#3b3e43</code>; light <code>#e1e3e6</code> / <code>#c7cacf</code>.</li>
+<li><strong>Ink</strong>: dark <code>#e7e8ea</code> / <code>#a6a9ae</code> / <code>#7b7f86</code>; light <code>#17181a</code> / <code>#4d5057</code>
+/ <code>#71757c</code>.</li>
+<li><strong>Instrument</strong>: <code>#0f1011</code> rail and readouts, <code>#0c0d0e</code> consoles.</li>
+</ul>
+<h3 id="named-rules">Named rules<a class="anchor" href="#named-rules" aria-hidden="true" tabindex="-1">#</a></h3>
+<p><strong>The Three-Signal Rule.</strong> Only olive, amber, and fault red carry operational
+meaning. Links use a desaturated slate (<code>--link</code>) so they never compete with
+signals.</p>
+<p><strong>The Neutral Rule.</strong> Working surfaces stay neutral gray. Never introduce warm
+beige or a brand-identity hue as a surface or accent color.</p>
+<h2 id="typography">Typography<a class="anchor" href="#typography" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><strong>UI font:</strong> the platform system stack (<code>-apple-system</code>, SF Pro, Segoe UI,
+Helvetica Neue, Inter, Roboto).
+<strong>Label/mono font:</strong> <code>ui-monospace</code>, SF Mono, Menlo, Consolas.</p>
+<h3 id="hierarchy">Hierarchy<a class="anchor" href="#hierarchy" aria-hidden="true" tabindex="-1">#</a></h3>
+<ul>
+<li><strong>Display</strong> (700, <code>clamp(1.45rem, 2vw, 1.8rem)</code>): page <code>h1</code> only.</li>
+<li><strong>Headline</strong> (600, 17px): panel and settings section headings.</li>
+<li><strong>Body</strong> (400, 14px base; 12–13px in dense rows).</li>
+<li><strong>Label</strong> (mono, 10–12px, uppercase, <code>0.05em</code>): machine-reported values such
+as state, ports, PIDs, branches, timestamps, and commands.</li>
+</ul>
+<h2 id="layout">Layout<a class="anchor" href="#layout" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The shell uses a fixed 240px instrument rail and a fluid main area padded
+<code>22px 32px 48px</code>. A resource screen is a single column until something is
+selected; then <code>.workArea:has(&gt; .inspector)</code> adds an inspector column of
+<code>--inspector-width</code> (<code>clamp(400px, 32vw, 560px)</code>), so creation and detail
+panels such as <strong>New cluster</strong> have room for their forms. The fleet signal rail
+and control bar are fused into one instrument. Control bars wrap their actions
+instead of overflowing.</p>
+<p>Inventories are joined tables: one bordered container whose rows are separated
+by hairlines, highlight on hover, and mark the selected row with a tinted
+background and a 2px inset bar.</p>
+<p><strong>Responsive behavior:</strong></p>
+<ul>
+<li><strong>≤1080px:</strong> inventory columns compress; the inspector narrows to
+<code>min(400px, 44vw)</code>.</li>
+<li><strong>≤860px:</strong> the rail becomes an off-canvas panel over a scrim, inspectors
+become full-screen detail surfaces, and the work area is one column.</li>
+<li><strong>≤620px:</strong> control bar items take the full width; secondary machine facts
+hide and touch targets grow.</li>
+</ul>
+<h2 id="elevation-and-shape">Elevation and shape<a class="anchor" href="#elevation-and-shape" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Surfaces are separated by 1px borders, not shadows. Resting buttons use
+<code>--shadow-sm</code>; menus, the expanded channel, and the maximized inspector use
+<code>--shadow-md</code>; tooltips and popovers use <code>--shadow-pop</code>. Hard offset "printed"
+shadows are not used.</p>
+<p>Radii are 4px (<code>--radius-sm</code>: chips, small controls), 6px (<code>--radius-md</code>:
+buttons, inputs, rows), and 8px (<code>--radius-lg</code>: panels, control bar,
+inspector). Status lamps and the brand-mark dots are the only circles.</p>
+<h2 id="components">Components<a class="anchor" href="#components" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="buttons">Buttons<a class="anchor" href="#buttons" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>13px/500 sans, 6px radius, <code>--line-strong</code> border on <code>--panel-raised</code>.
+Hover raises to <code>--panel-hover</code> with <code>--line-hover</code>; active uses
+<code>--panel-selected</code>. Focus-visible is a 3px amber outline with a 2px offset.
+Disabled is 0.48 opacity. Icon buttons keep their role colors (olive, amber,
+red, slate), a visible tooltip, an <code>aria-label</code>, and visually hidden text.</p>
+<h3 id="inputs">Inputs<a class="anchor" href="#inputs" aria-hidden="true" tabindex="-1">#</a></h3>
+<p><code>--field</code> background, <code>--line-strong</code> border, 6px radius. Focus darkens the
+border and adds the olive underline glow.</p>
+<h3 id="environment-controls">Environment controls<a class="anchor" href="#environment-controls" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>The global environment selector shares the settings field styles and lives in
+a bordered panel separated from page content by 20px. Identity and connection
+facts use compact text, with the target ID in monospace. <strong>Manage environments</strong>
+uses the standard button-link treatment rather than a browser-default link.
+Warnings retain their own full-width rows.</p>
+<p>Environment management uses a joined, bordered inventory with top-aligned
+details and wrapping actions. Expanded registration, listener, metadata, and
+fleet panels pair explanatory text with consistently spaced forms; they stack
+below 860px. Capability checkboxes stay beside their sentence-case labels.
+Wide environment tables scroll within their panel rather than widening the page.</p>
+<h3 id="software-updates">Software updates<a class="anchor" href="#software-updates" aria-hidden="true" tabindex="-1">#</a></h3>
+<p><strong>Software updates</strong> is the first Settings panel, with a visible <strong>Check for
+updates</strong> action and an inline status readout. It uses the same two-column
+section layout and three-signal status treatment as the other settings panels.
+Desktop startup and automatic-download preferences remain in <strong>Desktop behavior</strong>.</p>
+<h3 id="navigation-rail">Navigation rail<a class="anchor" href="#navigation-rail" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Dark in every theme. Four main sections, <strong>Development</strong>, <strong>Containers</strong>,
+<strong>Kubernetes</strong>, and <strong>System</strong>, replace the long flat inventory of links.
+Containers and Kubernetes use short, task-oriented subgroups; every destination
+still opens its own existing page, not a combined screen or extra tab strip.
+Nested links use indentation instead of repeating resource icons.</p>
+<p>Main sections and subgroups expand independently. Collapsing a main section
+preserves its subgroup choices. <strong>Expand all</strong> and <strong>Collapse all</strong> affect every
+available section and subgroup. Opening a page, following a bookmark, or using
+browser history automatically reveals its branch without closing other sections.
+Native-button toggles use chevrons, <code>aria-controls</code>, and <code>aria-expanded</code>; the
+current page keeps <code>aria-current</code>, a subtle light fill, and a neutral inset
+marker. See the <a href="daily-use.html#navigate-the-dashboard">complete navigation map</a>.</p>
+<p>At 860px or below, the closed rail is inert and hidden. Opening it preserves
+expansion choices and focuses the current page link, or the Porto brand link if
+that branch is collapsed. It traps keyboard focus within navigation and its close
+button, and blocks interaction with the underlying content. Escape, the scrim, or choosing
+a page closes it and restores focus to the trigger. Navigation controls have
+44px touch targets. A <strong>Skip to content</strong> link bypasses the rail without changing
+the current route.</p>
+<h3 id="status-lamp">Status lamp<a class="anchor" href="#status-lamp" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>A 9px LED-style circle: olive running, amber starting, red crashed or error,
+gray stopped. It is always paired with a text state.</p>
+<h3 id="integration-status">Integration status<a class="anchor" href="#integration-status" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Provider and tool readiness rows show a 2px inset left bar in the signal color
+(olive ready, amber working or missing, red error).</p>
+<h2 id="dos-and-donts">Do's and don'ts<a class="anchor" href="#dos-and-donts" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="do">Do<a class="anchor" href="#do" aria-hidden="true" tabindex="-1">#</a></h3>
+<ul>
+<li>Keep dark as the default theme and every color tokenized.</li>
+<li>Keep instrument surfaces dark in both themes.</li>
+<li>Reserve olive, amber, and fault red for health, progress, and fault.</li>
+<li>Keep the inventory visible while the inspector is open.</li>
+<li>Give every icon-only control an accessible name and a tooltip.</li>
+</ul>
+<h3 id="dont">Don't<a class="anchor" href="#dont" aria-hidden="true" tabindex="-1">#</a></h3>
+<ul>
+<li>Use warm beige, putty, or paper backgrounds, or a ruled background texture.</li>
+<li>Use pink, purple, or bright brand blue accents.</li>
+<li>Use hard offset shadows or radii above 8px.</li>
+<li>Add decorative or looping motion; reveal transitions stay around
+150–220ms and are disabled under reduced motion.</li>
+<li>Hide state behind an icon or a color alone.</li>
+</ul>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/design.md" rel="noopener"><code>docs/design.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="product.html" rel="prev"><span class="pager-label">Previous</span> Product overview</a>
+    <a class="pager-next" href="agents.html" rel="next"><span class="pager-label">Next</span> Agent instructions</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

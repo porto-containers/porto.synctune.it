@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Resource management | Porto docs</title>
+  <meta name="description" content="Engine budgets, Resource Saver and architecture policies.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/resource-management.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Resource management | Porto docs">
+  <meta property="og:description" content="Engine budgets, Resource Saver and architecture policies.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/resource-management.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html" aria-current="page">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#projects">Projects and runtimes</a></p>
+  <article class="prose" aria-label="Resource management and architecture policies">
+<h1 id="resource-management-and-architecture-policies">Resource management and architecture policies</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">5 sections</span></summary>
+    <ol>
+      <li><a href="#resource-saver-modes">Resource Saver modes</a></li>
+      <li><a href="#engine-budgets">Engine budgets</a></li>
+      <li><a href="#apple-silicon-and-amd64">Apple Silicon and amd64</a></li>
+      <li><a href="#optimized-synchronized-project-shares">Optimized synchronized project shares</a></li>
+      <li><a href="#reproducing-native-measurements">Reproducing native measurements</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Resource Saver is opt-in and disabled by default. Its host-side HTTP listeners
+remain available while eligible applications are asleep. An initiating request
+waits for the owned task and its readiness checks before the original method,
+headers and body are forwarded.</p>
+<h2 id="resource-saver-modes">Resource Saver modes<a class="anchor" href="#resource-saver-modes" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="table" role="region" aria-label="Table: Resource Saver modes" tabindex="0"><table>
+<thead><tr><th scope="col">Mode</th><th scope="col">What changes</th><th scope="col">What remains</th></tr></thead>
+<tbody>
+<tr><td><code>disabled</code></td><td>No new automatic suspension</td><td>Existing owned sleepers retain their wake listeners</td></tr>
+<tr><td><code>engine-idle-suspend</code></td><td>Stops only a verified, wholly idle Porto-owned Lima engine</td><td>VM disk, configuration, and host listeners</td></tr>
+<tr><td><code>container-pause</code></td><td>Freezes eligible tasks, reducing their process CPU</td><td>Resident process memory and disk data</td></tr>
+<tr><td><code>container-scale-to-zero</code></td><td>Stops eligible tasks, releasing task memory</td><td>Container metadata, writable layers, volumes and host listeners; process memory is lost</td></tr>
+</tbody>
+</table></div>
+<p>Configure global policy in Settings or with:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto resource-saver configure --mode container-scale-to-zero --idle 300 --wake 60
+porto resource-saver container example-api --mode stop
+porto resource-saver status</code></pre></div>
+<p>The container inspector also exposes pause, stop and exclusion choices. Mounted
+or stateful workloads require separate explicit consent (<code>--stateful</code> in the
+container command). Opting in does not make unsupported workloads eligible.</p>
+<p>Equivalent container/Compose labels are <code>dev.porto.resource-saver=pause</code> or
+<code>stop</code>, <code>dev.porto.resource-saver.stateful=true</code> for mounted data, and an optional
+<code>dev.porto.resource-saver.idle-seconds</code>. The existing <code>dev.porto.http-port</code> and
+<code>dev.porto.hostname</code> labels provide the owned HTTP route. Every Compose member
+must opt in, and non-HTTP dependencies need health checks. The application is
+resumed as one group.</p>
+<p>Settings and <code>configure --exclude 'database-*,important-api'</code> support name
+exclusions. Per-application overrides use IDs such as <code>compose:example</code> or
+<code>container:&lt;full-ID&gt;</code> and JSON fields <code>mode</code> and <code>idleSeconds</code>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto resource-saver configure --overrides '{&quot;compose:example&quot;:{&quot;idleSeconds&quot;:900}}'</code></pre></div>
+<h3 id="safety-and-request-boundaries">Safety and request boundaries<a class="anchor" href="#safety-and-request-boundaries" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Only HTTP/HTTPS requests through Porto's URL wake listeners are retained.
+Published ports used directly, raw TCP/UDP and additional published protocols
+do not provide first-connection wake. The bounded queue defaults to 64 requests,
+16 MiB per body, and a 60-second wake/readiness deadline. Client cancellation
+releases its reservation; concurrent requests share one resume. Active proxied
+streams and WebSocket upgrades hold the application active until disconnect.
+Wake queue and body limits apply only to requests waiting for an owned sleeper.
+Readiness releases the queue reservation while retaining the activity lease;
+ordinary traffic to an already-running application is not capped by wake limits.
+Queued upload bodies are staged in private temporary files within those limits
+before readiness wait. This lets HTTP/1 detect a disconnected uploading client
+promptly instead of retaining its wake until timeout. The wake deadline also
+bounds upload staging; temporary data is removed on completion, cancellation or
+failure. Already-running applications keep their ordinary streaming behavior.</p>
+<p>Interactive containers, running execs, unobservable multi-process applications,
+established connections, unsupported networks, unmanaged dependencies, missing
+metrics, incomplete inventory and ambiguous routes block automatic suspension.
+Idle detection uses observed CPU, network and disk activity, not a VM's reserved
+memory. Long-lived internal connections also conservatively count as activity.</p>
+<p>Engine suspension additionally checks every containerd namespace and active
+BuildKit work. Running or manually paused tasks, Kubernetes nodes, native file
+attachments, data operations and incomplete observations prevent it. External
+containerd installations and native Windows containers are not automatically
+suspended.</p>
+<p>Ownership is identity-bound and journaled before transitions, then verified
+against backend metadata before resume. A manual lifecycle action releases only
+that selected member from automatic ownership. Pause ownership is quarantined
+after daemon downtime because an external manual unpause/re-pause cannot be
+proven from a saved PID alone; resume it manually before opting in again.
+Stopped-task ownership is checked again on wake. Failed wakes return a gateway
+error with diagnostics, never a successful empty response. Backend pause,
+suspension, resume and failure events appear in Activity.</p>
+<p>Compose readiness uses the configured probe rather than merely a running PID.
+Exec-form health checks retain their original argument array, without adding a
+shell requirement to scratch images. Porto schedules probes for its explicitly
+managed workloads and health configurations, including compatibility-created
+containers, without adopting their filesystem or CNI lifecycle. Before the
+first probe, Docker inspection reports <code>starting</code>, not a missing healthcheck.</p>
+<h2 id="engine-budgets">Engine budgets<a class="anchor" href="#engine-budgets" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>CPU, memory, swap and disk settings apply only to Porto's owned Lima engine.
+Use Settings or:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto docker engine-resources configure --cpus 2 --memory 4096 --swap 0 --disk 100
+porto docker engine-resources apply --restart-engine
+porto docker engine-resources status</code></pre></div>
+<p>CPU, memory and disk zeroes preserve existing settings or the provider's defaults
+for a new engine. Omitted swap leaves it unchanged; swap zero disables only
+Porto-owned swap. Managed swap uses an owned Linux swap file and refuses
+unmanaged swap or unsupported filesystems. Other guest provisions are preserved.</p>
+<p>Existing engines require an explicit idle restart. Disk capacity may only grow;
+shrinking or changing an unsupported driver is rejected before configuration
+mutation. Failed edits restore the original configuration and preserve the
+existing VM disk. Disk growth is not an undoable shrink operation.</p>
+<h2 id="apple-silicon-and-amd64">Apple Silicon and amd64<a class="anchor" href="#apple-silicon-and-amd64" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Architecture policy is separate from Resource Saver:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto runtime acceleration status
+porto runtime acceleration configure --policy rosetta-preferred --rosetta
+porto runtime acceleration apply --restart-engine</code></pre></div>
+<p><code>automatic</code> uses verified backend capabilities. <code>native-only</code> rejects foreign
+platforms, including BuildKit solve constraints. <code>rosetta-preferred</code> uses a
+configured Rosetta handler, with a verified QEMU fallback when unavailable.
+<code>qemu-compatible</code> requires the QEMU path. Container inspector creation options,
+the <code>dev.porto.architecture-policy</code> Compose/container label, and the VM
+<code>--architecture-policy</code> option override global policy for that workload.</p>
+<p>Porto probes Apple's Virtualization.framework directly, Lima's installed
+drivers and guest agents, matching QEMU executables, and guest binfmt handlers.
+Container handlers must be enabled, executable and carry the fix-binary flag.
+Capabilities are refreshed rather than retained across provider upgrades.
+Native arm64 workloads remain native; creating one does not install emulation
+software. Existing owned-engine QEMU setup remains scoped to that guest.</p>
+<p>Rosetta is opt-in, requires Apple Silicon, an arm64 VZ guest and an already
+installed Apple runtime. If needed, explicitly run
+<code>softwareupdate --install-rosetta</code> and accept Apple's license yourself. Porto
+does not silently install it or register host-wide emulation handlers.
+QEMU-backed engines cannot be converted to VZ or have their disks replaced.
+After a VZ engine has a Rosetta filesystem device, disabling translation keeps
+that existing device configuration and disables only its binfmt handler.
+Selecting QEMU does not remove a guest device or change the VM's architecture.</p>
+<p>For a native arm64 standalone VM with optional amd64 userspace:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto vm create example --image ubuntu-24.04 --vm-type vz --arch aarch64 --rosetta</code></pre></div>
+<p>An amd64 <strong>kernel</strong> on Apple Silicon requires QEMU full-system software
+emulation, not Rosetta or hardware-accelerated amd64 virtualization. The matching
+QEMU executable and additional Lima Linux guest agent must be available.
+Apple Silicon desktop bundles include the extra guest agent; source installs
+may need <code>lima-additional-guestagents</code>. Snapshots retain their QEMU-only boundary.
+The dashboard and runtime status distinguish native, Rosetta, QEMU and
+unsupported/missing-capability states without claiming unmeasured speedups.</p>
+<p>Standalone VM acceptance is separate from container-engine acceptance. On a
+supported Apple Silicon host, the following command authorizes two disposable
+standalone VMs, with no host mounts and 2 GiB RAM each. They run sequentially:
+the first uses an arm64 VZ kernel with real amd64 Rosetta userspace and native
+arm64 ELF execution; the second boots an actual amd64 kernel under QEMU.
+Both verify persistent guest-home data across stop/start and remove only their
+own instances afterward:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PATH=&quot;$PWD/stage/runtime-darwin-arm64/bin:$PWD/stage/runtime-darwin-arm64/lima/bin:$PATH&quot; \
+  PORTO_TEST_NATIVE_STANDALONE_POLICIES=1 \
+  go test ./internal/vm -run '^TestNativeStandaloneArchitecturePolicies$' \
+    -count=1 -timeout=50m -v</code></pre></div>
+<h2 id="optimized-synchronized-project-shares">Optimized synchronized project shares<a class="anchor" href="#optimized-synchronized-project-shares" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>macOS and Linux can opt selected, registered project roots into a maintained
+Mutagen two-way-safe session. Windows/WSL retains ordinary bind mounts and the
+existing selected-distribution integration; synchronized mode is capability
+gated rather than substituting different path or ownership semantics.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto shares create example-project --ignore node_modules,dist
+porto shares status
+porto shares mode &lt;share-id&gt; bind
+porto shares mode &lt;share-id&gt; synchronized
+porto shares detach &lt;share-id&gt; --confirm</code></pre></div>
+<p>Settings exposes the same project selector, startup/scan/staging state,
+connectivity, conflicts and filesystem problems. Only the selected root is
+synchronized into its identity-bound <code>/mnt/porto-sync/&lt;share-id&gt;</code> directory.
+Whole home directories, filesystem roots, overlapping roots and symlink roots
+are rejected. No existing host directory or guest copy is deleted on detach.</p>
+<p>New container bind mounts inside a selected synchronized root use that guest
+copy after a successful flush and conflict check. Existing containers are not
+retargeted; recreate them after a binding-mode change. The
+<code>dev.porto.share-mode=bind</code> label opts a container back into ordinary bindings.
+Paused, disconnected, conflicting or replaced-engine sessions fail before a
+new workload is created rather than falling back to an empty or stale copy.</p>
+<p>Both endpoints can change files. Atomic renames, staging and notifications use
+the maintained tool's implementation. Ignore patterns and VCS exclusions stay
+local. Portable permissions synchronize executable bits but not host UID/GID,
+ACLs or every platform-specific mode. Relative contained symlinks are supported;
+unsafe links and case collisions are reported. Conflicts retain both versions;
+inspect the host and guest copies and resolve them explicitly. Neither side
+automatically wins a destructive conflict. A stopped engine disconnects its
+session; reconnect uses the same ownership record and pinned guest host key,
+not a replacement guest. Active synchronized sessions prevent automatic engine
+suspension until their synchronization is paused.</p>
+<p>SSH configuration, verified host keys and the Mutagen daemon are private to
+Porto. Global SSH configuration and unrelated Mutagen sessions are not changed.
+The pinned key is recorded for the loopback endpoint and for Lima's
+<code>lima-&lt;instance&gt;</code> host-key alias, which Lima 2.3 adds to its SSH configuration.
+Multiplexing, persistence and agent forwarding are disabled for these private
+connections.</p>
+<p>Desktop runtimes include a source-built <code>0.18.1-porto.1</code> CLI and Linux amd64/arm64
+agents, compiled with the current Go toolchain and pinned patched dependencies.
+Upstream 0.18.1 prebuilt executables are not used: their older Go and network
+dependencies have known vulnerabilities. Source development can prepare the
+same scoped toolchain without installing it host-wide:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">bash scripts/bundle-synchronization-runtime.sh darwin arm64 stage/synchronization-runtime
+export PATH=&quot;$PWD/stage/synchronization-runtime/bin:$PATH&quot;</code></pre></div>
+<p>Use the host's actual OS/architecture; macOS builds require macOS for native
+filesystem notifications. Ordinary binding mode does not require this tool.</p>
+<h2 id="reproducing-native-measurements">Reproducing native measurements<a class="anchor" href="#reproducing-native-measurements" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>On an Apple Silicon Mac with installed Rosetta and the documented development
+toolchain, first build the runtime inputs:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">bash scripts/bundle-desktop-runtime.sh darwin arm64 stage/runtime-darwin-arm64</code></pre></div>
+<p>The following command explicitly authorizes a disposable VZ acceptance VM.
+It creates private <code>PORTO_HOME</code> and <code>LIMA_HOME</code> directories, uses two CPUs,
+2 GiB RAM and a 20 GiB sparse disk, and mounts only its freshly created synthetic
+<code>projects</code> directory for the ordinary-bind comparison. No home or real project
+directory is shared. Only that VM is removed afterward; existing Porto engines
+are not selected:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PATH=&quot;$PWD/stage/runtime-darwin-arm64/bin:$PWD/stage/runtime-darwin-arm64/lima/bin:$PATH&quot; \
+  PORTO_TEST_NATIVE_RUNTIME_POLICIES=1 \
+  go test ./internal/daemon -run '^TestNativeAppleSiliconRuntimePolicies$' \
+    -count=1 -timeout=25m -v</code></pre></div>
+<p>The workload is a synthetic amd64 Go HTTP server built into a scratch image,
+with a no-cache BuildKit <code>RUN</code> step that executes the original Linux binary.
+It echoes the SHA-256 of an 819,200-byte initiating binary POST, exercises
+12 concurrent wakes, a real WebSocket, manual pause, complete engine shutdown,
+Rosetta/QEMU policy changes, and a native arm64 build. Sharing uses 10,000
+small synthetic files, an actual guest container bind, bidirectional edits and
+inotify. Additional cases use real Docker Compose dependencies and SIGKILL a
+separate process running the production ownership controller, HTTP wake route
+and health scheduler. They verify persisted stop ownership, pause quarantine
+after manual unpause/re-pause during downtime, an active exec, a canceled
+initiating body, and a real readiness timeout.</p>
+<p>The sharing case stops and starts the guest, edits the host while disconnected,
+verifies both versions and the same session/root identity on reconnect, and
+creates case-colliding guest filenames against a case-insensitive host. Neither
+guest version is discarded. Individual native acceptance areas can be rerun:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PATH=&quot;$PWD/stage/runtime-darwin-arm64/bin:$PWD/stage/runtime-darwin-arm64/lima/bin:$PATH&quot; \
+  PORTO_TEST_NATIVE_RUNTIME_POLICIES=1 \
+  go test ./internal/daemon \
+    -run '^TestNative(ResourceSaverLifecycle|SynchronizedShareResilience)$' \
+    -count=1 -timeout=30m -v</code></pre></div>
+<p>The separate maintained-tool case covers ignores and retained conflicts:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">PORTO_TEST_SYNC_BINARY=&quot;$PWD/stage/runtime-darwin-arm64/bin/mutagen&quot; \
+  go test ./internal/syncshares \
+    -run '^TestMaintainedSynchronizationPreservesLargeSyntheticRepository$' \
+    -count=1 -timeout=5m -v</code></pre></div>
+<p>An observed run on an Apple M5 Max, macOS 26.6, Go 1.27.3, Lima 2.2.1,
+an arm64 VZ guest and <code>0.18.1-porto.1</code> synchronization toolchain recorded:</p>
+<div class="table" role="region" aria-label="Table: Reproducing native measurements" tabindex="0"><table>
+<thead><tr><th scope="col">Observation</th><th scope="col">Measured result</th></tr></thead>
+<tbody>
+<tr><td>Fresh engine provisioning, possibly using Lima's cloud-image cache</td><td>38.75 s</td></tr>
+<tr><td>No-cache synthetic BuildKit build</td><td>0.671 s</td></tr>
+<tr><td>Measured host process subtree RSS before / immediately after / five seconds after build</td><td>138,264,576 / 138,264,576 / 146,685,952 bytes</td></tr>
+<tr><td>Running synthetic task memory before scale-to-zero</td><td>38,563,840 bytes; task absent after stopping</td></tr>
+<tr><td>Original binary POST after task scale-to-zero</td><td>1.099 s; exact payload checksum preserved</td></tr>
+<tr><td>Host process subtree RSS before complete engine suspension</td><td>216,121,344 bytes; owned process absent afterward</td></tr>
+<tr><td>Native VZ host-process CPU during a five-second idle sample</td><td>0.00 CPU seconds at <code>ps</code> resolution; process absent after suspension</td></tr>
+<tr><td>Original POST through complete engine and task wake/readiness</td><td>10.699 s</td></tr>
+<tr><td>Initial 10,000-file host-to-guest synchronization</td><td>2.632 s</td></tr>
+</tbody>
+</table></div>
+<p>These are reproducible observations, not latency guarantees or cross-product
+benchmarks. RSS covers the measured owned process subtree, not every macOS
+Virtualization.framework service or all guest RAM. CPU uses differences between
+the native VZ process's cumulative <code>ps time</code> samples, not the VM's configured CPU
+reservation. This already-quiet fixture did not show a measurable idle CPU
+decrease, and its small build did not demonstrate automatic post-build RSS
+reclamation. Complete engine suspension removed the measured process instead.
+The daemon, host listeners and OS caches remain. The earlier tiny-file
+synchronization result measures metadata-heavy initialization, not sequential
+byte throughput.</p>
+<p>A separate representative sharing run on the same host used the same original
+amd64 binary in both modes, 10,000 small files and eight deterministic
+pseudorandom 8 MiB payloads. Both modes traversed 10,011 files after reconnect
+and edit checks, read exactly 67,108,864 payload bytes, and produced the same
+SHA-256. The ordinary bind used VZ's host share; synchronized mode used the
+verified guest-disk copy:</p>
+<div class="table" role="region" aria-label="Table: Reproducing native measurements" tabindex="0"><table>
+<thead><tr><th scope="col">Mode</th><th scope="col">First walk/read/hash</th><th scope="col">Second trial</th><th scope="col">Third trial</th><th scope="col">Effective MiB/s, first / second / third</th></tr></thead>
+<tbody>
+<tr><td>Ordinary bind</td><td>630.309 ms</td><td>253.167 ms</td><td>318.846 ms</td><td>101.538 / 252.798 / 200.724</td></tr>
+<tr><td>Synchronized guest copy</td><td>206.137 ms</td><td>202.439 ms</td><td>201.321 ms</td><td>310.474 / 316.144 / 317.900</td></tr>
+</tbody>
+</table></div>
+<p>This includes metadata traversal and hashing, not just storage transfer.
+Subsequent trials may use caches; caches are not forcibly dropped on the shared
+host. Initial synchronization of the larger dataset took 2.901 s and is an
+additional cost, not hidden inside the per-read comparison. Synchronized mode
+also uses extra guest storage and synchronization resources, so one read alone
+does not justify it. These observations do not predict every repository's
+performance or establish battery savings.</p>
+<p>The lifecycle acceptance also measures an otherwise-idle HTTP service with a
+100 ms housekeeping timer. One run recorded 36,231,000 ns of task CPU over
+15.0696 s (0.240424% of one core) and 39,206,912 bytes of task memory before
+automatic scale-to-zero. Both Compose members then had no runnable tasks;
+the timer's process CPU cost and process memory were removed, while the
+initiating request still recovered the group after process loss. These are
+container cgroup counters and task-state observations, not a whole-laptop
+CPU, VM-RAM or battery claim. The earlier bare-server host CPU sample remains
+below its measurement resolution; automatic post-build RSS reclamation is
+still not claimed.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/resource-management.md" rel="noopener"><code>docs/resource-management.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="docker-engine.html" rel="prev"><span class="pager-label">Previous</span> Porto Docker Engine</a>
+    <a class="pager-next" href="networking.html" rel="next"><span class="pager-label">Next</span> Local networking</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

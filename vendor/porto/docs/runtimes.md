@@ -1,0 +1,1175 @@
+# Local runtimes
+
+Porto can manage native development applications, Docker resources, local Kubernetes clusters, and standalone Linux virtual machines from the same daemon, CLI, and dashboard.
+
+For authorized remote hosts, outbound Edge agents or explicit external
+Kubernetes imports, use [authenticated environments](remote-environments.md).
+Those targets have distinct identities, capabilities and caches. Registering an
+external cluster does not make its infrastructure Porto-owned or change global
+kubeconfigs.
+
+Native project orchestration remains the default. The Docker API server is enabled by default. Its containerd execution backend, Kubernetes, and VM providers report clear unavailable states when required tools are not installed or running.
+
+Enable providers independently:
+
+```sh
+porto runtime enable docker
+porto runtime enable kubernetes
+porto runtime enable vms
+porto runtime status
+```
+
+Disable a provider with `porto runtime disable <provider>`. Disabling Docker closes its API socket; deactivate the canonical Docker endpoint first when Porto owns it.
+
+## Architecture
+
+Porto separates the control plane from runtime providers:
+
+- The Porto daemon owns the HTTP API, dashboard state, project lifecycle, local routes, and Docker Engine-compatible API server.
+- Native projects continue to run directly on the host.
+- Docker clients connect to Porto through the named `porto` context.
+- Porto translates supported Docker API operations to nerdctl and a Porto-owned containerd backend, either local or in a persistent Lima VM.
+- Kubernetes inspection uses the selected managed kubeconfig; native administration uses Kubernetes clients and scoped Helm tooling without changing a global context.
+- Porto-created Kubernetes clusters use k3s/k0s on Lima VMs, kind on Porto's container engine, or the optional Apple Cluster provider on Apple silicon.
+- Standalone Linux VMs use Lima and remain separate from Kubernetes node groups.
+
+This design keeps supported Docker clients compatible without forwarding requests to another Docker daemon.
+
+## Requirements
+
+Core Porto only requires the dependencies listed in the [installation guide](installation.md).
+
+Additional runtime features require:
+
+| Capability | Requirement |
+| --- | --- |
+| Docker client compatibility | Desktop packages bundle Docker CLI, Compose, Buildx, Dive, Syft and Grype where supported; source builds may use another Docker Engine API client |
+| Containers, images, networks, volumes | `nerdctl` with containerd and BuildKit, or Lima for Porto-managed containerd and BuildKit. Default macOS VZ needs no QEMU; Linux needs its architecture-matched QEMU and `qemu-img`; Windows packages bundle them. |
+| Compose project orchestration | Bundled Docker CLI with Compose, using Porto's native Docker endpoint |
+| Kubernetes inspection | `kubectl` and an authorized kubeconfig context |
+| Kubernetes manifest/RBAC administration | An explicitly selected managed kubeconfig and its native Kubernetes permissions |
+| Helm lifecycle | Checksum-pinned Helm 4.3.1 (bundled on all six desktop targets), selected namespace and native release/resource permissions |
+| Porto-created Kubernetes clusters | `kubectl`; Porto can install `kind` and `limactl` on macOS. Optional Apple Cluster needs Apple silicon, macOS 26+, and stable Apple `container` 1.7.1+; it does not need Lima, QEMU or Docker. |
+| Optional Etcqlite datastore | Separately installed matching native binaries on macOS/Linux, explicit gate/lifecycle, private node-local storage and guest-reachable mTLS endpoints for new k3s only; see [Etcqlite](integrations.md#etcqlite). |
+| Standalone virtual machines | Lima and a supported VZ or QEMU driver. QEMU is required for snapshots and foreign-architecture kernels; Windows desktop releases bundle it. |
+
+Missing optional tools do not prevent native projects or the Porto daemon from running.
+
+See [resource management and architecture policies](resource-management.md) for
+owned-engine budgets, opt-in idle suspension and HTTP wake, selected synchronized
+project shares, and native/Rosetta/QEMU capability boundaries. Native arm64
+workloads stay native; Rosetta translates amd64 userspace in an arm64 VZ guest,
+not an amd64 VM kernel.
+
+For an installed desktop package, use either the non-conflicting `docker`
+command created by the install script or the explicit bundled entry point:
+
+```sh
+porto docker run --rm alpine:latest echo hello
+porto docker info
+porto docker compose up --detach
+porto docker buildx build --load --tag demo .
+porto ps --all
+porto exec -it demo sh
+porto docker cli --context porto run --rm alpine:latest echo hello
+porto docker dive demo
+```
+
+`porto docker run` forwards Docker's run options, image, and container command
+unchanged to the bundled CLI, targeting Porto's endpoint even when `DOCKER_HOST`
+or `DOCKER_CONTEXT` selects another engine. Standard input/output/error and the
+container's exit code are preserved. `porto docker cli` remains an unrestricted
+passthrough and honors explicit Docker context/host options and environment.
+
+The bundled CLI loads Porto's pinned plugins before user and system plugins,
+while preserving the user's Docker contexts, credentials, plugin files, and
+Buildx state.
+
+`porto docker <command> [args...]` forwards the original argument array and
+standard streams to Docker, defaults to Porto's endpoint, and preserves the
+client's exit code. An inherited Docker host, context, or TLS setting cannot
+silently redirect the default connection. Explicit Docker connection flags keep
+their normal meaning. `porto docker cli ...` remains an unrestricted raw entry
+point that also retains inherited Docker connection settings.
+The same supported operations work through `docker --context porto ...`.
+Source builds need a Docker CLI in `PATH`; desktop packages include it.
+
+Top-level `porto ps`, `run`, `create`, `exec`, `rm`, `images`, `image`, `build`,
+`network`, `volume`, `compose`, and `buildx` use Docker's command syntax.
+Existing project commands `start`, `stop`, `restart`, `kill`, and `logs` remain
+project operations; use `porto docker stop`, `porto docker logs`, and their
+equivalents for containers. Porto-specific inventory and data commands remain
+available. Use `porto docker data volume remove ... --confirm` for Porto's
+identity-checked volume-removal workflow; `porto docker volume remove` is now
+Docker's standard removal alias.
+
+Inspect or install provider tools:
+
+```sh
+porto runtime providers
+porto runtime install lima
+porto runtime install kind
+porto runtime install k9s
+porto runtime install k0s
+```
+
+The k0s and k3s providers both use Lima on the host and install their
+distribution inside Porto-managed guests. Porto uses Homebrew for explicit
+provider installation on macOS. Other
+platforms receive an actionable manual-install error instead of a silent
+fallback.
+
+## Docker Engine-compatible endpoint
+
+The daemon creates a user-owned socket:
+
+```text
+<PORTO_HOME>/run/docker.sock
+```
+
+On Windows, Porto exposes the equivalent named pipe:
+
+```text
+\\.\pipe\porto_docker_engine
+```
+
+The endpoint is served by Porto itself whenever the Docker runtime is enabled. It can answer health and system information requests while the packaged desktop app prepares the containerd execution backend.
+
+```sh
+porto docker context-install
+docker --context porto info
+```
+
+Packaged desktop builds install the execution backend automatically. CLI-only
+installations can prepare it before creating containers:
+
+```sh
+porto docker engine-install
+porto docker status
+```
+
+See [Porto Docker Engine](docker-engine.md) for architecture, supported Docker API routes, persistence, cleanup, and limitations.
+
+To make standard tools use Porto with `DOCKER_HOST` unset, activate the canonical Unix socket:
+
+```sh
+porto docker activate
+```
+
+Porto never overwrites an existing non-symlink socket. Replacing another runtime's symbolic link requires explicit intent:
+
+```sh
+porto docker activate --replace
+```
+
+Writing `/var/run/docker.sock` normally requires administrator privileges. When the operating system rejects the operation, Porto prints a command that preserves the correct `PORTO_HOME`. Deactivation removes only the link Porto owns and restores the previous symbolic link:
+
+```sh
+porto docker deactivate
+```
+
+See [Make Porto the default Docker engine](installation.md#make-porto-the-default-docker-engine)
+for the named-context default, canonical-socket verification, sudo retry, and
+restoration workflow.
+
+The Porto-owned API socket uses mode `0600`. Treat access to any Docker socket as host-administrator access.
+
+Windows clients use the named `porto` Docker context. Canonical
+`\\.\pipe\docker_engine` takeover is intentionally not automatic because
+Windows named pipes cannot be replaced with a reversible symbolic link.
+
+Selected WSL 2 distributions can use bundled native Linux Docker, Compose and
+Buildx through an owned Unix-socket bridge to the private Windows pipe.
+Selection, shares, watch behavior, native-vault credentials and removal are
+described in [Windows development integration](windows-integration.md).
+This does not change Lima/QEMU engines. Native Windows containers use a separately
+selected, owned containerd/runhcs service and `porto-windows` context, with
+distinct stores and explicit host/image/isolation checks. Switching the
+dashboard view does not stop either engine or retarget WSL tooling; see
+[native Windows setup](windows-integration.md#native-windows-setup).
+Windows-hosted Linux/VM terminals use ConPTY on Windows 10 1809 and newer.
+Native Windows-container execution uses the maintained containerd/runhcs SDK;
+its consoles use protected Windows named-pipe I/O.
+
+### Docker resources
+
+The container inspector includes bounded Logs, shell-independent Files, recent
+Stats and redacted Inspect views. Volumes add file browsing, verified
+clone/import/export/restore/empty/remove workflows and persisted local backups.
+Volume previews show current container/Compose mount ownership; existing
+containers and stopped managed-cluster nodes cannot be bypassed with force.
+Restore pins the verified archive checksum and publishes from isolated staging.
+**Storage** reports unique content, configured Linux snapshots,
+volume allocation, BuildKit records and all-namespace metadata separately. Object
+or category previews freeze exact protected cleanup boundaries; **Migrate runtime
+data** dry-runs source-preserving local
+transfers. Capability-supported native file bridges open real host paths without
+implicit copy-back. Migration records each selected object's pending, active and
+completed outcome before proceeding; after interruption, review the original
+identities and destinations through a new dry run rather than silently copying
+resources with reused names.
+
+Native access uses private `files/<resource-fingerprint>-ro` or `-rw` host paths
+(local Linux uses helper-owned `/run/porto-native/` mounts). Images stay read-only;
+container, volume and managed VM writes require explicit consent for the current
+resource identity. Capability reports check the named resource as well as the
+driver, without starting stopped workloads or installing a helper just to probe
+availability. Detach before changing storage. Engine stop, update and daemon
+shutdown release owned attachments; disconnected bridges and failed detach
+operations remain unavailable until cleanup/reconnect, never as empty successful
+mounts. Cleanup does not delete source data.
+macOS uses its built-in WebDAV filesystem over confined SFTP and needs no macFUSE
+driver. Successful closed saves are direct workload edits; Unix links and
+chmod/chown require guest tooling or archives. Windows uses WinFsp and Linux
+uses owned bind mounts or SSHFS over the shared confined SFTP transport,
+according to the resource/backend capability. SSHFS requires version 3.7.6 or a
+maintained build with the equivalent `contain_symlinks` security fixes; older
+distribution packages are capability-rejected, not mounted without containment.
+Live container writes enter the
+runtime's actual user/mount namespaces; stopped workloads stay stopped.
+Explicit standalone VM starts and reconnect starts use the same bounded 20-minute startup
+budget as initial creation, allowing a software-emulated QEMU guest to finish
+booting instead of being interrupted after five minutes. Caller cancellation
+still stops the wait.
+Kubernetes node restarts retain their existing five-minute budget.
+See [runtime data management](data-management.md) for safety,
+backup consistency, CLI workflows and the host/backend capability matrix.
+
+Local backups need no cloud account. Their dashboard policies support interval,
+retention, pause/resume and manual runs; progress, cancellation and failures stay
+visible in Activity. A replacement is durably verified before retention, and
+missed schedules run once without overlap. Copies are crash-consistent rather
+than application-consistent database backups. Local Linux or Porto's Lima guest
+uses the bundled helper; unsupported external volume-driver options, ownership
+maps and native filesystem capabilities fail explicitly without replacing data.
+
+```sh
+porto docker status
+porto docker engine-install
+porto docker containers
+porto docker images
+porto docker networks
+porto docker volumes
+
+porto docker container restart <container>
+porto docker pull alpine:latest
+```
+
+Top-level inventories are also available; `images` uses Docker's normal output
+and flags, while the other plural inventories retain Porto's JSON output:
+
+```sh
+porto containers
+porto images
+porto builds
+porto networks
+porto volumes
+```
+
+Compose projects use their standard Compose files against Porto's native Docker
+endpoint. Porto assigns a stable Compose project name per Porto project and generates a temporary
+`!override` file that remaps published TCP ports onto free localhost ports.
+This keeps concurrent projects and branch worktrees isolated without editing
+the source Compose file. Porto exposes Compose project and service labels from
+Docker so the dashboard can group related containers.
+
+Compose builds use Porto's BuildKit bridge, including multi-platform Bake
+targets when the worker supports the requested architectures.
+The Builds screen reads BuildKit history directly and reports active, successful,
+and failed records with their creation time, duration, image name, and platform.
+
+The container dashboard exposes state-aware start, resume, stop, restart,
+remove, and force-remove actions in both the inventory and inspector. Normal
+removal is enabled only after a container stops. The inspector can be maximized
+and includes an interactive terminal: application mode executes a selected
+shell inside the container, while debug mode starts a disposable
+`nicolaka/netshoot` toolbox that shares the target network and process
+namespaces plus its volumes.
+Containers carrying Docker Compose project labels are grouped into expandable
+application sections with service names, aggregate state, and running/container
+counts. Containers without Compose ownership remain in a separate standalone
+inventory.
+
+## Kubernetes
+
+Porto operates only the private contexts it creates under `PORTO_HOME`; it does
+not inherit the user's current global `kubectl` context. Completed managed
+clusters are also registered in `~/.kube/config` so standard clients and
+dashboards such as Headlamp discover them automatically. Porto preserves the
+current context and all unrelated entries.
+
+```sh
+porto kubernetes status
+porto kubernetes contexts
+porto kubernetes pods --namespace all
+porto kubernetes services --namespace default
+porto kubernetes configmaps --namespace default
+porto kubernetes secrets --namespace default
+porto kubernetes nodes
+```
+
+Pass `--context` when a command should not use the current context.
+`porto kubernetes configs` is a shorter alias for `configmaps`.
+Stopped managed clusters keep their kubeconfig and context, but the dashboard
+does not poll resource APIs until the selected context is reachable. On first
+load it prefers a fully running managed cluster; start a stopped cluster or
+select another context before opening its resources.
+
+The Kubernetes rail includes dedicated inventories for Deployments, Pods,
+Services, Jobs, CronJobs, storage, Gateway API resources, ConfigMaps, Secrets,
+and Nodes. Resource dashboards share context selection, namespaced inventories
+add namespace filtering, and each list provides health signals plus an adjacent
+inspector for the selected resource.
+
+Namespace filters and resource search match case-insensitive substrings:
+`app`, `App`, and `APP` include `app-1`, `app2`, and `application`.
+An empty namespace filter or `all` shows every namespace. Filtering uses the
+current context's read-only inventory; inspecting or mutating a selected object
+still uses its complete, exact namespace and name.
+
+The **Port forwarding** dashboard starts and stops explicit loopback forwards
+for Services, Pods, and Deployments. Leave the local port empty to allocate a
+free port from Porto's forwarding range, or request a specific available port.
+Forwards bind only to `127.0.0.1`, remain active until stopped or until the
+cluster or Porto daemon exits, and are not restored after a daemon restart.
+Porto allows up to 30 seconds for startup and checks the loopback listener
+without competing for its port. Failed starts are stopped and reaped before
+returning an error; daemon shutdown also cancels pending startup checks.
+
+### Manifest, workload and permission administration
+
+Open **Kubernetes > Clusters > Resources** (or **RBAC** for Roles, bindings and ServiceAccounts) for native administration. Existing
+Deployment, Job, CronJob, ConfigMap and Secret inspectors link to the same
+resource using only explicit context/namespace/name metadata. There is no second
+cluster/context store or administrator fallback: an unavailable managed
+kubeconfig, missing selected context or changed identity stops the operation.
+External-cluster onboarding remains a separate environment concern.
+
+Named-target inputs offer searchable current-resource suggestions while still
+accepting a manually typed name. Metadata-only name discovery follows every
+200-object API page without exposing Secret values. List permissions and
+failures affect suggestions only; native authorized get/actions can still
+target an unlisted name. Inventory filters also offer **Inspect typed resource**
+for an explicit namespace/name, without requiring the row to be visible.
+See [resource targeting](daily-use.md#find-and-target-resources).
+
+Discovery inventories actual served group/version/resource/kind combinations,
+including CRDs/custom resources, ServiceAccounts, Roles, ClusterRoles and their
+bindings. A failed API group produces a visible partial inventory rather than
+an empty success. Choose namespace or explicit cluster scope; cross-namespace
+manifest names are rejected rather than retargeted. Resource lists are paged at
+200 objects. **Show served schema** reads that API version's OpenAPI v3 kind
+schema and exposes its version/hash; unavailable or referenced-only schemas are
+identified honestly. Server-side validation remains authoritative.
+
+Effective capabilities come from native `SelfSubjectAccessReview` requests for
+the selected identity/resource, including the scale subresource where relevant.
+Read-only users see disabled mutation controls. Viewing or listing an object
+never grants permission to mutate it; Kubernetes enforces RBAC, bind/escalate
+restrictions, admission and immutable fields again at execution.
+
+Create a named resource or edit/upload YAML/JSON, then choose **Server dry run
+and diff**. Manifest input is bounded to 2 MiB and 50 named resources. Native
+server-side dry run with strict field validation produces the before/after
+preview. Apply uses field manager `porto-admin`, preserves server-owned
+status/metadata, binds existing UID/resourceVersion, and never uses force
+ownership. Changed/recreated objects, identity changes, served-version changes,
+admission failures and field-manager conflicts require a fresh preview.
+Helm/controller-owned objects carry ownership guidance; update the declared
+owner instead of fighting reconciliation.
+If an object was absent at preview, activation uses an atomic native create
+instead of retargeting a concurrent creator through an upsert. Controller
+rollback replaces the complete retained pod template, rather than merging
+current-only fields into the older revision.
+
+Apply is not a transaction: if a later resource fails, earlier accepted resources
+are reported as partial and remain available for inspection. Network loss or
+cancellation after a write cannot prove that the API rejected it; such outcomes
+are explicitly uncertain/partial, never a clean success or automatic rollback.
+An accepted manifest does not prove application readiness.
+
+Workload controls support:
+
+- Deployment/StatefulSet replica scale and Job parallelism.
+- Deployment/StatefulSet/DaemonSet restart and retained-controller rollback.
+- Deployment rollout pause/resume and Job/CronJob suspend/resume.
+- Explicit UID/resourceVersion-bound deletion for served resources, with
+  additional storage/namespace/CRD consequence acknowledgement where applicable.
+
+Rollout observation uses actual ready, updated and available replicas, observed
+generation and failure conditions, with a three-minute bound. Deployment,
+StatefulSet and DaemonSet availability must reach the desired count; readiness
+alone does not complete a rollout while the controller is still enforcing
+`minReadySeconds`. Paused/OnDelete policies,
+ProgressDeadlineExceeded, cancellation, API outages and incomplete rollout stay
+visible instead of claiming full completion. Controller history is filtered by
+the actual owning UID, never just a reused name. Rollback restores a retained pod
+template, not persistent data or database schema. Foreground deletion preserves
+finalizers and reports pending dependents; there is no force-finalizer removal.
+CRD deletion can remove all its custom resources, so inspect ownership, consumers,
+conversion/storage versions and backups first.
+
+Administration, Helm and existing cluster lifecycle operations share exclusion
+gates. A local stop/upgrade/rename cannot race an admitted administration action;
+other identities' external Kubernetes clients can still change resources, which
+native conflict checks and release revisions detect. Progress, cancellation,
+failed/partial states and daemon interruptions appear in shared **Activity >
+Operation history**, with no manifest or credential payload in its records.
+
+#### ConfigMaps and Secrets
+
+ConfigMaps remain ordinary readable Kubernetes configuration. Secret inventory
+and generic inspection use metadata-only responses by default. **Reveal Secret
+values** is an explicit action checked against the selected identity's native
+get permission; **Edit revealed Secret** is separate from reveal. Secret create/
+edit also requires consent before server dry run.
+
+Secret `data`, `stringData` and sensitive annotations are stripped from public
+diffs and cached operation previews. Full pending definitions are AES-GCM
+encrypted under a key in the system credential store; unavailable keys fail
+closed rather than producing plaintext cache files. Revealed values live only
+in the active editor state, are cleared after preview/hide/context changes, and
+are not added to Activity or diagnostic exports. Raw API/tool errors and warning
+values are withheld when they could include sensitive input. Do not put secret
+literals in ConfigMaps, labels, pod arguments or other ordinary readable fields:
+Kubernetes does not treat them as protected Secret data.
+
+### Helm repositories and releases
+
+Open **Kubernetes > Delivery > Helm releases**. Desktop packages include Apache-2.0
+Helm **4.3.1**, with architecture-native macOS/Linux/Windows AMD64/ARM64 archives,
+reviewed SHA-256 pins, startup version/license checks and diagnostic tool status.
+Source installations need that exact reviewed version on `PATH`. Other tool
+versions fail explicitly; no unreviewed download or x64 substitution is used.
+
+Add a named HTTPS repository and optional scoped credentials, then explicitly
+update indexes. Repository passwords are encrypted at rest and placed only in a
+private temporary Helm repository configuration, never URL/command arguments or
+global user Helm state. Cross-source credentials are not silently reused.
+Removing a local source does not uninstall releases.
+
+For install/upgrade, choose an exact chart version or upload a local `.tgz`
+(at most 16 MiB). The selected archive is SHA-256-pinned, rechecked before apply,
+and kept separate from release inventory. Values are JSON objects bounded to
+1 MiB, encrypted with the preview, and passed through a private temporary values
+file. **Reveal current Helm values** is explicit and requires native release-store
+read permissions; values are not exposed by status/history by default.
+Upgrades use replacement overrides (`--reset-values`), so explicitly load the
+old overrides when retaining them.
+
+**Render, dry run and preview Helm** selects the exact context/namespace, renders
+with native Helm, and performs strict API-server dry runs for served chart
+resources. Public before/after output hides Kubernetes Secret values and shows
+cluster-scoped/storage/CRD consequences. CRD-dependent APIs that do not yet exist
+cannot be fully admission-validated and carry an explicit warning; native Helm
+can still fail partially while establishing them. Charts, hooks and lookup/
+template code are trusted workload configuration, not an untrusted-code sandbox.
+Random templates, admission defaults and hooks can differ from a preview.
+
+Applying rechecks chart bytes, selected identity and current release revision.
+Install/upgrade/rollback wait for native resources and hook Jobs within bounded
+timeouts. Failed hooks, API errors, uncertain completion or non-completed release
+status are reported as partial, with native history and sanitized hook phases
+available. Porto does not force ownership, automatically clean up partial
+resources, or silently rollback failure.
+
+Rollback previews a specific retained Helm revision. Uninstall previews rendered
+resources, keeps native release history, and uses foreground deletion while
+respecting finalizers. Both require explicit confirmation; rendered storage,
+namespace and CRD consequences require additional acknowledgement. Helm/chart
+policies can delete PVCs or dependent resources. Neither chart rollback nor
+uninstall is a persistent-data/database rollback, and retained release history
+does not recreate deleted data.
+Rollback warnings include resources in both the current release and the retained
+target revision. A PVC present only in the current release still requires storage
+acknowledgement before rollback, even when the target manifest contains no PVC.
+
+For controller-owned application delivery, use
+[Kubernetes-native GitOps](kubernetes-gitops.md). Flux and Argo CD discovery,
+explicit pinned bootstrap, scoped sources, native reconciliation and reviewed
+ownership/deletion are separate from direct administration and Compose polling.
+Direct manifest/workload and Helm mutations reject GitOps-owned or staged
+handoff resources instead of creating competing writers.
+
+Synthetic API fixtures exercise served schemas/version changes, context/
+namespace isolation, native RBAC denial, Secret redaction/reveal, concurrent
+edits, partial application, controller UID history, finalizers, cancellation and
+failed Helm hooks. Native pinned Helm rendering/flag acceptance can be run with
+`PORTO_TEST_HELM_BIN=/path/to/verified/bin go test ./internal/kubeadmin`.
+
+### Create a local cluster
+
+Porto supports these providers without changing the existing default:
+
+- **k3s** (default): lightweight Kubernetes on Porto-managed Lima VMs
+- **k0s**: conformant Kubernetes on Porto-managed Lima VMs
+- **kind**: Kubernetes nodes in privileged containers through the Porto Docker endpoint
+- **apple** (Apple silicon only, experimental): Porto-owned native node containers, each backed by its own Apple Virtualization.framework VM
+
+k3s and k0s nodes use Ubuntu 24.04 cloud disk images and Lima's `user-v2`
+network for communication between nodes. On Windows, Lima 2.3 uses QEMU
+(version 11 or newer, with Windows Hypervisor Platform). Porto does not
+substitute the experimental WSL2 or HCS drivers: WSL2 requires rootfs tar archives and
+does not implement the same per-VM CPU, memory, and networking settings.
+See Lima's [QEMU implementation](https://github.com/lima-vm/lima/blob/v2.3.0/pkg/driver/qemu/qemu.go)
+and [WSL2 limitations](https://github.com/lima-vm/lima/blob/v2.2.0/website/content/en/docs/config/vmtype/wsl2.md).
+
+Kubernetes nodes disable inherited host-directory mounts and Lima's own
+containerd installation. This avoids the Windows reverse-SSHFS startup path,
+including guest sshfs/FUSE requirements, and redundant engine downloads.
+k3s or k0s installs its own container runtime inside each guest. Standalone VM
+templates retain their existing defaults.
+
+The first `limactl start` has a 20-minute limit because Lima downloads and
+prepares the guest image during **start**, before its 10-minute boot-readiness
+watch. Subsequent starts retain a five-minute limit, followed by an SSH
+readiness check of up to two minutes. SSH-readiness and resource probes run
+from `/` inside the guest rather than entering a mounted host directory;
+general VM commands retain their existing working-directory behavior.
+Caller cancellation or a shorter caller deadline still takes precedence.
+Startup errors retain the last 64 KiB of Lima
+output, including image-download or boot diagnostics, rather than only reporting
+an elapsed timeout. Porto checks exact instance names before creation and start;
+it does not implicitly recreate missing nodes, recover foreign instances, or
+delete instances whose creation it could not establish.
+
+Registry profiles are configured in **Settings → Registries**. Porto stores only
+profile metadata in its database; passwords and access tokens go to the
+operating system credential store. Saving a profile verifies it with a real
+pull of the chosen test image. Only enabled, verified profiles are matched to
+image hosts for dashboard and Docker-compatible pulls.
+
+Managed clusters receive a `porto-registry-credentials` Docker-config Secret in
+every current namespace. Porto adds it to each namespace's default service
+account, preserves other `imagePullSecrets`, and reconciles newly created
+namespaces while the cluster is running. Workloads that use a custom service
+account can reference the same Secret explicitly. Removing or disabling every
+verified profile removes Porto's service-account reference and only deletes
+Secrets carrying Porto's registry-management labels.
+
+Porto also runs internal kind operations with a private Docker client
+configuration. Verified Porto profiles take priority when kind pulls its node
+image. If Porto has no verified profiles, it can resolve Docker Hub credentials
+from the user's configured helper or stored auth. Temporary Docker configs use
+`0600` permissions and are removed after kind finishes; unrelated Docker
+contexts and helper settings are never copied.
+
+Porto-managed clusters include a default local-path storage class and Envoy
+Gateway. kind and Apple clusters also include metrics-server v0.9.0 for pod,
+container, and node CPU/memory stats. Porto installs or repairs these add-ons during
+cluster creation and startup. Cluster ownership is recorded before the add-on
+phase so a new cluster appears in the dashboard while final
+configuration is still running. An orphaned kubeconfig is also surfaced with a
+repair warning instead of disappearing from the managed cluster list.
+
+Cold kind runtime creation has a 20-minute limit, including its five-minute
+readiness wait. Native Apple bootstrap has a one-hour total limit, with bounded
+individual guest commands and shorter caller deadlines retained.
+API readiness and each
+add-on command have independent six-minute limits, so a slow storage rollout
+cannot consume the time reserved for Envoy Gateway or metrics-server. The
+daemon allows up to one hour for the complete creation sequence, including
+runtime and add-on setup. Shutdown and shorter caller deadlines still cancel
+the operation. Failures retain command progress and identify the deadline or
+cancellation cause instead of reporting only `signal: killed`.
+
+The dashboard records creation in Activity immediately and keeps provisioning
+inside the daemon if the user closes the form or navigates elsewhere. Gateway
+resources use idempotent server-side apply, and a slow final Gateway readiness
+condition no longer removes an otherwise healthy cluster.
+Multiple clusters can provision concurrently; runtime names and VM API ports
+are reserved independently for each in-flight operation. Managed cluster rows
+show a live elapsed-seconds timer only while `creating`.
+Stopping a kind cluster disables its lifecycle controls while Porto gracefully
+stops worker containers before the control plane; this can take a while.
+Managed-cluster metadata is created before nodes, so in-progress clusters appear
+with a `creating` state and their control-plane containers are protected as soon
+as they exist. Failed provisioning remains visible with an `error` state and
+the actionable backend message until the user deletes the failed cluster record.
+
+Porto names k3s contexts `porto-k3s-<cluster>` and migrates older
+`porto-<cluster>` kubeconfigs automatically. New k3s clusters disable the
+packaged `traefik` and `gateway-api-crd` components before starting the server;
+all managed providers use Envoy Gateway as their Gateway API data plane instead.
+Porto's Envoy Gateway bundle installs the Gateway API CRDs and admission
+policies, avoiding server-side apply ownership conflicts with k3s's separate
+Gateway API Helm chart. Disabling Traefik alone does not disable that chart.
+The additional component-disable flag is harmless on older k3s releases that
+do not package it. This applies only to new server provisioning; Porto does
+not change existing clusters' component configuration or force ownership of
+their CRDs.
+
+For k3s and k0s, Porto provisions one Lima VM for the controller and one VM
+for each requested worker. CPU, RAM, and disk values are per VM. Nodes share
+Lima's `user-v2` network, the Kubernetes API is forwarded to an allocated
+loopback port, and persistent volumes remain on the cluster nodes across stop
+and start operations.
+
+Before provisioning, Porto asks Lima for every planned node name explicitly.
+It never adopts, starts, or deletes a pre-existing Lima instance just because
+the name matches. Rename or remove the conflicting Lima instance, or choose a
+different cluster name. If an earlier failed attempt remains in Porto with an
+`error` state after its VM was cleaned up, delete that failed cluster record
+before retrying creation. A provisioning fix must run in the daemon, not only
+a newly installed CLI. Arrange a safe interruption of managed applications and
+restart the daemon with the updated binary before retrying; quitting the
+desktop alone leaves the existing daemon running.
+
+Porto continuously reconciles HTTP-capable Service ports in running managed
+clusters into Gateway API `HTTPRoute` resources. ClusterIP, NodePort, and
+LoadBalancer Services receive a stable hostname such as
+`api-8080.default.dev.porto.localhost`. One internal Envoy data-plane forward
+per cluster feeds Porto's existing HTTP/HTTPS router, so service URLs use the
+same DNS behavior and trusted certificates as Compose and native projects.
+The hostname mapping is stored in Porto's SQLite database and survives daemon
+and cluster restarts. Non-HTTP TCP ports, including database Services, retain
+direct localhost forwarding and now support ClusterIP Services too. Deleting
+the cluster removes its mappings and forwards.
+
+Porto recognizes HTTP routes from `appProtocol: http`, conventional `http` or
+`web` port names, and common development HTTP ports. Give uncommon web ports
+an explicit `appProtocol` or port name; other TCP ports appear as raw
+`localhost:<port>` endpoints.
+
+```sh
+porto kubernetes cluster create dev \
+  --provider k3s \
+  --cpus 2 \
+  --memory 2048 \
+  --disk 20 \
+  --workers 2 \
+  --worker-cpus 4 \
+  --worker-memory 4096 \
+  --worker-disk 30
+```
+
+Pin a k3s version when reproducibility is required:
+
+```sh
+porto kubernetes cluster create dev --version v1.33.4+k3s1
+```
+
+Each provider picks its default version differently. See
+[newer Kubernetes releases](kubernetes-upgrades.md#newer-kubernetes-releases)
+before using a new minor version.
+
+Create with another provider:
+
+```sh
+porto kubernetes cluster create kind-dev --provider kind --workers 2
+porto kubernetes cluster create k0s-dev --provider k0s --workers 2
+```
+
+kind node topology is fixed at creation time. Recreate a kind cluster to
+change its node count; k3s and k0s node groups can be scaled in place.
+
+Datastore defaults are unchanged. A **new k3s cluster** can explicitly select an
+already initialized, running [Etcqlite datastore](integrations.md#new-k3s-clusters)
+with `--etcqlite <name>` or the creation inspector's **k3s datastore** selector.
+This never installs/starts the integration, rewrites an existing cluster or
+claims kind/k0s compatibility. The guest verifies mTLS readiness before k3s setup;
+the binding pins cluster identity, endpoints and CA rather than a reusable name.
+
+#### Native Apple Cluster (Apple silicon only)
+
+Apple Cluster is an additional choice, not a replacement for Lima/VZ. The
+dashboard offers it only when the Porto daemon runs natively on an Apple silicon
+Mac. Intel Macs, Linux and Windows retain their existing providers, and a
+direct `--provider apple` request on those hosts fails before changing state.
+
+Install the latest stable Apple container CLI with Homebrew. Porto requires
+**macOS 26+** and **stable container 1.7.1+**, including its native runtime and
+bundled kindnet manifest. Older and prerelease CLIs are rejected with setup
+guidance; Porto never silently falls back to Lima.
+For Homebrew 1.7.1 installations, use formula revision **1.7.1_1** or newer:
+the original bottle omitted required cluster helper services. Refresh with
+`brew update && brew upgrade container` if it reports an unavailable cluster
+service after startup.
+
+```sh
+porto runtime install apple
+container system start
+porto kubernetes cluster create apple-dev --provider apple --workers 2 \
+  --cpus 2 --memory 3072 --worker-cpus 2 --worker-memory 2048
+```
+
+`porto runtime providers` also reports Apple's installed version on supported
+hosts. Installing/updating Apple's toolchain can restart its shared services,
+so back up active clusters and arrange any necessary downtime first. Existing
+Lima engines and VMs are not updated, stopped or replaced.
+
+New clusters use directly managed native Linux/arm64 node containers, not a
+shared VM and not Apple's protected cluster wrapper. Each node container is
+already its own lightweight VM; starting/stopping that node starts/stops its
+VM. Porto uses the reviewed `kindest/node` v1.35.5 image by default, or an
+explicit stable `--version`. One control plane and multiple workers are
+supported; HA control-plane membership changes are not implemented.
+
+CPU and memory values are per node; worker groups retain requested labels and
+taints. Omit `--disk` and `--worker-disk`: the native runtime owns disk sizing.
+Porto reserves and records an API port bound only to host loopback.
+Keep source-installed `kubectl` within one minor version of the selected
+Kubernetes server. Porto separates command warnings from structured responses
+without dropping container-exec diagnostics.
+
+Ownership is persisted before native creation: a unique cluster identity,
+separate node identities, exact IDs/roles/topology and resource configuration.
+After creation Porto records each node's timestamp, full immutable native
+configuration, writable filesystem descriptor, backing paths and native file
+identities. Every lifecycle operation revalidates these records; a loose name
+prefix is never ownership. Replaced nodes, changed configuration or missing
+storage produce actionable errors rather than adoption, recreation or data
+deletion.
+
+Kubeconfigs stay private under `PORTO_HOME`; the recorded CA fingerprint and
+stable node TLS server name preserve certificate verification when addresses
+change. Porto registers its usual `porto-<cluster>` context through the existing
+ownership-aware registry, preserving unrelated entries and the user's current
+context. Renaming changes the display name/context, not native node IDs, disks
+or Kubernetes membership.
+
+Initial guest preparation installs signed Debian D-Bus packages when missing,
+so kubelet can use systemd-logind's graceful node-shutdown inhibitors. This is
+inside each owned VM, not the Mac. Creation needs access to its signed package
+repositories; later recovery uses the retained guest filesystem.
+
+```sh
+porto kubernetes cluster stop apple-dev
+porto kubernetes cluster start apple-dev
+porto kubernetes cluster restart apple-dev
+porto kubernetes clusters
+porto kubernetes kubeconfig apple-dev
+```
+
+**Stop is nondestructive.** Porto snapshots previously healthy workloads and a
+representative Service, checks Pod termination-grace requirements, and increases
+only owned kubelet/logind shutdown budgets when needed. Workers shut down
+gracefully before the final control-plane VM. Each stopped VM and its original
+backing filesystem are verified. No workload is scaled to zero, no blanket
+drain is performed and no global container-stop command is used. Node files,
+credentials, desired replicas, manifests, membership and durable data remain.
+
+**Start is recovery, not recreation.** Required native services are started
+without stopping other containers. The control plane starts first; kubelet
+waits on an owned boot gate while address-dependent files are reconciled.
+The single-member datastore keeps stable loopback endpoints and its existing
+data. Porto waits for verified datastore/API readiness, refreshes the private
+kubeconfig, updates worker/discovery/proxy endpoints, then starts workers.
+Kubernetes controllers roll out a changed kube-proxy configuration; Porto never
+restarts application workload containers from the host.
+
+Success requires expected node identities, current boot IDs/addresses, preserved
+pod-network membership, CNI/DNS readiness, previously healthy workload recovery
+and an actual representative Service endpoint. Completed Jobs, zero replicas
+and intentionally paused workloads are not required to become running.
+Pre-existing failures remain visible. After an unobserved host/runtime stop,
+Porto checks current declarations and explicitly identifies incomplete historical
+health information.
+
+Conflicting operations are serialized per cluster. Transitional state, node
+progress, health baselines and errors are persisted, so Start/Stop can be retried
+after partial failure, cancellation or an application restart. Already-running
+or stopped nodes are handled idempotently. A retry observes an already-requested
+guest shutdown before starting that same VM, even after guest services have
+exited. Inventory distinguishes another application's active operation from an
+interrupted one. Deletion retains graceful workload checks after failed
+Start/Stop, records intent before removing a node, and reconciles uncertain
+completion only when that exact node and its backing directory are both absent.
+Residual backing data is retained for explicit inspection.
+Deadlines report incomplete recovery
+or shutdown; they never trigger an implicit force stop. Do not remove backing
+files or certificates to repair a failed start. TLS or storage identity errors
+require explicit inspection, not relaxed verification.
+
+**Existing wrapper-managed clusters stay unchanged.** Records created by the
+earlier `container cluster create` integration retain their original inventory,
+workload, image-import, kubeconfig, rename and deletion behavior. Container 1.7.1
+explicitly blocks the ordinary node-start command for those wrapper-owned nodes.
+Porto does not offer a one-way Stop and does not silently migrate or rebuild
+them. The dashboard identifies this backend-specific limitation separately from
+the new directly managed native lifecycle.
+
+Kubernetes inspection, workloads, manifests/RBAC, Helm, GitOps, k9s, local
+Service routing/port forwarding and KEDA use the same selected private identity
+as the other providers. Apple clusters include Porto's local-path storage,
+metrics-server and Envoy Gateway add-ons.
+Porto installs a default local-path StorageClass only when no default exists;
+existing defaults stay unchanged. Apple does not supply a LoadBalancer
+implementation, so a Gateway can report `AddressNotAssigned` even when its
+listener is serving traffic. Porto's local URLs use scoped API port forwards
+to the Envoy Service rather than requiring an external LoadBalancer address.
+
+Import specific images from the **Apple container image store**, not Porto's
+separate Docker engine:
+
+```sh
+container image pull --platform linux/arm64 docker.io/library/busybox:1.37.0
+porto kubernetes cluster image-import apple-dev docker.io/library/busybox:1.37.0
+```
+
+Porto streams a private native-platform OCI archive into every running node's
+Kubernetes containerd, reports partial failures and removes the temporary
+archive. It does not enable `--shared-image-store`, expose private host images
+to every node, or implicitly pull missing images.
+
+**Remaining limits:** node scaling, Karpenter node autoscaling and
+Kubernetes-version upgrades/recovery remain unavailable until a safe native
+implementation is verified. Porto rejects those operations before pausing
+unrelated work and never disguises deletion/recreation as an in-place upgrade.
+KEDA workload scaling and the existing Kubernetes workload APIs remain available.
+Expired or externally replaced certificates require explicit repair; Porto does
+not regenerate the cluster CA or bypass TLS verification to conceal them.
+Application-aware backups are still necessary; retained VM disks are not an
+independent backup.
+
+### Upgrade a cluster
+
+Open the managed cluster's **Upgrade** tab or run
+`porto kubernetes cluster upgrade <name> --version <release> --confirm`.
+k3s and k0s upgrade in place, controller first. kind upgrades create a
+replacement, preserving supported local-path PVs, application images and
+manifests, then reattach claims and restart applications. The original stopped
+nodes remain available for recovery. Unsupported storage blocks replacement
+before shutdown. See [cluster upgrades and recovery](kubernetes-upgrades.md)
+for consistency boundaries, version rules, and recovery commands.
+
+### Autoscaling
+
+The managed-cluster inspector's **Autoscaling** tab configures two independent
+controllers. Karpenter provisions real Lima workers for pending pods on k3s/k0s;
+KEDA scales workload replicas from event triggers on k3s, k0s, and kind.
+kind does not support dynamic node topology. Worker ceilings and machine budgets
+are explicit, fixed workers/control planes remain independent, and Porto pauses
+host node controllers during cluster lifecycle operations.
+
+```sh
+porto kubernetes cluster autoscaling dev --nodes --max-nodes 3 --keda
+porto kubernetes cluster autoscaling dev
+```
+
+See [Kubernetes autoscaling](kubernetes-autoscaling.md) for KEDA trigger
+configuration, credential references, storage protection, and shutdown behavior.
+
+### Open a cluster terminal
+
+Desktop releases bundle k9s. Select a managed cluster in the dashboard and
+open the **k9s terminal** tab; Porto launches k9s with that cluster's private
+kubeconfig, context, and all namespaces already selected.
+
+The embedded PTY is available on macOS and Linux. On Windows, use the bundled
+CLI command below from PowerShell or Windows Terminal.
+
+The CLI opens the same scoped TUI in the current terminal:
+
+```sh
+porto kubernetes terminal dev
+porto kubernetes terminal dev --namespace platform --command deployments
+porto kubernetes terminal dev --readonly
+```
+
+Inside k9s, press `?` for help, type `:ctx` to inspect contexts, `:ns` to
+switch namespaces, `:pods` to return to pods, `l` for logs, `s` for a pod
+shell, `Esc` to leave a view, and `Ctrl+C` to exit. The terminal remains
+explicitly scoped to Porto's private kubeconfig and never depends on the
+global current context.
+
+Source installations can install k9s on macOS with:
+
+```sh
+porto runtime install k9s
+```
+
+Porto stores each generated kubeconfig under an opaque, fixed-length filename
+inside `<PORTO_HOME>/kubernetes` by default. Use `porto kubernetes kubeconfig <cluster>`
+to resolve its path. kind and k0s context, cluster, and user entries use
+`porto-<cluster>`; k3s uses `porto-k3s-<cluster>`.
+
+In **Settings > Kubeconfig storage folder**, choose an empty, dedicated folder
+using an absolute path or `~/`. Saving persists the choice; restart Porto to move
+existing kubeconfigs, cluster metadata and autoscaling state together before
+runtime workers start. The CLI and daemon then use the same active location.
+**Use default folder** schedules the same safe move back to Porto's data folder.
+Existing clusters keep running, and the standard `~/.kube/config` registration
+location is unchanged.
+
+The move supports different filesystems, preserves file contents, and creates
+private directories/files (`0700`/`0600` on Unix). Nonempty destinations,
+overlapping paths, symlinks/special files and pending upgrade-recovery folders
+are rejected rather than overwritten or followed. A failed copy retains the
+originals and rolls back only files created by the move. Settings shows the
+active folder, pending restart and any migration/cleanup error; it never
+silently claims the requested location was applied. Finish or recover a pending
+upgrade before relocating its state.
+
+Porto lifecycle-manages a flattened copy in `~/.kube/config`: creation and
+startup add or refresh the context, rename replaces it, deletion removes it,
+and daemon startup reconciles clusters created by older versions. A
+`porto.dev/managed` context extension records the owning Porto cluster and
+provider. Porto changes only that owned context and its named cluster/user
+entries. It preserves every unrelated context, cluster, user, preference,
+extension, and non-Porto `current-context`; collisions with user-owned entries
+fail without overwriting them. If the current context is the Porto context being
+renamed, Porto follows the rename; deletion clears it rather than selecting a
+different cluster.
+
+Users can create additional contexts that reference Porto's cluster and user
+entries. Those aliases remain user-managed and keep their namespace or other
+context settings while Porto refreshes the underlying endpoint and credentials.
+Deleting the Porto cluster removes its owned context, but leaves cluster/user
+entries that an external context still references. Writes use an advisory
+kubectl-compatible exclusive `<config>.lock` that is removed after each
+mutation, mode `0600`, atomic replacement, and a one-time
+`~/.kube/config.porto-backup`. Fresh locks created by kubectl or another
+credential tool are respected; locks owned by a dead Porto process are
+recovered immediately, and unreadable external locks are recovered only after
+they have remained stale for two minutes.
+
+Provider-specific registration behavior:
+
+- **kind:** cluster recreation refreshes the copied API endpoint and client
+  certificates. Stopping its containers intentionally leaves the context
+  registered, so clients can still list it while the API is unreachable.
+- **k0s:** Porto fetches full admin credentials with `k0s kubeconfig admin` and
+  replaces the guest address with the allocated `127.0.0.1` API forwarding
+  endpoint before registration.
+- **k3s:** Porto consistently uses `porto-k3s-<cluster>` in the CLI, k9s, and
+  global kubeconfig. Every successful start re-fetches
+  `/etc/rancher/k3s/k3s.yaml`, rewrites its host endpoint, and refreshes rotated
+  credentials before updating the global entry.
+
+Inspect the private path or manually repair/install the generated context into
+the standard `~/.kube/config` file:
+
+```sh
+porto kubernetes kubeconfig dev
+porto kubernetes context-install dev
+```
+
+The manual command uses the same ownership and collision checks as automatic
+registration.
+
+Scale a worker group:
+
+```sh
+porto kubernetes cluster scale dev workers --nodes 3 --cpus 4 --memory 4096 --disk 30
+```
+
+Import an image from the active Docker runtime into every k3s node without pushing to an external registry:
+
+```sh
+porto kubernetes cluster image-import dev example:dev
+```
+
+Lifecycle commands preserve the VM disks unless the cluster is deleted:
+
+```sh
+porto kubernetes cluster stop dev
+porto kubernetes cluster start dev
+porto kubernetes cluster delete dev
+```
+
+Cluster deletion requires explicit confirmation through the daemon API and
+removes the matching Porto-managed node VMs, private kubeconfig, and registered
+global context.
+The dashboard can rename a managed cluster without renaming its existing
+containers or VMs. Porto atomically updates the private and global kubeconfig
+contexts plus saved service-route ownership while preserving the underlying
+runtime node identity.
+The renamed cluster appears immediately in the dashboard, and its previous
+logical name can be reused at once; Porto allocates a distinct internal runtime
+name when the original containers or VMs still use that identity.
+
+KinD control-plane containers cannot be removed directly through Porto's Docker
+API while their managed cluster exists. Use
+`porto kubernetes cluster delete <name>` or the Kubernetes dashboard instead.
+Managed deletion and creation cleanup authorize only their own control-plane
+Docker requests for the duration of the command; other requests and clusters
+remain protected, and authorization is revoked after success, failure or
+cancellation. Renamed clusters retain their original runtime-node identity.
+Failed deletion retains ownership and kubeconfig state for an explicit retry.
+If an older installation already lost its control-plane container,
+starting that KinD cluster recreates it from the saved cluster configuration and
+reports that recovery to the user.
+
+The Activity screen samples current CPU and memory for Porto itself, native
+projects, containers, Kubernetes nodes and pod containers, and standalone
+Lima VMs. Kubernetes pod rows are detail-only because their usage is already
+included in the node totals.
+
+### Pod inspection
+
+List pods and read logs:
+
+```sh
+porto kubernetes pods --namespace all
+porto kubernetes logs default api-7d9f --container api
+porto kubernetes logs default api-7d9f --container api --previous
+```
+
+Run a command:
+
+```sh
+porto kubernetes exec default api-7d9f --container api -- sh -lc 'id && pwd'
+```
+
+List or read files:
+
+```sh
+porto kubernetes files default api-7d9f --container api --path /app
+porto kubernetes files default api-7d9f --container api --path /app/config.json --read
+```
+
+The dashboard adds pod overview, streaming logs, an expandable xterm terminal backed by a real PTY, bounded text-file editing, resource statistics, events, readable and copyable effective manifest views, ConfigMap inspection, and metadata-only Secret inventory. ConfigMap text values are visible to authorized users. Secret values require explicit authorized reveal/edit in **Resources and RBAC** and never appear in cached previews or Activity. All operations use the selected kubeconfig identity and never bypass Kubernetes RBAC or container filesystem permissions.
+ConfigMap inspectors provide copy actions for every text or base64-encoded binary value and for the complete Kubernetes resource as formatted JSON.
+
+The Kubernetes **Storage** section inventories cluster-scoped PersistentVolumes
+and namespaced PersistentVolumeClaims, including phase, capacity, storage class,
+binding, access modes, reclaim policy, and volume mode. The **Gateway API**
+section explores GatewayClasses, Gateways, listeners, attached-route counts,
+addresses, HTTPRoutes, parent references, backend references, and acceptance or
+reference-resolution conditions.
+
+File reads and writes are limited to 1 MiB per request. Changes inside an ephemeral container filesystem may disappear when Kubernetes replaces the pod.
+File inspection requires `sh` and basic POSIX utilities inside the selected container. Shellless `scratch` and distroless images report that file inspection is unavailable instead of exposing the underlying `kubectl exec` command.
+
+The pod terminal can start a one-hour ephemeral debug toolbox when the
+application image has no shell or troubleshooting utilities. Porto uses the
+multi-platform image
+`docker.io/alpine/k8s:1.36.1@sha256:692239d739589247c4a791205ed9619c28ae85a21286e19a6211c04a62c56668`
+so the toolbox contents are immutable. It includes `kubectl`, Bash, BusyBox
+utilities, `curl`, `jq`, `yq`, Git, Helm, and Kustomize. The debug container
+shares the pod network, targets the selected container's process namespace,
+and mirrors its volume mounts so in-cluster credentials and mounted data remain
+available. It uses a non-root, restricted-compatible security context; tools
+that require elevated Linux capabilities remain subject to the pod's security
+policy. Subpath mounts are exposed at their full volume root because Kubernetes
+does not permit `subPath` or `subPathExpr` on ephemeral containers. Creating it
+requires the selected Kubernetes identity to update the
+pod's `ephemeralcontainers` subresource. Kubernetes retains the terminated
+ephemeral-container record until the pod is replaced.
+
+## Virtual machines
+
+Porto exposes a versioned VM image catalog:
+
+- Ubuntu 24.04 LTS
+- CentOS Stream 10
+- openSUSE Tumbleweed
+- NixOS unstable
+- Arch Linux current cloud snapshot (x86_64; emulated on ARM hosts)
+- Alpine Linux 3.23
+- Kali Linux 2026.2 installer metadata. Creation remains blocked until a trusted
+  cloud-init disk is available; Porto does not substitute unverified community
+  security images.
+
+List images and instances:
+
+```sh
+porto vm status
+porto vm images
+porto vm list
+```
+
+Create and start a machine:
+
+```sh
+porto vm create test-ubuntu \
+  --image ubuntu-24.04 \
+  --vm-type qemu \
+  --cpus 4 \
+  --memory 4096 \
+  --disk 30
+```
+
+Lifecycle and access:
+
+```sh
+porto vm start test-ubuntu
+porto vm shell test-ubuntu
+porto vm exec test-ubuntu uname -a
+porto vm copy ./fixture.txt test-ubuntu:/tmp/fixture.txt
+porto vm snapshot test-ubuntu before-upgrade
+porto vm restore test-ubuntu before-upgrade
+porto vm stop test-ubuntu
+porto vm delete test-ubuntu
+```
+
+Snapshot names follow the same 1-63 character lowercase letter, number, dot, and hyphen format as VM names. Lima snapshots are experimental and currently available only for QEMU-backed VMs. On macOS, install QEMU with `brew install qemu`, restart Porto, then create the VM with `--vm-type qemu` or choose the QEMU driver in the dashboard. Porto temporarily stops running VMs for snapshot creation and restoration, then restarts them even when the snapshot command fails. Existing `vz` VMs cannot be converted and must be recreated to use snapshots.
+
+Clone a prepared machine instead of provisioning each copy from scratch:
+
+```sh
+porto vm stop golden
+porto vm clone golden job-1 --start
+```
+
+`porto vm clone <source> <name> [--start]` uses Lima's clone, which works for
+both VZ and QEMU VMs. The source must be a stopped standalone VM without
+attached native files. On APFS and other copy-on-write filesystems the disk copy
+is nearly instant and shares unchanged blocks with the source. Porto records the
+clone as its own standalone VM, so it appears in `porto vm list` and the
+dashboard and `porto vm delete` removes it. A failed clone is removed instead of
+being left behind as an untracked Lima instance. The clone is a copy of the
+source disk: it keeps the source's SSH host keys and `/etc/machine-id`, while
+Lima gives it its own hostname (`lima-<name>`).
+
+Porto-created Kubernetes node VMs use the `porto-<cluster>-<group>-<index>` naming scheme. Standalone machines are not attached to Kubernetes automatically. Porto records ownership metadata and hides unrelated Lima instances and Kubernetes node VMs from the standalone machine inventory.
+
+The image catalog maps to Lima templates. Template availability depends on the installed Lima version and host architecture; Porto surfaces provider failures without changing native project state.
+
+## API
+
+Runtime APIs are served from the existing local daemon:
+
+```text
+GET    /api/runtime
+GET    /api/docker/status
+GET    /api/docker/containers
+GET    /api/docker/containers/{id}/terminal
+GET    /api/docker/images
+GET    /api/docker/builds
+GET    /api/docker/networks
+GET    /api/docker/volumes
+
+GET    /api/registries
+POST   /api/registries
+PUT    /api/registries/{id}
+DELETE /api/registries/{id}
+POST   /api/registries/{id}/verify
+
+GET    /api/kubernetes/status
+GET    /api/kubernetes/contexts
+GET    /api/kubernetes/clusters
+GET    /api/kubernetes/pods
+GET    /api/kubernetes/services
+GET    /api/kubernetes/nodes
+GET    /api/kubernetes/persistent-volumes
+GET    /api/kubernetes/persistent-volume-claims
+GET    /api/kubernetes/gateway-classes
+GET    /api/kubernetes/gateways
+GET    /api/kubernetes/http-routes
+GET    /api/kubernetes/admin/resource-names
+
+GET    /api/vms/status
+GET    /api/vms/images
+GET    /api/vms/instances
+
+POST   /api/kubernetes/clusters/{name}/rename
+```
+
+Mutation routes validate JSON input, use argument arrays rather than host-shell concatenation, and require explicit confirmation for deleting clusters, VMs, or pod filesystem paths.
+
+## Failure behavior
+
+- Containerd, Kubernetes, and VM runtime failures do not stop native project orchestration or the Docker API health endpoint.
+- Missing CLIs, unreachable daemons, unavailable Kubernetes APIs, and permission failures return actionable errors.
+- Unsupported Docker Engine API operations return HTTP 501 with a Docker-compatible JSON error.
+- Porto refuses destructive canonical Docker socket changes it cannot safely reverse.
+- Failed cluster creation removes VMs created during that attempt and reports cleanup errors.
+- Runtime command timeouts are bounded; image builds and provisioning receive longer explicit limits.
+
+## Desktop and web
+
+The same frontend is served in the browser and loaded by Porto Desktop. `localhost-ing` remains the native-project control surface, while the resource sections expose Docker, Kubernetes, and VM inventories.
+
+Closing the browser or desktop window does not stop the daemon. Stopping the daemon still performs the existing graceful shutdown of native projects and Sendbox sessions managed by that daemon.

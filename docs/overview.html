@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Overview and quickstart | Porto docs</title>
+  <meta name="description" content="What Porto does, platform support, the four-step quickstart and important limitations.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/overview.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Overview and quickstart | Porto docs">
+  <meta property="og:description" content="What Porto does, platform support, the four-step quickstart and important limitations.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/overview.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html" aria-current="page">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#start">Get started</a></p>
+  <article class="prose" aria-label="Porto">
+<h1 id="porto">Porto</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">11 sections</span></summary>
+    <ol>
+      <li><a href="#what-you-can-do">What you can do</a></li>
+      <li><a href="#platforms-and-prerequisites">Platforms and prerequisites</a></li>
+      <li><a href="#quickstart">Quickstart</a></li>
+      <li><a href="#use-docker-and-optional-runtimes">Use Docker and optional runtimes</a></li>
+      <li><a href="#use-porto-from-coding-agents">Use Porto from coding agents</a></li>
+      <li><a href="#configuration-and-local-state">Configuration and local state</a></li>
+      <li><a href="#important-limitations">Important limitations</a></li>
+      <li><a href="#build-from-source">Build from source</a></li>
+      <li><a href="#documentation">Documentation</a></li>
+      <li><a href="#contributing">Contributing</a></li>
+      <li><a href="#license">License</a></li>
+    </ol>
+  </details>
+</nav>
+<p><a class="badge" href="https://github.com/porto-containers/porto/actions/workflows/ci.yml" rel="noopener">CI</a>
+<a class="badge" href="https://github.com/porto-containers/porto/actions/workflows/codeql.yml" rel="noopener">CodeQL</a></p>
+<div class="alert alert-warning" role="note"><p class="alert-title">Warning</p>
+<p><strong>Porto is not production-ready.</strong> Use it for local development and experimentation only, not production or critical workloads.</p>
+<p><strong>macOS apps are ad-hoc sealed, not Developer ID signed or notarized. Windows installers are not code-signed.</strong> Your operating system may display security warnings or block installation or launch.</p>
+</div>
+<p>Porto is an open-source local-first development control plane for native applications, Linux containers, capability-supported native Windows containers, Compose stacks, Kubernetes clusters, and Linux virtual machines. A Go daemon and CLI share state with an Electron desktop app or a browser dashboard, so you can discover repositories, start workloads, inspect their data, and manage local runtimes in one place.</p>
+<p>Porto runs its own containerd backends rather than proxying another Docker engine, with BuildKit for Linux workloads. Supported Linux Docker clients and Compose workflows use the <code>porto</code> context; explicitly selected native Windows containers use a separate <code>porto-windows</code> context and runhcs store.</p>
+<p><img src="../assets/screenshots/dashboard.webp" alt="Porto dashboard showing local k8s cluster controls" width="1728" height="1117" loading="lazy" decoding="async"></p>
+<h2 id="what-you-can-do">What you can do<a class="anchor" href="#what-you-can-do" aria-hidden="true" tabindex="-1">#</a></h2>
+<ul>
+<li><strong>Manage authorized environments.</strong> Enroll remote Porto hosts and outbound Edge agents, import an explicit Kubernetes identity, and operate target-scoped resources or previewed fleets. Local access still needs no account. See <a href="remote-environments.html">remote environments</a>.</li>
+<li><strong>Install scoped tooling.</strong> Add verified extension packages with explicit grants, static isolated views and bounded WebAssembly actions. See <a href="extensions.html">extensions and authoring</a>.</li>
+<li><strong>Run mixed-stack projects.</strong> Discover Make, Compose, Node.js, Python, Go, and Rust applications; install dependencies automatically before startup; and manage processes, stable ports, HTTP readiness, and persistent stdout/stderr logs.</li>
+<li><strong>Deliver local applications.</strong> Create or edit multi-service Compose stacks with dependencies, shared storage/networks and replica-aware readiness. Upload definitions, use versioned templates or explicit Git refs, preview changes, and record controlled updates/rollback. Polling and signed webhooks are opt-in. See <a href="project-management.html#application-delivery">application delivery</a>.</li>
+<li><strong>Use Docker tooling and inspect runtime data.</strong> Manage containers, images, builds, networks, and volumes with Docker, Compose, and Buildx. Inspect layers with Dive and generate local Syft SBOMs with Grype vulnerability matching, browse runtime files and stats, create local volume backups, and preview protected cleanup.</li>
+<li><strong>Manage local Kubernetes.</strong> Create k3s, k0s, or kind clusters, or opt into <a href="runtimes.html#native-apple-cluster-apple-silicon-only">Apple Cluster on Apple silicon</a>, with scoped kubeconfigs and k9s terminals. Preview/apply manifests, operate workloads, manage native Helm releases and generic/RBAC resources with the selected identity, or use <a href="kubernetes-gitops.html">Flux/Argo CD GitOps delivery</a>. Perform provider-supported <a href="kubernetes-upgrades.html">cluster upgrades</a>, provision bounded k3s/k0s workers with Karpenter, and scale replicas with KEDA. See <a href="runtimes.html#manifest-workload-and-permission-administration">administration</a> and <a href="kubernetes-autoscaling.html">autoscaling</a>.</li>
+<li><strong>Opt into an Etcqlite datastore.</strong> Manage private native members and verified recovery images on macOS/Linux, then explicitly select their external-etcd endpoint for a new k3s cluster. No project scanning, automatic installation or existing-cluster migration. See <a href="integrations.html#etcqlite">Etcqlite integration</a>.</li>
+<li><strong>Create Linux VMs.</strong> Use Lima-backed Ubuntu, CentOS Stream, openSUSE, NixOS, Arch, or Alpine machines, with snapshots where the provider supports them. Kali images are available only for compatible architectures. See <a href="runtimes.html">local runtimes</a>.</li>
+<li><strong>Control laptop runtime resources.</strong> Set owned-engine budgets and opt eligible HTTP applications into Resource Saver. Choose native, Rosetta-preferred or QEMU-compatible architecture policies. See <a href="resource-management.html">resource management</a> for safety boundaries and platform requirements.</li>
+<li><strong>Keep branches and local URLs organized.</strong> Switch branches with automatic restarts or run concurrent branches in managed worktrees. Open projects, opted-in containers and managed Kubernetes Services through local HTTP hostnames, with trusted portless HTTPS on macOS, Windows and supported systemd Linux hosts.</li>
+<li><strong>Find resources without memorizing names.</strong> Search current-resource dropdowns or enter an explicit unlisted Kubernetes target for native inspection and actions. See <a href="daily-use.html#find-and-target-resources">resource targeting</a>.</li>
+<li><strong>Use selected WSL distributions.</strong> Native Linux Docker, Compose and Buildx use Porto's private Windows pipe, selected shared roots, polling watches and native-vault credentials. Windows-hosted Linux terminals use ConPTY. The existing Lima/QEMU Linux engine remains in place; see <a href="windows-integration.html">Windows integration</a>.</li>
+<li><strong>Select native Windows containers explicitly.</strong> On a supported Windows host, install the separately owned containerd/runhcs runtime and use its own context, store, Windows shells and capability checks without replacing Linux/WSL workloads. See <a href="windows-integration.html#native-windows-setup">native Windows setup</a>.</li>
+<li><strong>Source-preserving migration and native files.</strong> Dry-run selected local Docker runtime transfers and open capability-supported read-only or explicitly writable native filesystem bridges.
+Per-object migration checkpoints survive daemon interruptions; retries require a fresh dry run and never retarget recreated source names.
+Native capabilities and write consent are resource-identity-bound, with visible disconnected/failed-detach states. Windows native folders use WinFsp (explicit driver installation); unattached source volumes can use separately consented stopped, read-only helpers.
+macOS native folders use the built-in WebDAV filesystem over confined SFTP, without a third-party driver.
+Linux bridges require FUSE3 and SSHFS 3.7.6+ or an equivalent maintained build with symlink containment.
+CLI <code>--resume</code> retains exact migration identities and destinations.
+Required CI covers native Linux backends on both architectures, KVM-backed x64 Lima, and real desktop filesystem drivers on both architectures; software-emulated Lima integration is <a href="data-management.html#real-runtime-acceptance">explicit opt-in acceptance</a>.
+See <a href="data-compatibility.html">data compatibility contracts</a> for API/storage formats and upgrade recovery limits.</li>
+</ul>
+<h2 id="platforms-and-prerequisites">Platforms and prerequisites<a class="anchor" href="#platforms-and-prerequisites" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Releases target <strong>macOS, Linux, and Windows</strong> on <strong>x86-64 (<code>amd64</code>) and ARM64 (<code>arm64</code>)</strong>. Choose the desktop package for a graphical session, or the CLI/web archive for a headless machine.</p>
+<div class="table" role="region" aria-label="Table: Platforms and prerequisites" tabindex="0"><table>
+<thead><tr><th scope="col">Platform</th><th scope="col">Desktop package</th><th scope="col">Runtime requirements and boundaries</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td>DMG</td><td>Lima is bundled. Install QEMU with <code>brew install qemu</code> for snapshot-capable VMs, then restart Porto.</td></tr>
+<tr><td>Linux</td><td>Portable archive</td><td>The installer verifies QEMU and prepares a <a href="installation.html#linux-desktop-sandbox">scoped desktop sandbox permission</a> where AppArmor requires it, with administrator approval. Failed prerequisites stop setup before replacing Porto. KVM access enables hardware acceleration.</td></tr>
+<tr><td>Windows</td><td>EXE installer</td><td>Lima and QEMU are bundled. Native Windows-container tooling is separately selected on supported AMD64 hosts. Native WCOW and kind are not substituted with x64 binaries on ARM64; see the <a href="windows-integration.html#embedded-terminals-and-supported-boundaries">matrix</a>.</td></tr>
+</tbody>
+</table></div>
+<p>Desktop packages include the daemon, dashboard, Docker CLI, Compose, Buildx, Dive, Syft, Grype, Helm, <code>kubectl</code>, <code>k9s</code>, Lima, and kind where supported. They do <strong>not</strong> require Go, Node.js, or a separate Docker Desktop installation.</p>
+<p>They also include Porto's Linux runtime helper for direct container I/O, Windows
+containerd connections, CNI, and checkpoint capability discovery. New Windows-hosted
+Linux engines use Ubuntu 24.04 LTS. Bundled Lima includes stale-process
+recovery and consoleless graceful/forced shutdown fixes, without requiring
+manual PID-file deletion or VM recreation. See
+<a href="installation.html#windows-guest-recovery">Windows guest recovery</a>.</p>
+<p>Native applications still need Git and their own language runtimes, package managers, and build tools in the daemon's <code>PATH</code>. Missing optional runtime providers do not prevent native project orchestration. Windows Explorer access to runtime files additionally requires an explicitly installed <a href="https://winfsp.dev" rel="noopener">WinFsp 2.1+ driver</a>; in-app file browsing and volume archives do not.</p>
+<p>See <a href="installation.html">installation</a> for platform details and <a href="runtimes.html#requirements">runtime requirements</a> for source and CLI-only installations.</p>
+<h2 id="quickstart">Quickstart<a class="anchor" href="#quickstart" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="1-install-porto">1. Install Porto<a class="anchor" href="#1-install-porto" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Install and launch the latest desktop release on <strong>macOS or Linux</strong>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">curl -fsSL https://raw.githubusercontent.com/porto-containers/porto/main/scripts/install-desktop.sh | sh</code></pre></div>
+<p>On <strong>Windows PowerShell</strong>:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">irm https://raw.githubusercontent.com/porto-containers/porto/main/scripts/install-desktop.ps1 | iex</code></pre></div>
+<p>The installers select your OS and architecture, verify the release's <code>SHA256SUMS</code>, install for the current user, expose the CLI, and launch Porto. On macOS/Linux, ensure <code>~/.local/bin</code> is on your <code>PATH</code>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">export PATH=&quot;$HOME/.local/bin:$PATH&quot;</code></pre></div>
+<p>On Windows, open a new terminal after installation so it picks up the updated user <code>Path</code>.</p>
+<p>If macOS Gatekeeper blocks launch, only unblock a trusted download from the <a href="https://github.com/porto-containers/porto/releases" rel="noopener">official releases page</a> after checksum verification. For the one-line installer's default location:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">xattr -drs com.apple.quarantine &quot;$HOME/Applications/Porto.app&quot;</code></pre></div>
+<p>Reopen that app afterward. For a manual DMG installation, copy <code>Porto.app</code> into <code>/Applications</code> first and use that path instead. Do not disable Gatekeeper globally. See <a href="installation.html#macos-gatekeeper-quarantine">macOS launch troubleshooting</a>.</p>
+<p>For a <strong>headless installation</strong>, download and verify the CLI/web archive from the <a href="https://github.com/porto-containers/porto/releases" rel="noopener">releases page</a>. Keep the <code>porto</code> binary (<code>porto.exe</code> on Windows) and <code>ui/dist</code> directory together, then add the binary's directory to <code>PATH</code>. See <a href="installation.html#manual-archive-installation">manual archive installation</a>.</p>
+<h3 id="2-check-the-daemon">2. Check the daemon<a class="anchor" href="#2-check-the-daemon" aria-hidden="true" tabindex="-1">#</a></h3>
+<p><strong>The desktop app starts the daemon automatically</strong> and prepares the container backend on first launch when Docker support is enabled. Do not start a second daemon.</p>
+<p>For a CLI/web installation, start it yourself:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto daemon start</code></pre></div>
+<p>This command runs in the foreground. Leave it open and use a second terminal for the commands below. <code>Ctrl+C</code> gracefully stops the daemon and its managed projects.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto version
+porto daemon status</code></pre></div>
+<p><code>porto daemon status</code> should print <code>running</code>. Open the dashboard at <strong>http://127.0.0.1:37623</strong>. For startup problems, run <code>porto diagnose</code> and consult <a href="diagnostics.html">diagnostics</a> or <a href="installation.html#windows-guest-recovery">Windows guest recovery</a>.</p>
+<h3 id="3-discover-projects">3. Discover projects<a class="anchor" href="#3-discover-projects" aria-hidden="true" tabindex="-1">#</a></h3>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto scan --depth 3 ~/code ~/work
+porto list</code></pre></div>
+<p>Replace the roots with existing workspace directories. Put scan flags before the roots. Porto detects the first runnable strategy in each subtree; it does not treat every repository or nested package as a separate application. See <a href="project-management.html#discovery">discovery rules</a>.</p>
+<h3 id="4-start-a-project">4. Start a project<a class="anchor" href="#4-start-a-project" aria-hidden="true" tabindex="-1">#</a></h3>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto start api
+porto logs api --stream stdout -n 100
+porto stop api</code></pre></div>
+<p>Replace <code>api</code> with a project name shown by <code>porto list</code>. Startup normally runs <code>git pull --ff-only</code>; use <code>porto start --no-pull api</code> to skip it. Porto then installs the project's dependencies before launching it; Compose projects rebuild their images without cache, and <code>--no-cache</code> forces the same for Make projects that wrap Compose. Setup output appears in the process logs; missing tools or failed installs stop startup. See <a href="project-management.html#dependency-setup">dependency setup</a> for supported package managers and build steps.</p>
+<p>Automatic port assignment starts at <code>41000</code>; Compose-published ports are also supported. Porto marks an application ready when its HTTP endpoint returns 200. Pin a port with <code>porto port api 8080</code>. Running projects are also available at <code>http://&lt;project&gt;.porto.localhost:37680</code> without DNS setup.</p>
+<p>On macOS, Windows, or a supported systemd Linux host, install trusted portless
+HTTPS once to use <code>https://&lt;project&gt;.porto.localhost/</code>:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto https install</code></pre></div>
+<p>This authorizes only platform setup, not the daemon or workloads. Linux needs
+the documented CA/NSS prerequisites. Settings also provides trust, renewal,
+proxy, registry CA and connectivity controls. See <a href="networking.html">local networking</a>
+for lifecycle, browser limitations, dotted hostnames and direct-IP capabilities.</p>
+<p>For an always-available setup, follow the <a href="daily-use.html">daily-use guide</a> to install Porto in a stable location and start it at login or boot.</p>
+<h2 id="use-docker-and-optional-runtimes">Use Docker and optional runtimes<a class="anchor" href="#use-docker-and-optional-runtimes" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Once the execution backend is ready, select Porto's Docker context and use Docker normally:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">docker context use porto
+docker run --rm alpine:latest echo hello
+docker ps --all</code></pre></div>
+<p>The container example should print <code>hello</code> and remove itself. From a Compose project directory, use <code>docker compose up --detach</code>. If <code>DOCKER_HOST</code> or <code>DOCKER_CONTEXT</code> is set, unset it so it does not override the selected context. CLI/web installations can provision the backend with <code>porto docker engine-install</code>; desktop packages do this automatically.</p>
+<p><code>porto docker &lt;command&gt;</code> is also available: it uses Docker's flags and defaults to Porto's endpoint. Non-conflicting shortcuts include <code>porto ps</code>, <code>porto exec</code>, and <code>porto compose</code>. <strong><code>porto start</code>, <code>porto stop</code>, and <code>porto logs</code> operate on projects</strong>; use <code>docker stop</code> and <code>docker logs</code> for containers. <code>porto docker cli</code> is unrestricted passthrough and honors explicit or inherited Docker connection settings.</p>
+<p>Inspect optional providers with <code>porto runtime providers</code> and enable features independently:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto runtime enable kubernetes
+porto runtime enable vms
+porto runtime status</code></pre></div>
+<p>See <a href="runtimes.html">local runtimes</a> for container, Kubernetes, VM, and provider-install commands, and <a href="data-management.html">runtime data management</a> for storage, backups, migration, and native file access.</p>
+<h2 id="use-porto-from-coding-agents">Use Porto from coding agents<a class="anchor" href="#use-porto-from-coding-agents" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The <a href="agent-skill.html">Porto agent skill</a> teaches coding agents to install Porto, check the daemon, and drive projects, containers, clusters and VMs through the <code>porto</code> CLI. Agents working in this repository discover it automatically.</p>
+<p>To install Porto and the skill together, set <code>PORTO_AGENT_SKILLS_DIR</code> to your agent's personal skills directory, such as <code>~/.copilot/skills</code> for GitHub Copilot CLI or <code>~/.claude/skills</code> for Claude Code. Separate several directories with <code>:</code> (<code>;</code> on Windows). The installer saves the skill from the same release as <code>porto/SKILL.md</code> and refreshes it on every run.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">curl -fsSL https://raw.githubusercontent.com/porto-containers/porto/main/scripts/install-desktop.sh | PORTO_AGENT_SKILLS_DIR=&quot;$HOME/.copilot/skills&quot; sh</code></pre></div>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">$env:PORTO_AGENT_SKILLS_DIR = &quot;$HOME\.copilot\skills&quot;; irm https://raw.githubusercontent.com/porto-containers/porto/main/scripts/install-desktop.ps1 | iex</code></pre></div>
+<p>Or hand both steps to an agent with this prompt:</p>
+<div class="code" data-lang="text"><pre tabindex="0"><code class="language-text">Read https://raw.githubusercontent.com/porto-containers/porto/main/.github/skills/porto/SKILL.md and follow it. If `porto version` fails, install Porto with PORTO_AGENT_SKILLS_DIR set to your personal skills directory; otherwise save that file as porto/SKILL.md in that directory. Make sure the daemon is running, then use the porto CLI for this task. Ask me before deleting anything or changing global Docker, HTTPS or Gatekeeper settings.</code></pre></div>
+<h2 id="configuration-and-local-state">Configuration and local state<a class="anchor" href="#configuration-and-local-state" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Set environment variables in the environment that launches Porto. Keep the same user and <code>PORTO_HOME</code> for the desktop, daemon, and CLI.</p>
+<div class="table" role="region" aria-label="Table: Configuration and local state" tabindex="0"><table>
+<thead><tr><th scope="col">Variable</th><th scope="col">Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>PORTO_HOME</code></td><td>Override the directory containing Porto's SQLite database, logs, certificates, and managed runtime metadata.</td></tr>
+<tr><td><code>PORTO_UI_DIR</code></td><td>Select compiled dashboard assets when <code>ui/dist</code> is not beside the binary or in the working directory.</td></tr>
+<tr><td><code>PORTO_LOG_LEVEL</code></td><td>Set application diagnostics to <code>debug</code> (default), <code>info</code>, <code>warn</code>, or <code>error</code>. Restart the desktop and daemon after changing it.</td></tr>
+<tr><td><code>PORTO_LOG_MAX_FILE_MB</code></td><td>Override the Settings limit for rotating <code>logs/porto.log</code>, in MB of 1,000,000 bytes (default <code>10</code>).</td></tr>
+<tr><td><code>PORTO_LOG_MAX_TOTAL_MB</code></td><td>Override the Settings limit for <code>porto.log</code> plus its archives, deleting the oldest archives first (default <code>50</code>; must exceed the file limit).</td></tr>
+</tbody>
+</table></div>
+<p>The default state directory is <code>~/Library/Application Support/porto</code> on macOS, <code>${XDG_CONFIG_HOME:-~/.config}/porto</code> on Linux, and <code>%APPDATA%\porto</code> on Windows. Project state and output live in <code>porto.db</code>; application diagnostics live separately in <code>logs/porto.log</code>. Completed diagnostic days are compressed, and diagnostic, project and update logs keep seven calendar days by default. See <a href="daily-use.html#application-diagnostic-logs">diagnostic logs</a>.</p>
+<p>Use <strong>Settings</strong> for runtime and desktop preferences, log retention, and optional cleanup schedules. Installed desktop builds offer <strong>Check for updates</strong> under <strong>Settings &gt; Software updates</strong>, in <strong>Help</strong>, and in the menu bar/system tray. See <a href="installation.html#desktop-updates">desktop updates</a>.</p>
+<h2 id="important-limitations">Important limitations<a class="anchor" href="#important-limitations" aria-hidden="true" tabindex="-1">#</a></h2>
+<ul>
+<li><strong>Local-first development, not production management.</strong> The dashboard/API stay on loopback and Docker clients use private sockets/pipes. Optional remote access uses a separate authenticated TLS agent or an explicitly imported identity. Never expose the unauthenticated control interfaces through a network proxy.</li>
+<li><strong>Docker compatibility is bounded.</strong> Porto supports Docker API versions <strong>1.41 through 1.47</strong>, not every Docker Engine feature. Swarm and generic engine plugins are unsupported; native Windows mode has a separate host/image/isolation matrix and does not advertise Linux-only helpers or builds. Mounts, checkpoints, SDKs, Dev Containers, and Testcontainers have documented capability limits. Check the <a href="docker-engine.html#docker-api-compatibility-matrix">compatibility matrix</a> before relying on a workflow.</li>
+<li><strong>Discovery and readiness are opinionated.</strong> Detection follows file and entry-point conventions, and readiness expects HTTP 200 on the selected port. See <a href="project-management.html">project management</a> before using non-HTTP services or unusual monorepo layouts.</li>
+<li><strong>Generic volume backups are not database-aware.</strong> Local volume copies are crash-consistent, not application-consistent database backups. The opt-in Etcqlite integration uses its separate verified native recovery format. Native filesystem access and migration support depend on the host/backend. See <a href="data-management.html">data-management safety boundaries</a>.</li>
+<li><strong>Analysis coverage is explicit.</strong> Dive is not a vulnerability scanner. Local Syft/Grype analysis requires an identifiable Linux OCI platform and a valid local advisory database; partial, stale and failed analysis never means zero vulnerabilities. See <a href="image-inspection.html">image analysis</a>.</li>
+</ul>
+<h2 id="build-from-source">Build from source<a class="anchor" href="#build-from-source" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Build with a security-patched <strong>Go 1.27.3 or newer</strong> release and <strong>Node.js 26 with npm</strong> for the dashboard. Node.js 22.12 remains the compatibility minimum. Release packages do not need these build tools.</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">git clone https://github.com/porto-containers/porto.git
+cd porto
+npm --prefix ui ci
+npm --prefix ui run build
+go build ./cmd/porto</code></pre></div>
+<p>Run <code>./porto daemon start</code> from the repository root, then follow the quickstart in another terminal using <code>./porto</code> instead of <code>porto</code>. On Windows PowerShell, use <code>.\porto.exe</code>.</p>
+<p>For the Electron desktop shell, after building the daemon and dashboard:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">npm --prefix ui run desktop:install
+npm --prefix ui run desktop</code></pre></div>
+<p>On macOS this prepares a cached <strong>Porto Dev.app</strong> tied to the source checkout, without modifying the npm-installed Electron runtime. Packaging macOS desktop archives/DMGs and running startup regression tests require macOS 26+ and full Xcode 26+, not just Command Line Tools. See <a href="installation.html#build-from-source">source installation</a> and <a href="ci-cd.html#ci-details">packaging setup</a>.
+The packaging guide also documents parallel target builds and the optional
+checksum-verified download cache.</p>
+<p>For maintainers, <code>./release.sh &lt;version&gt;</code> switches to and updates <code>main</code>, then
+prepares and publishes the release. Only <code>--mock</code> runs a trial without changing
+versions or Git history. See <a href="ci-cd.html#cutting-a-release">cutting a release</a>.</p>
+<h2 id="documentation">Documentation<a class="anchor" href="#documentation" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Start with the <a href="index.html">documentation index</a>, or go directly to a guide:</p>
+<div class="table" role="region" aria-label="Table: Documentation" tabindex="0"><table>
+<thead><tr><th scope="col">Guide</th><th scope="col">Topics</th></tr></thead>
+<tbody>
+<tr><td><a href="installation.html">Installation</a> and <a href="daily-use.html">daily use</a></td><td>Releases, source builds, dashboard navigation, startup at login/boot, and updates</td></tr>
+<tr><td><a href="project-management.html">Project management</a> and <a href="branch-management.html">branches</a></td><td>Discovery, setup, CLI commands, ports, readiness, logs, and worktrees</td></tr>
+<tr><td><a href="runtimes.html">Local runtimes</a> and <a href="docker-engine.html">Docker Engine</a></td><td>Containers, Compose, Kubernetes, VMs, and Docker API compatibility</td></tr>
+<tr><td><a href="kubernetes-upgrades.html">Kubernetes upgrades</a> and <a href="kubernetes-autoscaling.html">autoscaling</a></td><td>Upgrade/recovery boundaries, Karpenter workers, and KEDA</td></tr>
+<tr><td><a href="data-management.html">Runtime data management</a> and <a href="image-inspection.html">image analysis</a></td><td>Files, storage, backups, migration, native mounts, Dive, SBOMs and Grype</td></tr>
+<tr><td><a href="networking.html">Networking</a> and <a href="integrations.html">integrations</a></td><td>Local HTTP/HTTPS, DNS, sql-not-so-lite, KillSwitch, and Sendbox</td></tr>
+<tr><td><a href="remote-environments.html">Remote environments</a> and <a href="extensions.html">extensions</a></td><td>Enrollment, Edge fleets, trust, target-scoped operations, grants and authoring</td></tr>
+<tr><td><a href="diagnostics.html">Diagnostics</a></td><td>Health checks, redacted bundles, and confirmed repairs</td></tr>
+<tr><td><a href="product.html">Product overview</a> and <a href="design.html">design system</a></td><td>Intended users, product principles, and interface conventions</td></tr>
+<tr><td><a href="ci-cd.html">CI and releases</a></td><td>Local checks, automated tests, packaging, and release artifacts</td></tr>
+</tbody>
+</table></div>
+<h2 id="contributing">Contributing<a class="anchor" href="#contributing" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Report bugs or discuss changes in <a href="https://github.com/porto-containers/porto/issues" rel="noopener">GitHub issues</a>, or submit a focused <a href="https://github.com/porto-containers/porto/pulls" rel="noopener">pull request</a>. Include your OS, Porto version, reproduction steps, and redacted diagnostics when reporting a problem.</p>
+<p>For code changes, build from source as above, then run <code>go test ./...</code> and <code>npm --prefix ui run lint</code>. The <a href="ci-cd.html#running-the-checks-locally">local validation guide</a> covers formatting, vet, desktop tests, and optional integration checks.</p>
+<h2 id="license">License<a class="anchor" href="#license" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT</a></p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/README.md" rel="noopener"><code>README.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    
+    <a class="pager-next" href="installation.html" rel="next"><span class="pager-label">Next</span> Installation</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

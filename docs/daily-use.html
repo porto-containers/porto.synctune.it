@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Daily use | Porto docs</title>
+  <meta name="description" content="Keep Porto available at login or boot, navigate the dashboard and find resources.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/daily-use.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Daily use | Porto docs">
+  <meta property="og:description" content="Keep Porto available at login or boot, navigate the dashboard and find resources.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/daily-use.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html" aria-current="page">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#start">Get started</a></p>
+  <article class="prose" aria-label="Daily use">
+<h1 id="daily-use">Daily use</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">12 sections</span></summary>
+    <ol>
+      <li><a href="#install-in-a-stable-location">Install in a stable location</a></li>
+      <li><a href="#tune-the-desktop-experience">Tune the desktop experience</a></li>
+      <li><a href="#rest-and-operate-modes">Rest and operate modes</a></li>
+      <li><a href="#navigate-the-dashboard">Navigate the dashboard</a></li>
+      <li><a href="#find-and-target-resources">Find and target resources</a></li>
+      <li><a href="#manage-compose-stacks">Manage Compose stacks</a></li>
+      <li><a href="#clean-up-unused-runtime-data">Clean up unused runtime data</a></li>
+      <li><a href="#application-diagnostic-logs">Application diagnostic logs</a></li>
+      <li><a href="#start-the-daemon-automatically">Start the daemon automatically</a></li>
+      <li><a href="#everyday-workflow">Everyday workflow</a></li>
+      <li><a href="#use-an-always-on-home-system">Use an always-on home system</a></li>
+      <li><a href="#upgrade-and-back-up">Upgrade and back up</a></li>
+    </ol>
+  </details>
+</nav>
+<p>Porto is designed to stay available as a localhost orchestrator while projects are started and stopped as needed. Install the release in a stable location, start the daemon at login or boot, and keep the same user and environment for both the daemon and CLI.</p>
+<h2 id="install-in-a-stable-location">Install in a stable location<a class="anchor" href="#install-in-a-stable-location" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="linux-and-macos">Linux and macOS<a class="anchor" href="#linux-and-macos" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>After verifying and extracting a <a href="installation.html#install-a-release">release archive</a>, copy it into a user-owned application directory:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">mkdir -p &quot;$HOME/.local/share/porto&quot; &quot;$HOME/.local/bin&quot;
+cp /path/to/extracted/porto &quot;$HOME/.local/share/porto/porto&quot;
+cp -R /path/to/extracted/ui &quot;$HOME/.local/share/porto/&quot;
+chmod 755 &quot;$HOME/.local/share/porto/porto&quot;
+ln -sfn &quot;$HOME/.local/share/porto/porto&quot; &quot;$HOME/.local/bin/porto&quot;</code></pre></div>
+<p>Add the binary and dashboard location to your shell profile:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+export PORTO_UI_DIR=&quot;$HOME/.local/share/porto/ui/dist&quot;</code></pre></div>
+<p>Setting <code>PORTO_UI_DIR</code> explicitly keeps dashboard discovery predictable when the binary is reached through a symlink.</p>
+<h3 id="windows">Windows<a class="anchor" href="#windows" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Extract the full release into <code>%LOCALAPPDATA%\Porto</code> so it contains both <code>porto.exe</code> and <code>ui\dist</code>. Add <code>%LOCALAPPDATA%\Porto</code> to the user <code>Path</code>, then open a new terminal and verify:</p>
+<div class="code" data-lang="powershell"><pre tabindex="0"><code class="language-powershell">porto daemon status</code></pre></div>
+<p>Keep the archive layout intact whenever the installation is moved or upgraded.</p>
+<h2 id="tune-the-desktop-experience">Tune the desktop experience<a class="anchor" href="#tune-the-desktop-experience" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><strong>Release version</strong> at the top of Settings shows the installed desktop release
+or, in the web dashboard, the connected daemon's version. Prerelease and build
+metadata are preserved. Opening Settings reads the version locally without
+checking GitHub for updates; a failed read shows an error and <strong>Retry version</strong>.</p>
+<p>For a fresh release check, choose <strong>Help &gt; Check for updates</strong>, <strong>Check for
+updates</strong> in Porto's menu bar/system tray, or <strong>Settings &gt; Software updates &gt;
+Check for updates</strong>. Software updates is the first Settings section, above
+appearance preferences. Installed builds show progress and errors there and reuse
+the verified download and restart flow; source builds and browser dashboards
+cannot update the desktop.</p>
+<p>The Settings page persists the theme, interface density, reduced motion,
+terminal font size, terminal line height, cursor blinking, and terminal
+scrollback. Porto uses the dark theme by default; choose <strong>Light</strong> or <strong>Match
+system</strong> under <strong>Theme</strong>. Theme, density, and motion preferences apply across
+the dashboard after saving. Terminal
+preferences are used by VM and managed-cluster terminals, and reduced motion
+also disables cursor blinking.</p>
+<p>Installed desktop builds add two shell preferences:</p>
+<ul>
+<li><strong>Open Porto when I sign in</strong> registers or removes the operating-system login
+item on Windows and after the macOS app has been moved into Applications.</li>
+<li><strong>Close the window to the menu bar or system tray</strong> hides Porto instead of
+quitting the desktop shell. The tray icon is always shown as a monochrome
+glyph: a macOS template image that follows the menu bar's tint, and on
+Windows and Linux white or black to match the system dark or light theme. Its
+menu provides
+<strong>Open Porto</strong>, the Docker engine controls described below, and <strong>Quit
+Porto</strong>. When both settings are enabled, Windows login
+launches quietly in the tray while the daemon starts and resumes its managed
+runtime. Electron 44 no longer supports hidden login launch on macOS, so the
+macOS window opens normally and can then be closed to the menu bar.</li>
+</ul>
+<p>These preferences are stored in the desktop app's user-data directory. The web
+dashboard shows the controls as unavailable because a browser cannot manage
+login items or a system tray.</p>
+<h2 id="rest-and-operate-modes">Rest and operate modes<a class="anchor" href="#rest-and-operate-modes" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Stop Porto's Docker engine when you don't need containers, and start it again
+when you do. Either control talks to the daemon, which owns the engine VM:</p>
+<ul>
+<li>The power button beside <strong>Porto</strong> at the top of the sidebar. The label under
+the name reads <strong>Operate mode</strong> while the engine runs and <strong>Rest mode</strong> while
+it is stopped. The button appears for the local environment in the Linux
+container view when the Docker runtime is enabled.</li>
+<li><strong>Start Docker engine</strong> / <strong>Stop Docker engine</strong> in the menu bar or system
+tray. The line above it shows the engine state, refreshed every 10 seconds.</li>
+</ul>
+<p>Stopping asks for confirmation when containers are running; they stop with the
+engine. Containers, images and volumes are kept. Stopping is refused while
+runtime or data work is in progress. Starting boots the existing engine only;
+use <code>porto docker engine-install</code> to create or repair one. The CLI equivalents
+are <code>porto docker engine-start</code> and <code>porto docker engine-stop</code>.</p>
+<h2 id="navigate-the-dashboard">Navigate the dashboard<a class="anchor" href="#navigate-the-dashboard" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The sidebar has five main sections. Expand a section, then a short subgroup
+when needed; each link still opens a separate, focused page.</p>
+<div class="table" role="region" aria-label="Table: Navigate the dashboard" tabindex="0"><table>
+<thead><tr><th scope="col">Section</th><th scope="col">Group</th><th scope="col">Pages</th></tr></thead>
+<tbody>
+<tr><td>Development</td><td>Direct links</td><td>localhost-ing, Applications, Databases (Soon)</td></tr>
+<tr><td>Containers</td><td>Direct links</td><td>Containers, Networks</td></tr>
+<tr><td>Containers</td><td>Images &amp; builds</td><td>Images, Builds</td></tr>
+<tr><td>Containers</td><td>Storage &amp; data</td><td>Volumes, Storage tools, Migrate runtime data</td></tr>
+<tr><td>Kubernetes</td><td>Clusters</td><td>Overview, Resources, RBAC, Nodes</td></tr>
+<tr><td>Kubernetes</td><td>Workloads</td><td>Deployments, Pods, Jobs, Scheduled jobs</td></tr>
+<tr><td>Kubernetes</td><td>Networking</td><td>Services, Port forwarding, Gateway API</td></tr>
+<tr><td>Kubernetes</td><td>Storage &amp; config</td><td>Storage, ConfigMaps, Secrets</td></tr>
+<tr><td>Kubernetes</td><td>Delivery</td><td>Helm releases, GitOps applications</td></tr>
+<tr><td>Fleet</td><td>Direct links</td><td>Environments and fleets, Virtual machines</td></tr>
+<tr><td>System</td><td>Direct links</td><td>Extensions, Diagnostics, Activity, Settings</td></tr>
+</tbody>
+</table></div>
+<p><strong>Resources</strong> and <strong>RBAC</strong> are the same native administration page split by
+API kind. <strong>RBAC</strong> lists Roles, ClusterRoles, their bindings and
+ServiceAccounts; <strong>Resources</strong> lists every other served kind. Links from other
+inspectors open whichever page owns the resource.</p>
+<p>Multiple sections and subgroups can stay expanded together. Collapsing a section
+preserves its subgroup choices; <strong>Expand all</strong> and <strong>Collapse all</strong> open or close
+every available section and subgroup. Opening a page, including an existing
+bookmark or browser-history entry, reveals its section and subgroup automatically
+without closing other sections. Existing page URLs are unchanged. Unsupported
+destinations and empty groups remain hidden for the selected environment; there is no local
+fallback.</p>
+<p>On narrow screens, use <strong>Open navigation</strong>. Escape, the backdrop, or selecting a
+page closes the panel and returns focus to its trigger. Dismissing the panel
+without changing pages preserves expansion choices and any open resource
+inspector. Keyboard users can also use <strong>Skip to content</strong> to bypass the sidebar.</p>
+<p>Open pages refresh their data every few seconds only while the dashboard is
+visible. Closing the window to the tray, minimizing it, or fully covering it on
+macOS pauses those refreshes, so an idle Porto does not keep querying projects,
+Git or runtimes. Showing the window again refreshes overdue data immediately.
+Live container updates, terminals and log streams stay connected.</p>
+<h2 id="find-and-target-resources">Find and target resources<a class="anchor" href="#find-and-target-resources" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Resource filters offer a searchable dropdown of currently discovered names,
+including projects, Docker containers/images/networks/volumes and Kubernetes
+resources. Namespace filters also suggest discovered namespaces. Suggestions
+refresh with their inventory; typing arbitrary text still performs the existing
+substring search rather than requiring a listed value.</p>
+<p>Kubernetes suggestions use <code>namespace/name</code> where needed. Choose a suggestion,
+or type a resource name with an explicit namespace (or <code>namespace/name</code>) and
+choose <strong>Inspect typed resource</strong> to open native administration even if that
+resource is missing from the inventory. This escape hatch is useful when a
+list/filter is incomplete; the actual API response and selected identity's
+permissions remain authoritative.</p>
+<p><strong>Resources</strong>, <strong>RBAC</strong> and <strong>Port forwarding</strong> populate their named-target
+dropdowns from all metadata-only API pages in the selected context, namespace
+and resource type. A failed or forbidden list shows a suggestion error but does
+not disable manually named inspection or forwarding. Kubernetes still checks
+the requested get, mutation or port-forward permission. Helm release names
+likewise accept either a listed release or a manually entered name.</p>
+<h2 id="manage-compose-stacks">Manage Compose stacks<a class="anchor" href="#manage-compose-stacks" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><strong>Containers</strong> groups containers by their Compose project label. Each group's
+header has stack controls that act on every container in the project, even
+when a filter hides some of them:</p>
+<ul>
+<li><strong>Start stack</strong> starts stopped containers and resumes paused ones.</li>
+<li><strong>Stop stack</strong> stops active containers.</li>
+<li><strong>Restart stack</strong> restarts active containers.</li>
+<li><strong>Remove stack</strong> works like <code>docker compose down</code>.</li>
+</ul>
+<p>Start and Restart follow each service's <code>depends_on</code> order and skip dependents
+when a dependency fails. Stop and Remove run dependents first. Each container
+uses the same per-container action, and the same safeguards, as its row
+buttons.</p>
+<p><strong>Remove stack</strong> previews the project's Compose-created networks and volumes
+before anything changes. Confirming it stops active containers and removes every
+container, then removes those networks. Volumes are kept unless you select
+<strong>Also delete volumes</strong>, which works like <code>docker compose down -v</code>: it deletes the
+listed named volumes and the containers' anonymous volumes. External networks
+and volumes are never included. If any container cannot be stopped or removed,
+Porto keeps the stack's networks and volumes and reports which containers
+remain.</p>
+<h2 id="clean-up-unused-runtime-data">Clean up unused runtime data<a class="anchor" href="#clean-up-unused-runtime-data" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Porto cleans up unused runtime data daily by default. Each run removes
+standalone containers stopped for more than 24 hours, unused BuildKit cache,
+unused images older than 24 hours, and unused anonymous volumes, then trims the
+engine VM disk so its host file shrinks. Compose service containers, Kubernetes
+nodes, Resource Saver workloads, checkpoints, named volumes and images used by
+any container are kept, so stopped apps keep their data and can start again.
+Docker commands keep working while cleanup runs. Later builds may
+need to download or rebuild removed images and cache.</p>
+<p>Turn the schedule off, or choose <strong>Run now</strong> for a one-off cleanup, in
+<strong>Settings → Runtime cleanup</strong>. Attempts are scheduled one day after the
+previous attempt finishes. The daemon must be running and Docker enabled;
+overdue schedules run once when available rather than replaying every missed
+day.</p>
+<p>Settings retains the latest manual and scheduled results, including each
+step's removals, the host disk space reclaimed, partial failures and
+interruptions. See <a href="docker-engine.html#automatic-runtime-cleanup">automatic runtime cleanup</a>
+for scope, reporting, and lifecycle details.</p>
+<h2 id="application-diagnostic-logs">Application diagnostic logs<a class="anchor" href="#application-diagnostic-logs" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The desktop shell and daemon append diagnostics to the same <code>logs/porto.log</code>
+file under Porto's state directory:</p>
+<div class="table" role="region" aria-label="Table: Application diagnostic logs" tabindex="0"><table>
+<thead><tr><th scope="col">OS</th><th scope="col">Default log file</th></tr></thead>
+<tbody>
+<tr><td>Windows</td><td><code>%APPDATA%\porto\logs\porto.log</code></td></tr>
+<tr><td>macOS</td><td><code>~/Library/Application Support/porto/logs/porto.log</code></td></tr>
+<tr><td>Linux</td><td><code>${XDG_CONFIG_HOME:-~/.config}/porto/logs/porto.log</code></td></tr>
+</tbody>
+</table></div>
+<p>With <code>PORTO_HOME</code> set, the file is <code>&lt;PORTO_HOME&gt;/logs/porto.log</code>. The directory
+and file are created automatically, including before daemon database startup,
+so initialization failures are retained. Unix directory/file permissions are
+<code>0700</code>/<code>0600</code>; Windows uses the user-profile directory's inherited permissions.
+Keep a custom <code>PORTO_HOME</code> private to your user.</p>
+<p>At the first write or maintenance pass after local midnight, Porto closes and
+renames the completed file, immediately reopens a fresh <code>porto.log</code>, then
+compresses the completed day as <code>porto-YYYY-MM-DD.zip</code>. Each archive contains
+one <code>.log</code> entry with the same name. A short-lived uncompressed file can remain
+for up to one minute so desktop writes already in flight finish before ZIP
+creation. The desktop daemon bootstrap uses <code>daemon-startup.log</code>, which is
+overwritten on each daemon launch instead of accumulating.</p>
+<p>The live file is also capped at <strong>10 MB</strong> by default. When the next record
+would exceed it, Porto rotates first, so a busy day becomes
+<code>porto-YYYY-MM-DD.1.zip</code>, <code>.2.zip</code> and so on in write order, with the
+undecorated <code>porto-YYYY-MM-DD.zip</code> holding the day's last part. A single record
+larger than the cap is truncated with a <code>[truncated N bytes ...]</code> marker. The
+live file and its archives together stay under <strong>50 MB</strong> by default: Porto
+deletes the oldest archives first, even inside the retention window, and
+records a <code>WARN</code> entry with the number of files and bytes removed. Sizes are
+measured from the files on disk, and 1 MB is 1,000,000 bytes.</p>
+<p>Change both limits in <strong>System settings → Rotate the log file at (MB)</strong> and
+<strong>Keep all diagnostic logs under (MB)</strong>, from 1 to 100,000 MB. The total must be
+larger than the file limit. Saving applies them immediately: an oversized live
+file rotates and the oldest archives are pruned at once. The
+<code>PORTO_LOG_MAX_FILE_MB</code> and <code>PORTO_LOG_MAX_TOTAL_MB</code> environment variables
+override the saved limits for the daemon they launch; Settings then shows the
+fields as read-only until you remove them and restart Porto. Invalid
+environment values stop the daemon with an explicit error.</p>
+<p>Porto keeps <strong>7 calendar days</strong> of logs by default, including the current day.
+Change <strong>System settings → Keep logs for</strong> to retain between 1 and 365 days.
+The same window applies to:</p>
+<ul>
+<li>diagnostic archives in <code>logs/</code>, compressed or not;</li>
+<li>project process output stored in <code>porto.db</code> (<code>porto logs</code>), deleted
+per line after the window;</li>
+<li>desktop update installer logs and helper copies in <code>updates/&lt;version&gt;/</code>
+(<code>*.install.log</code>, <code>apply-update-&lt;pid&gt;.sh</code> or <code>.ps1</code>), plus version folders
+they leave empty.</li>
+</ul>
+<p>Cleanup runs when the daemon or desktop starts, at least daily while they run,
+and immediately when the setting is shortened, so logs left by earlier Porto
+versions are cleaned on the next start. Only files with Porto's own names are
+removed; symlinks, unrelated files and downloaded update packages are kept.
+Interrupted ZIP or state writes (<code>*.tmp-&lt;pid&gt;</code>) are removed on daemon start
+and their source logs are compressed again.</p>
+<p>The default level is <strong>debug</strong>. Set <code>PORTO_LOG_LEVEL</code> to <code>debug</code>, <code>info</code>, <code>warn</code>,
+or <code>error</code> in the environment that launches Porto to change verbosity. Restart
+both the desktop and daemon after changing it; closing the desktop does not
+stop the daemon. Invalid levels or an inaccessible log file produce an explicit
+startup error rather than silently disabling logging.</p>
+<p>Entries include timestamps, severity, component, and process ID. The file also
+captures renderer console messages, desktop exceptions, daemon startup stderr,
+and fatal runtime output. Runtime debug traces include executable names,
+durations, and exit errors, but not command arguments, environment values, or
+input/output payloads. Existing error messages and renderer output can still
+contain local paths or other diagnostic details; review logs before sharing.</p>
+<p>The active day's log appends across restarts. Foreground daemon diagnostics
+remain visible on stderr, and a desktop-launched daemon keeps writing after the
+desktop exits.
+This application log is separate from project/container logs; <code>porto logs</code> and
+the dashboard's project-log clearing controls do not modify it, although both
+follow the same retention window.</p>
+<p>For cross-runtime health checks, redacted local support bundles, and narrowly
+scoped repairs, see <a href="diagnostics.html">Diagnostics and repair</a>.</p>
+<h2 id="start-the-daemon-automatically">Start the daemon automatically<a class="anchor" href="#start-the-daemon-automatically" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The daemon runs in the foreground and gracefully stops its managed projects when it receives an interrupt or termination signal. Use the service manager for your platform rather than leaving a terminal open.</p>
+<h3 id="linux-with-a-systemd-user-service">Linux with a systemd user service<a class="anchor" href="#linux-with-a-systemd-user-service" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Create <code>~/.config/systemd/user/porto.service</code>:</p>
+<div class="code" data-lang="ini"><pre tabindex="0"><code class="language-ini">[Unit]
+Description=Porto local app orchestrator
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/porto/porto daemon start
+Environment=PORTO_UI_DIR=%h/.local/share/porto/ui/dist
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target</code></pre></div>
+<p>Extend <code>PATH</code> with the locations of any required language runtimes, package managers, or Docker client. Porto-launched projects inherit this environment.</p>
+<p>Enable and start the service:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">systemctl --user daemon-reload
+systemctl --user enable --now porto
+systemctl --user status porto</code></pre></div>
+<p>Stop and start it around an upgrade, or disable login startup entirely:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh"># Pause and resume for an upgrade:
+systemctl --user stop porto
+systemctl --user start porto
+
+# Stop now and disable automatic startup:
+systemctl --user disable --now porto</code></pre></div>
+<p>On an always-on home system, allow the user service to start at boot and continue without an interactive login:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">sudo loginctl enable-linger &quot;$USER&quot;</code></pre></div>
+<p>This changes user-service scheduling only; Porto still runs as the unprivileged user. If project roots live on a mounted disk, add <code>RequiresMountsFor=/path/to/projects</code> under <code>[Unit]</code>.</p>
+<h3 id="macos-with-a-launchagent">macOS with a LaunchAgent<a class="anchor" href="#macos-with-a-launchagent" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Create <code>~/Library/LaunchAgents/dev.porto.daemon.plist</code>, replacing <code>/Users/YOU</code> with your home directory:</p>
+<div class="code" data-lang="xml"><pre tabindex="0"><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;dev.porto.daemon&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/Users/YOU/.local/share/porto/porto&lt;/string&gt;
+    &lt;string&gt;daemon&lt;/string&gt;
+    &lt;string&gt;start&lt;/string&gt;
+  &lt;/array&gt;
+  &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+  &lt;dict&gt;
+    &lt;key&gt;PORTO_UI_DIR&lt;/key&gt;
+    &lt;string&gt;/Users/YOU/.local/share/porto/ui/dist&lt;/string&gt;
+    &lt;key&gt;PATH&lt;/key&gt;
+    &lt;string&gt;/Users/YOU/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin&lt;/string&gt;
+  &lt;/dict&gt;
+  &lt;key&gt;RunAtLoad&lt;/key&gt;
+  &lt;true/&gt;
+  &lt;key&gt;KeepAlive&lt;/key&gt;
+  &lt;true/&gt;
+  &lt;key&gt;StandardOutPath&lt;/key&gt;
+  &lt;string&gt;/Users/YOU/Library/Logs/porto-daemon.log&lt;/string&gt;
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;
+  &lt;string&gt;/Users/YOU/Library/Logs/porto-daemon.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre></div>
+<p>Validate and load it:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">plutil -lint &quot;$HOME/Library/LaunchAgents/dev.porto.daemon.plist&quot;
+launchctl bootstrap &quot;gui/$(id -u)&quot; &quot;$HOME/Library/LaunchAgents/dev.porto.daemon.plist&quot;
+launchctl print &quot;gui/$(id -u)/dev.porto.daemon&quot;</code></pre></div>
+<p>Unload it before an upgrade, then repeat the <code>bootstrap</code> command to start it again:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">launchctl bootout &quot;gui/$(id -u)&quot; &quot;$HOME/Library/LaunchAgents/dev.porto.daemon.plist&quot;</code></pre></div>
+<p>To prevent it from loading at future logins, remove the plist after unloading it.</p>
+<p>The LaunchAgent starts when that user logs in. Add runtime directories to its <code>PATH</code> when projects depend on tools installed by a version manager.</p>
+<h3 id="windows-with-task-scheduler">Windows with Task Scheduler<a class="anchor" href="#windows-with-task-scheduler" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Create a task that:</p>
+<ol>
+<li>triggers <strong>At log on</strong> for your user;</li>
+<li>runs <code>%LOCALAPPDATA%\Porto\porto.exe</code>;</li>
+<li>passes <code>daemon start</code> as its arguments;</li>
+<li>starts in <code>%LOCALAPPDATA%\Porto</code>;</li>
+<li>runs without elevated privileges and restarts on failure.</li>
+</ol>
+<p>Use <strong>End</strong> to stop the current task and <strong>Disable</strong> to prevent it from starting at future logins. Stop active projects before ending the task because Task Scheduler can terminate it without a graceful signal.</p>
+<p>The working directory preserves dashboard asset discovery. Add required development tools to the user <code>Path</code> because managed projects inherit the task's environment.</p>
+<h2 id="everyday-workflow">Everyday workflow<a class="anchor" href="#everyday-workflow" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Scan long-lived project roots once:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto scan ~/code ~/work --depth 3</code></pre></div>
+<p>Rescan after adding or moving repositories. On a typical day:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto daemon status
+porto list
+porto start &lt;project&gt;
+porto logs &lt;project&gt; --stream all -n 100
+porto stop &lt;project&gt;</code></pre></div>
+<p>The dashboard at <code>http://127.0.0.1:37623</code> provides the same lifecycle controls plus dependency setup, logs, branch switching, and concurrent branch instances. Select a project row to open its controls immediately underneath it, or use the log action to open its process console directly; the console can be maximized for longer troubleshooting sessions.</p>
+<ul>
+<li>Run <strong>Setup dependencies</strong> after the initial scan and when project dependencies change.</li>
+<li>Pin ports only for tools that need a fixed address; otherwise let Porto avoid collisions automatically.</li>
+<li>Leave the daemon running and stop projects you no longer need.</li>
+<li>On Linux and macOS, stopping the user service normally lets Porto gracefully stop every project it currently manages.</li>
+<li>On Windows, stop active projects before ending the scheduled task because Task Scheduler can terminate a task without a graceful signal.</li>
+</ul>
+<p>Starting the daemon does not automatically start every stored project. Start only the projects needed for the current development session.</p>
+<h2 id="use-an-always-on-home-system">Use an always-on home system<a class="anchor" href="#use-an-always-on-home-system" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Run Porto under an unprivileged account that owns or can access the project roots. Never run the daemon with <code>sudo</code>, because every managed project inherits the daemon's privileges.</p>
+<p>Porto's dashboard and default routers bind to loopback. To administer a home system from another machine without publishing its control endpoints, create an SSH tunnel:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">ssh -N \
+  -L 37623:127.0.0.1:37623 \
+  -L 37680:127.0.0.1:37680 \
+  user@home-system</code></pre></div>
+<p>Then open the dashboard at <code>http://127.0.0.1:37623</code> and routed projects at <code>http://&lt;project&gt;.porto.localhost:37680</code> on the client machine. The SSH connection encrypts both routes.</p>
+<p>Do not expose Porto's loopback control endpoints directly to a LAN or the internet. Keep them behind an SSH tunnel or another authenticated private-access layer.</p>
+<h2 id="upgrade-and-back-up">Upgrade and back up<a class="anchor" href="#upgrade-and-back-up" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Stop active projects and then stop the service or scheduled task before replacing the binary and <code>ui/dist</code>. On Linux and macOS, a normal service stop also lets Porto gracefully stop its managed projects. Copy the complete new release into the stable installation directory, then start the service again.</p>
+<p>Porto keeps its database, certificates, managed worktrees, and other state in the platform's user configuration directory. Set <code>PORTO_HOME</code> to use a fixed custom location. If you set it, use the same value in the shell and service definition so every Porto command opens the same state.</p>
+<p>Back up that directory while the daemon is stopped. Treat the certificate authority private key as sensitive.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/daily-use.md" rel="noopener"><code>docs/daily-use.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="installation.html" rel="prev"><span class="pager-label">Previous</span> Installation</a>
+    <a class="pager-next" href="diagnostics.html" rel="next"><span class="pager-label">Next</span> Diagnostics</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

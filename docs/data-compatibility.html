@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Data compatibility | Porto docs</title>
+  <meta name="description" content="Data and backup APIs, archive format, persisted schemas and upgrade recovery.">
+  <meta name="theme-color" content="#141516">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://porto.synctune.it/docs/data-compatibility.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Porto">
+  <meta property="og:title" content="Data compatibility | Porto docs">
+  <meta property="og:description" content="Data and backup APIs, archive format, persisted schemas and upgrade recovery.">
+  <meta property="og:url" content="https://porto.synctune.it/docs/data-compatibility.html">
+  <meta property="og:image" content="https://porto.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Porto dashboard with its resource rail and a managed k3s cluster.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/site.js" defer></script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../docs/index.html" aria-current="page">Docs</a>
+      <a href="../index.html#install">Install</a>
+      <a href="../docs/index.html#contribute">Contribute</a>
+      <a href="https://github.com/porto-containers/porto" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+<div class="docs-shell">
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="collapsible" open>
+    <summary>Browse the docs</summary>
+    <ul class="nav-groups">
+      <li class="nav-group"><ul><li><a href="index.html">All documentation</a></li></ul></li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-start">Get started</p>
+        <ul aria-labelledby="nav-start">
+          <li><a href="overview.html">Overview and quickstart</a></li>
+          <li><a href="installation.html">Installation</a></li>
+          <li><a href="daily-use.html">Daily use</a></li>
+          <li><a href="diagnostics.html">Diagnostics</a></li>
+          <li><a href="agent-skill.html">Porto agent skill</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-projects">Projects and runtimes</p>
+        <ul aria-labelledby="nav-projects">
+          <li><a href="project-management.html">Project management</a></li>
+          <li><a href="branch-management.html">Branch management</a></li>
+          <li><a href="runtimes.html">Local runtimes</a></li>
+          <li><a href="docker-engine.html">Porto Docker Engine</a></li>
+          <li><a href="resource-management.html">Resource management</a></li>
+          <li><a href="networking.html">Local networking</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-kubernetes">Kubernetes</p>
+        <ul aria-labelledby="nav-kubernetes">
+          <li><a href="kubernetes-upgrades.html">Cluster upgrades</a></li>
+          <li><a href="kubernetes-autoscaling.html">Autoscaling</a></li>
+          <li><a href="kubernetes-gitops.html">GitOps delivery</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-data">Data and images</p>
+        <ul aria-labelledby="nav-data">
+          <li><a href="data-management.html">Runtime data management</a></li>
+          <li><a href="data-compatibility.html" aria-current="page">Data compatibility</a></li>
+          <li><a href="image-inspection.html">Image analysis</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-integrations">Environments and integrations</p>
+        <ul aria-labelledby="nav-integrations">
+          <li><a href="remote-environments.html">Remote environments</a></li>
+          <li><a href="extensions.html">Extensions</a></li>
+          <li><a href="windows-integration.html">Windows integration</a></li>
+          <li><a href="integrations.html">Optional integrations</a></li>
+          <li><a href="kill-switch.html">KillSwitch</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <p class="nav-label" id="nav-develop">Develop and release</p>
+        <ul aria-labelledby="nav-develop">
+          <li><a href="ci-cd.html">CI and releases</a></li>
+          <li><a href="installed-acceptance.html">Installed-package acceptance</a></li>
+          <li><a href="dashboard.html">Dashboard source</a></li>
+          <li><a href="desktop-app.html">Desktop app source</a></li>
+          <li><a href="product.html">Product overview</a></li>
+          <li><a href="design.html">Design system</a></li>
+          <li><a href="agents.html">Agent instructions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </details>
+</nav>
+<main id="content" tabindex="-1">
+  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#data">Data and images</a></p>
+  <article class="prose" aria-label="Runtime data API and persisted-state compatibility">
+<h1 id="runtime-data-api-and-persisted-state-compatibility">Runtime data API and persisted-state compatibility</h1>
+<nav class="toc" aria-label="On this page">
+  <details class="collapsible" open>
+    <summary>On this page <span class="count">6 sections</span></summary>
+    <ol>
+      <li><a href="#compatibility-boundaries">Compatibility boundaries</a></li>
+      <li><a href="#resource-and-archive-json">Resource and archive JSON</a></li>
+      <li><a href="#local-http-contract">Local HTTP contract</a></li>
+      <li><a href="#sqlite-layout-and-upgrade-behavior">SQLite layout and upgrade behavior</a></li>
+      <li><a href="#recovery-and-user-visible-upgrade-notes">Recovery and user-visible upgrade notes</a></li>
+      <li><a href="#regression-evidence-and-remaining-limits">Regression evidence and remaining limits</a></li>
+    </ol>
+  </details>
+</nav>
+<p>This reference specifies the shipped data-operation, local volume-backup and
+migration-recovery contracts behind the <a href="https://github.com/porto-containers/porto/issues/75" rel="noopener">roadmap's compatibility work</a>.
+It complements <a href="data-management.html">runtime data management</a>, which explains
+the user workflows. Native attachment records, remote environments, extensions
+and platform-specific runtime stores are separate contracts.</p>
+<p>The source definitions are <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/dataops/types.go" rel="noopener">data-operation types</a>,
+<a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/datafiles/types.go" rel="noopener">filesystem types</a>,
+<a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/daemon/data_operations.go" rel="noopener">HTTP handlers</a> and
+<a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/store/data_operations.go" rel="noopener">SQLite persistence</a>.
+These describe existing behavior, not a proposed schema or an assigned future
+release version.</p>
+<h2 id="compatibility-boundaries">Compatibility boundaries<a class="anchor" href="#compatibility-boundaries" aria-hidden="true" tabindex="-1">#</a></h2>
+<div class="table" role="region" aria-label="Table: Compatibility boundaries" tabindex="0"><table>
+<thead><tr><th scope="col">Surface</th><th scope="col">Current contract</th><th scope="col">Compatibility consequence</th></tr></thead>
+<tbody>
+<tr><td>Local HTTP API</td><td>Unversioned <code>/api/data/</code> and <code>/api/docker/backups</code> routes; camelCase JSON fields</td><td>Keep the daemon, CLI and dashboard from the same release. Request decoders reject unknown fields, so even an optional request-field addition is not automatically compatible with an older daemon.</td></tr>
+<tr><td>SQLite data tables</td><td>Additive, transactional <code>CREATE TABLE/INDEX IF NOT EXISTS</code> initialization; no data-schema version column or migration-version ledger</td><td>Reopening an existing compatible database does not rewrite terminal operation JSON. There is no general down migration or guarantee that arbitrary older binaries can operate on newer state.</td></tr>
+<tr><td>Volume archives</td><td>Explicit manifest <code>version: 1</code></td><td>Readers reject other versions, unknown manifest fields and unsupported ownership modes. Do not silently add manifest fields or change checksum serialization while claiming format-1 compatibility.</td></tr>
+<tr><td>Resource identity</td><td>SHA-256 of the compact, ordered <code>Resource</code> JSON representation</td><td>JSON field names, order, omission rules and values affect previews, schedule keys and recovery ownership. A resource name is not an identity.</td></tr>
+<tr><td>Operation recovery</td><td>Persisted outcomes plus fresh runtime ownership/integrity checks</td><td>An interrupted operation is not automatically replayed or rolled back. Recorded metadata is not proof that an unrecorded runtime mutation did not happen.</td></tr>
+<tr><td>Optional Etcqlite</td><td>Additive <code>etcqlite_enabled</code> setting (default false), separate format-1 native instance metadata and verified recovery manifests</td><td>Existing clusters retain their datastore defaults. New k3s bindings pin decimal-string cluster IDs and endpoint/CA fingerprints. Native images use their own SQLite/SHA-256-trailer contract, not volume archive 1. See <a href="integrations.html#native-recovery-and-reversible-removal">Etcqlite recovery</a>.</td></tr>
+</tbody>
+</table></div>
+<p>New changes must identify which of these boundaries they cross before assigning
+a release version. A compatible change needs reader/writer fixtures for both
+representations; an incompatible change needs an explicit conversion, failure
+and recovery design. Do not infer downgrade support from a successful reopen
+with the current executable.</p>
+<h2 id="resource-and-archive-json">Resource and archive JSON<a class="anchor" href="#resource-and-archive-json" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="resource-identity">Resource identity<a class="anchor" href="#resource-identity" aria-hidden="true" tabindex="-1">#</a></h3>
+<p><code>Resource</code> has these fields in this serialization order:</p>
+<div class="table" role="region" aria-label="Table: Resource identity" tabindex="0"><table>
+<thead><tr><th scope="col">Field</th><th scope="col">JSON type</th><th scope="col">Serialization</th></tr></thead>
+<tbody>
+<tr><td><code>kind</code></td><td>string</td><td>Always emitted; scheduled backups require <code>volume</code>.</td></tr>
+<tr><td><code>name</code></td><td>string</td><td>Always emitted; the display/runtime name, not a generation identifier.</td></tr>
+<tr><td><code>id</code></td><td>string</td><td>Always emitted; the backend's resource-generation identity.</td></tr>
+<tr><td><code>createdAt</code></td><td>string</td><td>Omitted when empty; preserve the supplied representation.</td></tr>
+<tr><td><code>backend</code></td><td>string</td><td>Omitted when empty; preserve the supplied backend identity.</td></tr>
+<tr><td><code>readOnly</code></td><td>boolean</td><td>Always emitted, including <code>false</code>.</td></tr>
+</tbody>
+</table></div>
+<p>For example, the bytes hashed for a resource with no optional identity fields
+are exactly:</p>
+<div class="code" data-lang="json"><pre tabindex="0"><code class="language-json">{&quot;kind&quot;:&quot;volume&quot;,&quot;name&quot;:&quot;synthetic-volume&quot;,&quot;id&quot;:&quot;synthetic-generation&quot;,&quot;readOnly&quot;:false}</code></pre></div>
+<p>The hash is lowercase hexadecimal, with no trailing newline in its input.
+Do not rebuild it by sorting a map or dropping <code>readOnly: false</code>.
+The persisted resource key is this fingerprint when <code>resource.id</code> is present.
+Without that ID, <code>prune</code> and <code>migration</code> use <code>runtime-data</code>; other actions use
+<code>action:destination</code>. The daemon also serializes data jobs across resources.</p>
+<p>Native volume generations use the guest <code>volume.json</code> identity rather than
+the <code>_data</code> directory. Replacing volume contents does not retarget a schedule;
+deleting and recreating the named volume invalidates its old identity.</p>
+<h3 id="archive-format-1">Archive format 1<a class="anchor" href="#archive-format-1" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>An archive is a tar stream of <code>data/</code> members followed by exactly one regular
+<code>porto-manifest.json</code> member. No tar member may follow that manifest.
+The <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/datafiles/archive.go" rel="noopener">archive reader/writer</a> defines:</p>
+<div class="table" role="region" aria-label="Table: Archive format 1" tabindex="0"><table>
+<thead><tr><th scope="col">Manifest field</th><th scope="col">JSON type</th><th scope="col">Contract</th></tr></thead>
+<tbody>
+<tr><td><code>version</code></td><td>integer</td><td>Exactly <code>1</code>.</td></tr>
+<tr><td><code>resource</code></td><td>Resource object</td><td>Nonempty <code>id</code>; volume import/download additionally requires <code>kind: &quot;volume&quot;</code>.</td></tr>
+<tr><td><code>createdAt</code></td><td>timestamp string</td><td>Go <code>time.Time</code> JSON, written in UTC with RFC 3339 fractional seconds when needed.</td></tr>
+<tr><td><code>consistency</code></td><td>string</td><td>Exactly <code>crash-consistent</code>; not an application-consistency claim.</td></tr>
+<tr><td><code>ownership</code></td><td>string, optional</td><td><code>filesystem</code>, <code>namespace</code>, or omitted/empty for legacy archives. Runtime exports use logical namespace ownership and translate supported rootless UID/GID mappings on restore.</td></tr>
+<tr><td><code>bytes</code></td><td>integer</td><td>Sum of regular-file content bytes, not total tar size.</td></tr>
+<tr><td><code>entries</code></td><td>array</td><td>Ordered manifest entries matching the tar members; an empty archive uses <code>[]</code>.</td></tr>
+<tr><td><code>sha256</code></td><td>string</td><td>SHA-256 of the compact Go JSON encoding of this manifest with <code>sha256</code> set to <code>&quot;&quot;</code>; all other fields and their omission/order rules remain unchanged.</td></tr>
+</tbody>
+</table></div>
+<p>Each entry has <code>path</code>, <code>type</code>, <code>size</code>, <code>mode</code>, <code>uid</code>, <code>gid</code> and <code>modifiedAt</code>.
+<code>linkTarget</code> and <code>sha256</code> are omitted when empty. Types are <code>file</code>, <code>directory</code>,
+<code>symlink</code> and <code>hardlink</code>. Paths are relative to <code>data/</code>; hardlinks reference a
+preceding regular file, and symlinks must stay contained. Mode is an integer
+permission mask from <code>0</code> through <code>511</code> (<code>0777</code>), not an octal JSON string.
+File SHA-256 values cover content bytes.</p>
+<p>The reader checks member/manifest agreement, checksums, ordering, duplicate
+paths and link containment. Devices, sockets, FIFOs and special permission
+bits are unsupported. Limits are 64 GiB of logical content, 100,000 entries
+and 32 MiB for the manifest; paths are limited to 4,096 bytes. The daemon
+additionally bounds the whole archive to 64 GiB plus 32 MiB.</p>
+<p>The operation's archive object is different from the manifest:
+<code>{path, sha256, manifest, bytes, resource, consistency}</code>.
+Here <code>sha256</code> covers the <strong>whole tar file</strong>, <code>manifest</code> is the manifest's
+checksum, and <code>bytes</code> is the tar file size. All six fields are emitted.
+Reformatting JSON or repacking a tar can therefore change an integrity value
+even when file contents appear equivalent.</p>
+<h2 id="local-http-contract">Local HTTP contract<a class="anchor" href="#local-http-contract" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The default base is <code>http://127.0.0.1:37623</code>. This is the local control API,
+not a remotely exposed backup service: it has no bearer-token authentication.
+The daemon requires a loopback request host and, when supplied, a loopback
+HTTP/HTTPS <code>Origin</code>. Non-local environment IDs require their explicit
+authenticated environment path; they cannot fall back to these local routes.
+See <a href="remote-environments.html">remote environments</a> for that separate boundary.</p>
+<p>JSON request bodies use <code>Content-Type: application/json</code>, contain one JSON
+value, and are limited to 2 MiB. Unknown fields, including nested fields, fail
+decoding. Missing fields initially take Go zero values; the action-specific
+validation below still applies. These routes have no pagination cursor or
+declared rate-limit protocol.</p>
+<h3 id="operations-and-archive-transport">Operations and archive transport<a class="anchor" href="#operations-and-archive-transport" aria-hidden="true" tabindex="-1">#</a></h3>
+<div class="table" role="region" aria-label="Table: Operations and archive transport" tabindex="0"><table>
+<thead><tr><th scope="col">Method and path</th><th scope="col">Request</th><th scope="col">Success response</th></tr></thead>
+<tbody>
+<tr><td><code>POST /api/docker/storage/preview</code></td><td>Data <code>Request</code>, with <code>action</code> selecting volume transfer, cleanup or migration</td><td><code>200</code>, action-specific preview. A volume preview contains <code>request</code>, <code>resource</code>, <code>owners</code>, <code>destination</code>, <code>token</code>, <code>consistency</code>, <code>consequences</code>, and optional <code>archive</code>/<code>files</code>.</td></tr>
+<tr><td><code>POST /api/data/operations</code></td><td>Confirmed <code>Request</code> from the reviewed preview</td><td><code>202</code>, <code>Operation</code>. Acceptance starts asynchronous work; it does not mean the operation succeeded.</td></tr>
+<tr><td><code>GET /api/data/operations</code></td><td>None</td><td><code>200</code>, newest 100 operations by descending ID; <code>[]</code> when empty.</td></tr>
+<tr><td><code>GET /api/data/operations/{id}</code></td><td>Positive integer ID</td><td><code>200</code>, <code>Operation</code>.</td></tr>
+<tr><td><code>DELETE /api/data/operations/{id}</code></td><td>Positive integer ID</td><td><code>200</code>, <code>{&quot;status&quot;:&quot;cancellation-requested&quot;}</code> for an active worker. Poll history for the final outcome; this does not delete history.</td></tr>
+<tr><td><code>PUT /api/data/archives</code></td><td>Raw tar body, not JSON or multipart</td><td><code>201</code>, verified archive object with a managed upload path. Invalid/incomplete uploads are removed.</td></tr>
+<tr><td><code>GET /api/data/operations/{id}/archive</code></td><td>Positive integer ID</td><td><code>200</code>, <code>application/x-tar</code>, after manifest and whole-file checksum revalidation. A failed/interrupted job can still have a verified recovery archive.</td></tr>
+</tbody>
+</table></div>
+<p><code>Request</code> fields follow the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/dataops/types.go" rel="noopener">source type</a>:</p>
+<div class="table" role="region" aria-label="Table: Operations and archive transport" tabindex="0"><table>
+<thead><tr><th scope="col">Field</th><th scope="col">JSON type</th><th scope="col">Meaning and validation</th></tr></thead>
+<tbody>
+<tr><td><code>action</code></td><td>string</td><td><code>volume-export</code>, <code>volume-clone</code>, <code>volume-import</code>, <code>volume-restore</code>, <code>volume-empty</code>, <code>volume-remove</code>, <code>prune</code> or <code>migration</code>.</td></tr>
+<tr><td><code>resource</code></td><td>Resource object</td><td>Target resource; previews resolve and pin its current identity where applicable.</td></tr>
+<tr><td><code>identity</code></td><td>string</td><td>Fingerprint returned by the preview, not a name-only lookup.</td></tr>
+<tr><td><code>destination</code></td><td>string, optional</td><td>New volume name for clone/import, or a confined managed export path. HTTP callers cannot choose arbitrary host files.</td></tr>
+<tr><td><code>archive</code></td><td>string, optional</td><td>Managed uploaded archive path for import/restore; for <code>volume-empty</code>, the preview's content digest.</td></tr>
+<tr><td><code>directory</code></td><td>string, optional</td><td>Reserved for internally constructed backup jobs; rejected when nonempty on manual operation creation.</td></tr>
+<tr><td><code>categories</code></td><td>string array, optional</td><td>Explicit cleanup categories.</td></tr>
+<tr><td><code>selections</code></td><td>Selection array, optional</td><td>Exact cleanup/migration selections, not a wildcard over future inventory. Each has string <code>kind</code>, <code>name</code>, <code>id</code>, and optional <code>destination</code>.</td></tr>
+<tr><td><code>context</code></td><td>string, optional</td><td>Explicit local source Docker context for migration.</td></tr>
+<tr><td><code>includeSensitive</code></td><td>boolean, optional</td><td>Separate consent for sensitive migration configuration; defaults to <code>false</code>.</td></tr>
+<tr><td><code>allowSourceHelper</code></td><td>boolean, optional</td><td>Separate consent for stopped read-only source helpers; defaults to <code>false</code>.</td></tr>
+<tr><td><code>confirm</code></td><td>boolean</td><td>Must be <code>true</code> when creating a manual operation.</td></tr>
+<tr><td><code>preview</code></td><td>string, optional</td><td>Must be nonempty on creation and match the freshly validated preview during execution. Stale previews fail rather than selecting new resources.</td></tr>
+<tr><td><code>scheduleId</code>, <code>retention</code></td><td>integers, optional</td><td>Internal backup metadata; rejected when nonzero on manual operation creation.</td></tr>
+<tr><td><code>trigger</code></td><td>string, optional</td><td>Manual creation accepts absent/empty or <code>manual</code>; the worker defaults it to <code>manual</code>. Internal backup triggers are <code>scheduled</code> and <code>manual-backup</code>.</td></tr>
+</tbody>
+</table></div>
+<p>The serializer always emits <code>action</code>, <code>resource</code>, <code>identity</code> and <code>confirm</code>;
+other request fields have <code>omitempty</code>. Do not send internal scheduler fields
+by copying a scheduled job's request into the manual-create endpoint.</p>
+<p>An <code>Operation</code> always emits integer <code>id</code> and <code>bytes</code>, object <code>request</code> and
+<code>result</code>, and string <code>status</code>, <code>phase</code> and <code>startedAt</code>. <code>completedAt</code> and
+<code>error</code> are omitted when empty. Timestamp writers use UTC RFC 3339 with
+nanosecond precision when needed. <code>bytes</code> reports operation progress, not
+necessarily archive size or reclaimed space. <code>phase</code> is progress text, not a
+closed enum.</p>
+<p>Status is <code>running</code>, or terminal <code>succeeded</code>, <code>failed</code>, <code>cancelled</code>,
+<code>interrupted</code> or <code>skipped</code>. A result has optional <code>archive</code>, <code>steps</code>,
+<code>bytesReclaimed</code> and <code>message</code>. Missing <code>bytesReclaimed</code> means unavailable;
+an explicit <code>0</code> means measured zero. Each step always emits string <code>kind</code>,
+<code>source</code>, <code>destination</code> and <code>status</code>, and optionally <code>message</code> and <code>id</code>.
+Keep per-step outcomes on partial failure rather than interpreting the
+top-level failure as a rollback.</p>
+<p>For example, read history without triggering a mutation:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">curl --fail-with-body --silent --show-error \
+  http://127.0.0.1:37623/api/data/operations</code></pre></div>
+<h3 id="backup-schedules">Backup schedules<a class="anchor" href="#backup-schedules" aria-hidden="true" tabindex="-1">#</a></h3>
+<div class="table" role="region" aria-label="Table: Backup schedules" tabindex="0"><table>
+<thead><tr><th scope="col">Method and path</th><th scope="col">Request</th><th scope="col">Success response</th></tr></thead>
+<tbody>
+<tr><td><code>GET /api/docker/backups</code></td><td>None</td><td><code>200</code>, schedules in ascending ID order; <code>[]</code> when empty.</td></tr>
+<tr><td><code>POST /api/docker/backups</code></td><td>Complete <code>Schedule</code> object, for creation or update</td><td><code>200</code>, saved <code>Schedule</code>, including its ID and recomputed deadline.</td></tr>
+<tr><td><code>DELETE /api/docker/backups/{id}?confirm=true</code></td><td>Positive integer ID and explicit confirmation</td><td><code>204</code>, no body. Existing archives and operation history remain.</td></tr>
+<tr><td><code>POST /api/docker/backups/{id}/run</code></td><td>Positive integer ID; no body required</td><td><code>202</code>, <code>Operation</code> with trigger <code>manual-backup</code>. A paused schedule may be run manually; its regular deadline is unchanged.</td></tr>
+</tbody>
+</table></div>
+<p>All schedule response fields are emitted:</p>
+<div class="table" role="region" aria-label="Table: Backup schedules" tabindex="0"><table>
+<thead><tr><th scope="col">Field</th><th scope="col">JSON type</th><th scope="col">Contract</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td>integer</td><td><code>0</code> for creation; positive existing ID for update; negative is invalid. One schedule exists per resource fingerprint.</td></tr>
+<tr><td><code>resource</code></td><td>Resource object</td><td>Identity-bearing, writable local volume. Create/resume resolves the current descriptor; an existing identity cannot be retargeted to a recreated volume.</td></tr>
+<tr><td><code>enabled</code></td><td>boolean</td><td>Explicit policy, not inferred from whether Docker is currently available. An existing schedule can be paused while its source is unavailable.</td></tr>
+<tr><td><code>intervalHours</code></td><td>integer</td><td>Inclusive range <code>1..8760</code>.</td></tr>
+<tr><td><code>retention</code></td><td>integer</td><td>Inclusive range <code>1..365</code> verified recovery archives.</td></tr>
+<tr><td><code>directory</code></td><td>string</td><td>Empty selects <code>backups/&lt;first-16-fingerprint-characters&gt;</code> beneath Porto's state root. Relative choices stay under <code>backups/</code>; absolute saved paths must also remain in that managed root. Responses/persistence contain an absolute path.</td></tr>
+<tr><td><code>nextRunAt</code></td><td>timestamp string</td><td>Server-owned; every save recalculates it as current UTC time plus the interval. Supplying an old deadline does not preserve it.</td></tr>
+</tbody>
+</table></div>
+<p>Automatic claiming requires Docker enabled, an enabled due schedule and no
+running data job. Claiming the operation and moving its deadline happen in
+one SQLite transaction. Missed intervals run once, then advance from the
+current time; they are not replayed as a backlog.</p>
+<h3 id="errors-and-client-handling">Errors and client handling<a class="anchor" href="#errors-and-client-handling" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>Runtime errors normally return JSON <code>{&quot;message&quot;:&quot;...&quot;}</code>. Malformed JSON,
+request-origin guards and some explicit not-found responses instead use
+plain-text HTTP errors. There is no common machine-readable error-code enum.
+Preserve the HTTP status and body; do not assume every error is JSON.</p>
+<div class="table" role="region" aria-label="Table: Errors and client handling" tabindex="0"><table>
+<thead><tr><th scope="col">Status</th><th scope="col">Current uses</th></tr></thead>
+<tbody>
+<tr><td><code>400</code></td><td>Invalid/oversized JSON, unknown fields, invalid IDs/limits, missing confirmation, reserved scheduler fields, or refused input.</td></tr>
+<tr><td><code>403</code></td><td>Non-loopback request host or supplied origin.</td></tr>
+<tr><td><code>404</code></td><td>Explicit missing schedule responses and unavailable/expired archive download.</td></tr>
+<tr><td><code>409</code></td><td>Changed resource/preview, competing runtime operation, runtime disabled by a route guard, or cancellation without an active worker.</td></tr>
+<tr><td><code>501</code></td><td>Explicit unsupported filesystem capability.</td></tr>
+<tr><td><code>503</code></td><td>Unavailable backend/worker. Backup schedule creation/resume also uses this status when Docker is disabled, unlike the <code>409</code> route guard.</td></tr>
+<tr><td><code>500</code></td><td>Other persistence/execution failures. A direct missing operation-row lookup currently reaches this generic path, not a guaranteed <code>404</code>.</td></tr>
+</tbody>
+</table></div>
+<p>Once a job has been accepted, execution errors are recorded in its operation
+rather than retroactively changing the original <code>202</code> response. Canceling a
+watcher or closing a view does not cancel the job.</p>
+<h2 id="sqlite-layout-and-upgrade-behavior">SQLite layout and upgrade behavior<a class="anchor" href="#sqlite-layout-and-upgrade-behavior" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The database is <code>porto.db</code> beneath <code>PORTO_HOME</code>, or Porto's OS-specific user
+configuration directory when that override is absent. Transfers and backups
+live beneath the same state root in <code>transfers/</code> and <code>backups/</code>. Their absolute
+paths and resource identities are persisted; moving files alone is not a
+state migration.</p>
+<p>The data initializer creates the following schema in one transaction. This
+is a reference, <strong>not an instruction to run SQL against an installation</strong>:</p>
+<div class="code" data-lang="sql"><pre tabindex="0"><code class="language-sql">CREATE TABLE data_operations (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ resource_key TEXT NOT NULL,
+ request TEXT NOT NULL,
+ status TEXT NOT NULL,
+ phase TEXT NOT NULL DEFAULT 'queued',
+ bytes INTEGER NOT NULL DEFAULT 0,
+ started_at TEXT NOT NULL,
+ completed_at TEXT NOT NULL DEFAULT '',
+ result TEXT NOT NULL DEFAULT '{}',
+ error TEXT NOT NULL DEFAULT ''
+);
+CREATE UNIQUE INDEX idx_data_operation_active
+ ON data_operations(resource_key) WHERE status='running';
+CREATE INDEX idx_data_operation_history ON data_operations(started_at);
+CREATE TABLE volume_backup_schedules (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ resource_key TEXT NOT NULL UNIQUE,
+ resource TEXT NOT NULL,
+ enabled INTEGER NOT NULL,
+ interval_hours INTEGER NOT NULL CHECK(interval_hours BETWEEN 1 AND 8760),
+ retention INTEGER NOT NULL CHECK(retention BETWEEN 1 AND 365),
+ directory TEXT NOT NULL,
+ next_run_at TEXT NOT NULL
+);
+CREATE INDEX idx_volume_backup_due
+ ON volume_backup_schedules(enabled,next_run_at);
+CREATE TABLE migration_volume_ledger (
+ source_context TEXT NOT NULL,
+ source_identity TEXT NOT NULL,
+ destination TEXT NOT NULL,
+ destination_identity TEXT NOT NULL,
+ verified_at TEXT NOT NULL,
+ PRIMARY KEY(source_context,source_identity,destination)
+);
+CREATE TABLE migration_source_temporaries (
+ owner TEXT NOT NULL,
+ kind TEXT NOT NULL,
+ resource TEXT NOT NULL,
+ reserved_at TEXT NOT NULL,
+ PRIMARY KEY(owner,kind)
+);
+CREATE TABLE volume_transfer_temporaries (
+ owner TEXT PRIMARY KEY,
+ destination TEXT NOT NULL UNIQUE
+);</code></pre></div>
+<p>The implementation adds <code>IF NOT EXISTS</code> to these statements. An error rolls
+back this <strong>data-table transaction</strong>, including newly created indexes/tables;
+it does not roll back every other initializer in <code>Store.Open</code>. Existing
+incompatible tables are not repaired by <code>IF NOT EXISTS</code>. Preserve them and
+diagnose the failure instead of deleting the database to force startup.</p>
+<p><code>request</code>, <code>result</code> and schedule <code>resource</code> are JSON text using the types above.
+SQL <code>enabled</code> is written as <code>0</code> or <code>1</code>; readers treat exactly <code>1</code> as enabled.
+Operation request and checkpoint writers each cap their JSON at 1 MiB.
+Persisted JSON decoding ignores unknown fields and supplies Go zero values for
+omitted fields, unlike the strict HTTP/manifest decoders. Schedule readers
+subsequently validate the required volume identity, interval, retention and
+absolute directory. This is <strong>not</strong> a lossless future-schema round trip:
+typed rewrites, including running-job recovery, can discard unknown fields.
+Malformed or wrongly typed JSON returns a decode error instead of an empty
+successful result.</p>
+<p>The migration volume ledger proves the exact source-context/source-identity/
+destination mapping and its verified destination identity. It is not a
+name-only permission to overwrite an existing destination.
+Source-helper reservations contain JSON string fields <code>context</code>, <code>endpoint</code>,
+<code>kind</code>, <code>name</code>, <code>owner</code> and optional <code>id</code>; kinds are <code>container</code> or <code>image</code>.
+Destination transfer reservations contain <code>owner</code> and <code>destination</code>, with a
+32-byte owner token required by the store.
+Reservations precede runtime mutation, and failed ownership-proven cleanup
+retains them. Do not remove these rows to hide a cleanup failure.</p>
+<h2 id="recovery-and-user-visible-upgrade-notes">Recovery and user-visible upgrade notes<a class="anchor" href="#recovery-and-user-visible-upgrade-notes" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>The shipped data features retain these upgrade boundaries:</p>
+<ul>
+<li>Schedules and operation history survive restart. Startup marks running jobs
+<code>interrupted</code>, preserving verified archives and recorded successful steps.
+Running steps become <code>interrupted</code>; pending steps are not promoted to success.
+Corrupt operation JSON makes recovery fail without partially rewriting history.</li>
+<li>A backup is durably recorded and revalidated before retention deletes older
+identity/checksum-proven archives in the same directory. A retention failure
+does not make the verified replacement disappear. Expiration clears the old
+archive path and records phase <code>archive-expired</code>, retaining its history.</li>
+<li>Pausing or removing a schedule does not remove archives. A recreated volume
+needs an explicitly reviewed schedule for its new identity.</li>
+<li>Migration retry requires a fresh dry run with the saved source identities and
+destinations. Regrant sensitive/helper consent. Completed destination objects
+remain after partial failure; source resources are not removed as rollback.</li>
+<li>Restore validates in staging and checks ownership/integrity again before
+atomic publication. Failure before publication preserves the original
+destination. Restoring a volume is an explicit data operation, not a side
+effect of reinstalling or downgrading Porto.</li>
+</ul>
+<p>Before an upgrade that changes one of these contracts, inspect operation
+history, finish/cancel active data jobs, resolve retained helper reservations
+through normal ownership-checked recovery, and preserve verified archives.
+Quiesce application writers yourself when application-consistent recovery is
+required.</p>
+<p>For a control-plane recovery copy, plan downtime and stop the daemon before
+copying its SQLite database and associated archive directories. Stopping the
+daemon can stop managed native projects; closing only the desktop window does
+not stop the daemon. The database uses WAL: <strong>never copy a live <code>porto.db</code>
+alone</strong> and assume it contains all committed state. Preserve a consistent
+database/sidecar set, permissions, archive paths and the original state-root
+location. This copy does not back up guest disks or replace application data
+backups.</p>
+<p>There is no supported arbitrary in-place downgrade or automatic down migration.
+Before using an earlier release, review its actual readers/runtime compatibility
+and retain an untouched copy of the newer state. Restore a verified coherent
+recovery set only while stopped and only for a compatible target; do not
+drop new tables, rewrite fingerprints, change archive versions or clear
+reservations by hand. Restoring old SQLite metadata does not rewind containers,
+volumes, source runtimes or already-published data. Refresh inventory and review
+new previews after recovery. If target compatibility is unknown, prefer a
+forward fix over letting the old executable rewrite newer state.</p>
+<h2 id="regression-evidence-and-remaining-limits">Regression evidence and remaining limits<a class="anchor" href="#regression-evidence-and-remaining-limits" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>Run the focused synthetic-fixture suite with:</p>
+<div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">go test ./internal/datafiles ./internal/dataops ./internal/store ./internal/daemon</code></pre></div>
+<div class="table" role="region" aria-label="Table: Regression evidence and remaining limits" tabindex="0"><table>
+<thead><tr><th scope="col">Boundary</th><th scope="col">Executable coverage</th></tr></thead>
+<tbody>
+<tr><td>Fingerprint serialization and archive-1 readers</td><td><code>TestResourceFingerprintCompatibility</code>, <code>TestVersionOneManifestCompatibility</code> in <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/datafiles" rel="noopener">datafiles tests</a>. Legacy omitted ownership remains readable; unsupported versions/fields/ownership are rejected.</td></tr>
+<tr><td>Additive initialization and partial-schema rollback</td><td><code>TestDataOperationMigrationIsAdditiveAndIdempotent</code>, <code>TestDataOperationMigrationRollsBackPartialSchemaOnFailure</code> in <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/store/data_operations_test.go" rel="noopener">store tests</a>.</td></tr>
+<tr><td>Legacy operation JSON and corrupt-record recovery</td><td><code>TestDataOperationReadsLegacyJSONWithoutRewritingIt</code>, <code>TestDataRecoveryRejectsCorruptJSONWithoutChangingHistory</code> in the same store suite.</td></tr>
+<tr><td>HTTP response shape and strict request decoding</td><td><code>TestDataOperationHistoryHTTPContract</code>, <code>TestDataOperationRejectsIncompatibleJSON</code> in <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/daemon/data_operations_test.go" rel="noopener">daemon tests</a>.</td></tr>
+<tr><td>Missed deadlines, verified recovery points and exact temporary ownership</td><td>Existing restart/checkpoint tests in the store suite and <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/store/migration_helpers_test.go" rel="noopener">source-helper reservation tests</a>.</td></tr>
+<tr><td>Retention and failed restore safety</td><td>Existing <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/daemon/data_operations_test.go" rel="noopener">daemon retention tests</a> and <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/internal/datafiles/archive_test.go" rel="noopener">archive restore tests</a>.</td></tr>
+</tbody>
+</table></div>
+<p>These are current-reader and synthetic recovery checks, not execution evidence
+for every historical Porto binary, a complete downgrade matrix, real backend
+acceptance, or native filesystem-driver qualification. Record those separately
+when a future persisted-state change needs them. This slice does not assign
+milestones, new feature versions, or complete the roadmap-wide compatibility
+policy for other subsystems.</p>
+  </article>
+  <aside class="doc-source" aria-label="Source">
+    <p>From <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/docs/data-compatibility.md" rel="noopener"><code>docs/data-compatibility.md</code></a> in Porto v1.11.6 (<code>4b9dbdb</code>). <a href="https://github.com/porto-containers/porto/issues" rel="noopener">Report a problem</a>.</p>
+  </aside>
+  <nav class="pager" aria-label="Previous and next pages">
+    <a class="pager-prev" href="data-management.html" rel="prev"><span class="pager-label">Previous</span> Runtime data management</a>
+    <a class="pager-next" href="image-inspection.html" rel="next"><span class="pager-label">Next</span> Image analysis</a>
+  </nav>
+</main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-brand"><img class="mark" src="../assets/favicon.svg" alt="" width="32" height="32"><span>Porto is open source under the <a href="https://github.com/porto-containers/porto/blob/4b9dbdb0501c2d515c524108dde04d7c98f30c2c/LICENSE" rel="noopener">MIT license</a>.</span></p>
+    <p>Documentation from <a href="https://github.com/porto-containers/porto/tree/4b9dbdb0501c2d515c524108dde04d7c98f30c2c" rel="noopener">Porto v1.11.6 (<code>4b9dbdb</code>)</a>. Not production-ready: use Porto for local development and experimentation.</p>
+    <p>This site loads no analytics, cookies, fonts or third-party resources. A <a href="https://open.synctune.it/" rel="noopener">Synctune Open</a> project. <a href="https://github.com/porto-containers/porto.synctune.it" rel="noopener">Website source</a>.</p>
+  </div>
+</footer>
+</body>
+</html>
