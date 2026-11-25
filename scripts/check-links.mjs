@@ -110,25 +110,28 @@ export async function checkSite(directory) {
   return { problems, warnings, externals, pages: files.length };
 }
 
+const transient = (status) => status === 429 || status >= 500;
+
+// Retries server errors, rate limits and network failures with backoff.
 async function request(url) {
-  let last = "";
+  let result = { status: 0, error: "" };
   for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (attempt) await new Promise((done) => setTimeout(done, 2000 * attempt));
     for (const method of ["HEAD", "GET"]) {
       try {
         const response = await fetch(url, { method, redirect: "follow", signal: AbortSignal.timeout(20_000), headers: { "User-Agent": "porto-website-link-check" } });
         await response.body?.cancel();
-        if (method === "HEAD" && [403, 404, 405, 501].includes(response.status)) {
-          last = `HTTP ${response.status}`;
-          continue;
-        }
-        return { status: response.status };
+        result = { status: response.status };
+        if (method === "HEAD" && [403, 404, 405, 501].includes(response.status)) continue;
+        break;
       } catch (error) {
-        last = error.cause?.code ?? error.name;
+        result = { status: 0, error: error.cause?.code ?? error.name };
       }
     }
-    await new Promise((done) => setTimeout(done, 1500 * (attempt + 1)));
+    if (result.status && !transient(result.status)) return result;
+    if (result.error === "ENOTFOUND") return result;
   }
-  return { status: 0, error: last };
+  return result;
 }
 
 async function main() {
@@ -144,9 +147,10 @@ async function main() {
       const batch = await Promise.all(urls.slice(index, index + 6).map(async (url) => ({ url, ...(await request(url)) })));
       for (const { url, status, error } of batch) {
         const from = externals.get(url).slice(0, 3).join(", ");
-        if (status === 429) warnings.push(`${url} is rate limited (linked from ${from})`);
-        else if ((status < 200 || status >= 400) && knownUnreachable.has(url)) warnings.push(`${url} returned ${status || error}: ${knownUnreachable.get(url)}`);
-        else if (status < 200 || status >= 400) problems.push(`${url} returned ${status || error} (linked from ${from})`);
+        const failed = status < 200 || status >= 400;
+        if (failed && knownUnreachable.has(url)) warnings.push(`${url} returned ${status || error}: ${knownUnreachable.get(url)}`);
+        else if (failed && (transient(status) || (!status && error !== "ENOTFOUND"))) warnings.push(`${url} is temporarily unavailable (${status || error}) after retries (linked from ${from})`);
+        else if (failed) problems.push(`${url} returned ${status || error} (linked from ${from})`);
       }
     }
     console.log(`Requested ${urls.length} external URLs.`);

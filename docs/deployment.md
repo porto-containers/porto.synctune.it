@@ -50,8 +50,10 @@ schedule and manual dispatch:
   every local link, asset, anchor, unique id and basic page structure. On
   `main` pushes and manual runs it uploads the Pages artifact.
 - **Outbound links** requests every external URL. Pinned GitHub links to
-  Porto's source are verified by the sync script instead. Known upstream
-  failures are listed in `scripts/check-links.mjs` and reported as warnings.
+  Porto's source are verified by the sync script instead. Rate limits, server
+  errors and timeouts are retried, then reported as warnings; 4xx responses and
+  unknown hosts fail. Known upstream failures are listed in
+  `scripts/check-links.mjs` and reported as warnings.
 - **Deploy GitHub Pages** deploys that artifact. Only this job gets
   `pages: write` and `id-token: write`, and it never runs for pull requests or
   the weekly schedule.
