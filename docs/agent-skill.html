@@ -172,7 +172,7 @@ the command when needed:</p>
 <ul>
 <li><strong>macOS</strong>: builds aren't notarized, so Gatekeeper may block the first launch.
 Tell the user and point to the
-<a href="https://github.com/porto-containers/porto/blob/main/docs/installation.md#macos-gatekeeper-quarantine" rel="noopener">quarantine guide</a>.
+<a href="installation.html#macos-gatekeeper-quarantine">quarantine guide</a>.
 Never disable Gatekeeper globally. <code>brew install qemu</code> is only needed for
 snapshot-capable VMs.</li>
 <li><strong>Linux</strong>: the installer installs or verifies QEMU and may configure an
@@ -180,7 +180,7 @@ AppArmor sandbox profile through <code>sudo</code>. If you can't answer a sudo p
 hand the command to the user.</li>
 <li><strong>Headless machines</strong> (no desktop session): use the CLI and web archive from
 the <a href="https://github.com/porto-containers/porto/releases" rel="noopener">releases page</a> as in
-<a href="https://github.com/porto-containers/porto/blob/main/docs/installation.md#manual-archive-installation" rel="noopener">manual archive installation</a>.
+<a href="installation.html#manual-archive-installation">manual archive installation</a>.
 Keep <code>porto</code> and <code>ui/dist</code> together, then run <code>porto docker engine-install</code>
 once the daemon is up.</li>
 </ul>
@@ -227,7 +227,7 @@ A running project is also routed at <code>http://&lt;project&gt;.porto.localhost
 <code>docker compose down --remove-orphans</code>, removing the stack's containers.</li>
 <li>Discovery picks the first runnable strategy per subtree: Make, Compose,
 Node.js, Python, Go, then Rust. If a project is missing, rescan its root or
-read the <a href="https://github.com/porto-containers/porto/blob/main/docs/project-management.md#discovery" rel="noopener">discovery rules</a>.</li>
+read the <a href="project-management.html#discovery">discovery rules</a>.</li>
 <li><code>porto branch &lt;project&gt; &lt;branch&gt;</code> switches the worktree and restarts a running
 project. It refuses dirty worktrees.</li>
 </ul>
@@ -251,7 +251,7 @@ Run it only when the user wants Porto as their default engine. Unset
 <li>Bind mounts work from the home directory and, on macOS, from <code>/tmp</code> and
 <code>$TMPDIR</code>; other host paths aren't shared with the engine VM.</li>
 <li>Docker API 1.41 to 1.47 is supported; Swarm and engine plugins aren't. Check
-the <a href="https://github.com/porto-containers/porto/blob/main/docs/docker-engine.md#docker-api-compatibility-matrix" rel="noopener">compatibility matrix</a>
+the <a href="docker-engine.html#docker-api-compatibility-matrix">compatibility matrix</a>
 before relying on an unusual feature.</li>
 <li>A daily runtime cleanup is on by default. It removes standalone containers
 stopped for over 24 hours, unused cache, unused images older than 24 hours
@@ -286,7 +286,7 @@ immediately, without a prompt.</p>
 <code>v1.36.4+k0s.1</code>, or <code>v1.37.0</code> for kind and Apple); without it k3s and k0s use
 their stable channel. <code>porto kubernetes cluster upgrade &lt;name&gt; --version &lt;release&gt; --confirm</code>
 upgrades one minor version at a time and interrupts the cluster, so ask first.
-See <a href="https://github.com/porto-containers/porto/blob/main/docs/kubernetes-upgrades.md#newer-kubernetes-releases" rel="noopener">newer Kubernetes releases</a>.</p>
+See <a href="kubernetes-upgrades.html#newer-kubernetes-releases">newer Kubernetes releases</a>.</p>
 <h2 id="7-linux-vms">7. Linux VMs<a class="anchor" href="#7-linux-vms" aria-hidden="true" tabindex="-1">#</a></h2>
 <div class="code" data-lang="sh"><pre tabindex="0"><code class="language-sh">porto runtime enable vms
 porto vm images
@@ -327,7 +327,7 @@ command so its state stays consistent.</li>
 <li><strong>Keep the control ports on loopback</strong> (<code>37623</code>, <code>37680</code>, <code>37681</code>). They're
 unauthenticated by design, so never bind or forward them to a network.</li>
 <li><strong>Trust the installed version over this file.</strong> <code>porto help</code> lists the exact
-commands. The <a href="https://github.com/porto-containers/porto/blob/main/docs/README.md" rel="noopener">docs index</a>
+commands. The <a href="index.html">docs index</a>
 covers what this skill leaves out: remote environments, extensions, data
 backups and migration, WSL, native Windows containers, networking and HTTPS.</li>
 </ul>

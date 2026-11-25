@@ -6,6 +6,8 @@ import test from "node:test";
 import { checkSite } from "../scripts/check-links.mjs";
 import { repositoryTarget } from "../scripts/links.mjs";
 import { assertSafeTarget } from "../scripts/package.mjs";
+import { resolver } from "../scripts/build.mjs";
+import { pages } from "../scripts/pages.mjs";
 import { createSlugger, flowchartToHtml, renderMarkdown } from "../scripts/markdown.mjs";
 
 test("heading ids follow GitHub's slugs, including duplicates and punctuation", () => {
@@ -101,4 +103,15 @@ test("packaging refuses to replace the repository, its parents or its folders", 
   }
   assert.equal(assertSafeTarget(join(repo, "dist"), repo), join(repo, "dist"));
   assert.equal(assertSafeTarget(join(tmpdir(), "pages"), repo), join(tmpdir(), "pages"));
+});
+
+test("links to published Porto docs stay on the site, other files pin to the synced commit", () => {
+  const source = { repository: "porto-containers/porto", commit: "a".repeat(40), links: { LICENSE: "blob", "internal/store": "tree" } };
+  const resolve = resolver(pages.find((page) => page.source === "docs/installation.md"), source);
+  assert.deepEqual(resolve("../README.md#quickstart"), { href: "overview.html#quickstart" });
+  assert.deepEqual(resolve("README.md"), { href: "index.html" });
+  assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/docs/runtimes.md#requirements"), { href: "runtimes.html#requirements" });
+  assert.deepEqual(resolve("../internal/store/"), { href: `https://github.com/porto-containers/porto/tree/${"a".repeat(40)}/internal/store`, external: true });
+  assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/go.mod"), { href: "https://github.com/porto-containers/porto/blob/main/go.mod", external: true });
+  assert.throws(() => resolve("../missing.md"), /not in SOURCE\.json links/);
 });

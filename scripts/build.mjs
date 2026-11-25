@@ -29,9 +29,16 @@ export async function loadSource() {
   return source;
 }
 
-function resolver(page, source) {
+// Maps a Markdown link in a vendored document to a site page or a pinned GitHub URL.
+export function resolver(page, source) {
   const bySource = new Map(pages.map((entry) => [entry.source, entry]));
+  const blob = new RegExp(`^https://github\\.com/${source.repository.replace(".", "\\.")}/blob/[^/]+/([^?#]+)(#.*)?$`);
   return (url) => {
+    const published = url.match(blob);
+    if (published && (bySource.has(published[1]) || published[1] === indexSource)) {
+      const local = bySource.get(published[1]);
+      return { href: `${local ? `${local.slug}.html` : "index.html"}${published[2] ?? ""}` };
+    }
     const target = repositoryTarget(page.source, url);
     if (target === null) {
       const external = /^[a-z][a-z0-9+.-]*:/i.test(url);
