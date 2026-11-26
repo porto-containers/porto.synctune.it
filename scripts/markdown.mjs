@@ -132,7 +132,6 @@ class Renderer {
 
   anchor(url, content, className = "") {
     const target = this.link(url);
-    if (target.href === null) return content;
     const rel = target.external ? ' rel="noopener"' : "";
     const cls = className ? ` class="${className}"` : "";
     return `<a${cls} href="${escapeHtml(target.href)}"${rel}>${content}</a>`;
