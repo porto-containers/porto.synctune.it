@@ -1,18 +1,16 @@
 // Checks a packaged website: every local link, asset and anchor resolves, ids are unique and
 // each page has the basic accessible structure. With --external, also requests outbound URLs.
 //
+// Local links follow GitHub Pages clean URLs: `a` serves a.html and `dir/` serves dir/index.html.
+// Links ending in .html, and links to a directory without the trailing slash (Pages answers
+// with a redirect), are reported. Sitemap entries and og:url follow the same rules.
+//
 //   node scripts/check-links.mjs <packaged directory> [--external]
 import { readFile, readdir, stat } from "node:fs/promises";
-import { dirname, extname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { decodeEntities } from "./markdown.mjs";
 import { site } from "./pages.mjs";
-
-// Outbound links in vendored Porto docs that are known to fail for the public. Fix them upstream,
-// then remove the entry. Listed URLs are reported as warnings instead of failures.
-export const knownUnreachable = new Map([
-  ["https://github.com/mbianchidev/etcqlite", "private repository linked from Porto's docs/integrations.md"],
-]);
 
 const PINNED = new RegExp(`^https://github\\.com/${site.repository.replace(".", "\\.")}/(?:blob|tree)/[0-9a-f]{40}/`);
 
@@ -21,7 +19,27 @@ async function htmlFiles(directory) {
   return entries.filter((entry) => entry.isFile() && entry.name.endsWith(".html")).map((entry) => join(entry.parentPath, entry.name));
 }
 
-const exists = (path) => stat(path).then((info) => info, () => null);
+const isFile = (path) => stat(path).then((info) => info.isFile(), () => false);
+
+// Resolves a local URL path (no fragment) from the page `from` to a file under `root`.
+// Returns { target }, or { problem } and an optional corrected path in `fix`.
+async function resolveLocal(root, from, path) {
+  if (!path) return { target: from };
+  const decoded = decodeURIComponent(path);
+  if (/\.html$/i.test(decoded)) {
+    return { problem: "ends in .html", fix: path.replace(/(^|\/)index\.html$/i, "$1").replace(/\.html$/i, "") || "./" };
+  }
+  const target = decoded.startsWith("/") ? join(root, decoded) : resolve(dirname(from), decoded);
+  if (target !== root && !target.startsWith(root + sep)) return { problem: "leaves the site" };
+  if (/(^|\/)(\.\.?)?$/.test(decoded)) {
+    const index = join(target, "index.html");
+    return (await isFile(index)) ? { target: index } : { problem: "does not exist" };
+  }
+  if (await isFile(target)) return { target };
+  if (await isFile(`${target}.html`)) return { target: `${target}.html` };
+  if (await isFile(join(target, "index.html"))) return { problem: "is a directory without the trailing slash, which GitHub Pages redirects", fix: `${path}/` };
+  return { problem: "does not exist" };
+}
 
 function attributes(html, name) {
   return [...html.matchAll(new RegExp(`\\s${name}="([^"]*)"`, "g"))].map((match) => decodeEntities(match[1]));
@@ -68,11 +86,13 @@ export async function checkSite(directory) {
       previous = Number(level);
     }
 
-    const urls = [...attributes(body, "href"), ...attributes(body, "src")];
+    const ogUrls = [...body.matchAll(/<meta property="og:url" content="([^"]*)"/g)].map((match) => decodeEntities(match[1]));
+    const urls = [...attributes(body, "href"), ...attributes(body, "src"), ...ogUrls];
     for (const url of urls) {
       if (/^(mailto|tel):/i.test(url)) continue;
       let local = url;
-      if (/^https?:\/\//i.test(url)) {
+      const absolute = /^https?:\/\//i.test(url);
+      if (absolute) {
         const parsed = new URL(url);
         if (parsed.origin !== site.origin) {
           if (!PINNED.test(url)) externals.set(url, [...(externals.get(url) ?? []), name]);
@@ -86,26 +106,26 @@ export async function checkSite(directory) {
       const hashIndex = local.indexOf("#");
       const path = hashIndex < 0 ? local : local.slice(0, hashIndex);
       const hash = hashIndex < 0 ? "" : decodeURIComponent(local.slice(hashIndex + 1));
-      let target = path ? (path.startsWith("/") ? join(root, path) : resolve(dirname(file), path)) : file;
-      target = decodeURIComponent(target);
-      if (!target.startsWith(root)) {
-        problems.push(`${name}: ${url} leaves the site`);
-        continue;
-      }
-      let info = await exists(target);
-      if (info?.isDirectory()) {
-        target = join(target, "index.html");
-        info = await exists(target);
-      } else if (!info && !extname(target)) {
-        target = `${target}.html`;
-        info = await exists(target);
-      }
-      if (!info) {
-        problems.push(`${name}: ${url} does not exist`);
+      const { target, problem, fix } = await resolveLocal(root, file, path);
+      if (problem) {
+        const suggestion = fix ? `; use ${absolute ? site.origin : ""}${fix}${hashIndex < 0 ? "" : local.slice(hashIndex)}` : "";
+        problems.push(`${name}: ${url} ${problem}${suggestion}`);
         continue;
       }
       if (hash && target.endsWith(".html") && !ids.get(target)?.has(hash)) problems.push(`${name}: ${url} has no #${hash} target`);
     }
+  }
+
+  const sitemap = await readFile(join(root, "sitemap.xml"), "utf8").catch(() => null);
+  for (const [, loc] of sitemap?.matchAll(/<loc>([^<]*)<\/loc>/g) ?? []) {
+    const url = decodeEntities(loc);
+    if (!url.startsWith(`${site.origin}/`)) {
+      problems.push(`sitemap.xml: ${url} is not on ${site.origin}`);
+      continue;
+    }
+    const path = new URL(url).pathname;
+    const { problem, fix } = await resolveLocal(root, join(root, "index.html"), path);
+    if (problem) problems.push(`sitemap.xml: ${url} ${problem}${fix ? `; use ${site.origin}${fix}` : ""}`);
   }
   return { problems, warnings, externals, pages: files.length };
 }
@@ -148,8 +168,7 @@ async function main() {
       for (const { url, status, error } of batch) {
         const from = externals.get(url).slice(0, 3).join(", ");
         const failed = status < 200 || status >= 400;
-        if (failed && knownUnreachable.has(url)) warnings.push(`${url} returned ${status || error}: ${knownUnreachable.get(url)}`);
-        else if (failed && (transient(status) || (!status && error !== "ENOTFOUND"))) warnings.push(`${url} is temporarily unavailable (${status || error}) after retries (linked from ${from})`);
+        if (failed && (transient(status) || (!status && error !== "ENOTFOUND"))) warnings.push(`${url} is temporarily unavailable (${status || error}) after retries (linked from ${from})`);
         else if (failed) problems.push(`${url} returned ${status || error} (linked from ${from})`);
       }
     }

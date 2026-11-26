@@ -6,15 +6,17 @@ const CSP = "default-src 'self'; img-src 'self'; style-src 'self'; script-src 's
 export const logo = (prefix) =>
   `<img class="mark" src="${prefix}assets/favicon.svg" alt="" width="32" height="32">`;
 
+// Links use GitHub Pages clean URLs: pages without .html, directory indexes with a trailing slash.
 export function header(prefix, current) {
-  const link = (href, label, key) => `<a href="${prefix}${href}"${current === key ? ' aria-current="page"' : ""}>${label}</a>`;
+  const home = prefix || "./";
+  const link = (href, label, key) => `<a href="${href}"${current === key ? ' aria-current="page"' : ""}>${label}</a>`;
   return `<header class="masthead">
   <div class="masthead-inner">
-    <a class="brand" href="${prefix}index.html">${logo(prefix)}<span>Porto</span></a>
+    <a class="brand" href="${home}">${logo(prefix)}<span>Porto</span></a>
     <nav class="site-nav" aria-label="Site">
-      ${link("docs/index.html", "Docs", "docs")}
-      ${link("index.html#install", "Install", "install")}
-      ${link("docs/index.html#contribute", "Contribute", "contribute")}
+      ${link(`${prefix}docs/`, "Docs", "docs")}
+      ${link(`${home}#install`, "Install", "install")}
+      ${link(`${prefix}docs/#contribute`, "Contribute", "contribute")}
       <a href="https://github.com/${site.repository}" rel="noopener">GitHub<span class="visually-hidden"> repository</span> <span aria-hidden="true">&#8599;</span></a>
     </nav>
   </div>
@@ -61,7 +63,7 @@ function sidebar(currentSlug) {
   const groups = sections
     .map((section) => {
       const items = section.pages
-        .map((page) => `<li><a href="${page.slug}.html"${page.slug === currentSlug ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}</a></li>`)
+        .map((page) => `<li><a href="${page.slug}"${page.slug === currentSlug ? ' aria-current="page"' : ""}>${escapeHtml(page.title)}</a></li>`)
         .join("\n          ");
       return `<li class="nav-group">
         <p class="nav-label" id="nav-${section.id}">${escapeHtml(section.title)}</p>
@@ -75,7 +77,7 @@ function sidebar(currentSlug) {
   <details class="collapsible" open>
     <summary>Browse the docs</summary>
     <ul class="nav-groups">
-      <li class="nav-group"><ul><li><a href="index.html"${currentSlug === "index" ? ' aria-current="page"' : ""}>All documentation</a></li></ul></li>
+      <li class="nav-group"><ul><li><a href="./"${currentSlug === "index" ? ' aria-current="page"' : ""}>All documentation</a></li></ul></li>
       ${groups}
     </ul>
   </details>
@@ -121,13 +123,13 @@ export function docPage({ page, rendered, source, previous, next }) {
     body = body.replace(/(<h1\b[^>]*>[\s\S]*?<\/h1>\n)/, `$1${toc}`);
   }
   const pager = [
-    previous ? `<a class="pager-prev" href="${previous.slug}.html" rel="prev"><span class="pager-label">Previous</span> ${escapeHtml(previous.title)}</a>` : "",
-    next ? `<a class="pager-next" href="${next.slug}.html" rel="next"><span class="pager-label">Next</span> ${escapeHtml(next.title)}</a>` : "",
+    previous ? `<a class="pager-prev" href="${previous.slug}" rel="prev"><span class="pager-label">Previous</span> ${escapeHtml(previous.title)}</a>` : "",
+    next ? `<a class="pager-next" href="${next.slug}" rel="next"><span class="pager-label">Next</span> ${escapeHtml(next.title)}</a>` : "",
   ].join("\n    ");
   return `<!doctype html>
 <html lang="en">
 <head>
-  ${head({ prefix: "../", title: `${page.title} | Porto docs`, description: page.summary, path: `docs/${page.slug}.html` })}
+  ${head({ prefix: "../", title: `${page.title} | Porto docs`, description: page.summary, path: `docs/${page.slug}` })}
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#content">Skip to content</a>
@@ -135,7 +137,7 @@ ${header("../", page.section.audience === "contributors" ? "contribute" : "docs"
 <div class="docs-shell">
 ${sidebar(page.slug)}
 <main id="content" tabindex="-1">
-  <p class="crumbs"><a href="index.html">Docs</a> <span aria-hidden="true">/</span> <a href="index.html#${page.section.id}">${escapeHtml(page.section.title)}</a></p>
+  <p class="crumbs"><a href="./">Docs</a> <span aria-hidden="true">/</span> <a href="./#${page.section.id}">${escapeHtml(page.section.title)}</a></p>
   <article class="prose" aria-label="${escapeHtml(title)}">
 ${body}  </article>
   <aside class="doc-source" aria-label="Source">
@@ -155,7 +157,7 @@ ${footer("../", source)}
 export function docsIndex({ source }) {
   const block = (section) => {
     const cards = section.pages
-      .map((page) => `<li><a href="${page.slug}.html"><span class="entry-title">${escapeHtml(page.title)}</span><span class="entry-summary">${escapeHtml(page.summary)}</span></a></li>`)
+      .map((page) => `<li><a href="${page.slug}"><span class="entry-title">${escapeHtml(page.title)}</span><span class="entry-summary">${escapeHtml(page.summary)}</span></a></li>`)
       .join("\n        ");
     return `<section class="doc-section" aria-labelledby="${section.id}">
       <h3 id="${section.id}">${escapeHtml(section.title)}</h3>
@@ -169,7 +171,7 @@ export function docsIndex({ source }) {
   return `<!doctype html>
 <html lang="en">
 <head>
-  ${head({ prefix: "../", title: "Porto documentation", description: "Guides for installing and using Porto, and for contributing to it.", path: "docs/index.html" })}
+  ${head({ prefix: "../", title: "Porto documentation", description: "Guides for installing and using Porto, and for contributing to it.", path: "docs/" })}
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#content">Skip to content</a>
@@ -182,10 +184,10 @@ ${sidebar("index")}
     <h1>Porto documentation</h1>
     <p class="lede">How to install, run and troubleshoot Porto, and how to work on it. These pages are published from the <a href="https://github.com/${site.repository}/tree/${source.commit}" rel="noopener">Porto repository</a> at release v${escapeHtml(source.version)}.</p>
     <h2 id="use">Use Porto</h2>
-    <p>New to Porto? Start with the <a href="overview.html#quickstart">quickstart</a>, then <a href="installation.html">installation</a> for platform details.</p>
+    <p>New to Porto? Start with the <a href="overview#quickstart">quickstart</a>, then <a href="installation">installation</a> for platform details.</p>
     ${users}
     <h2 id="contribute">Contribute</h2>
-    <p>Build Porto from source with the <a href="overview.html#build-from-source">source build steps</a>, read the <a href="overview.html#contributing">contributing notes</a>, then run the <a href="ci-cd.html#running-the-checks-locally">local checks</a> before opening a pull request.</p>
+    <p>Build Porto from source with the <a href="overview#build-from-source">source build steps</a>, read the <a href="overview#contributing">contributing notes</a>, then run the <a href="ci-cd#running-the-checks-locally">local checks</a> before opening a pull request.</p>
     ${contributors}
   </article>
 </main>
