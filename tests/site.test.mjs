@@ -179,3 +179,14 @@ test("links to published Porto docs stay on the site, other files pin to the syn
   assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/go.mod"), { href: "https://github.com/porto-containers/porto/blob/main/go.mod", external: true });
   assert.throws(() => resolve("../missing.md"), /not in SOURCE\.json links/);
 });
+
+test("links to unlinked destinations, such as private repositories, render as plain text", () => {
+  const source = { repository: "porto-containers/porto", commit: "a".repeat(40), links: {} };
+  const resolve = resolver(pages.find((page) => page.source === "docs/integrations.md"), source);
+  assert.deepEqual(resolve("https://github.com/mbianchidev/etcqlite"), { href: null });
+  assert.deepEqual(resolve("https://github.com/mbianchidev/etcqlite/blob/main/README.md#usage"), { href: null });
+  assert.deepEqual(resolve("https://github.com/mbianchidev/etcqlite-other"), { href: "https://github.com/mbianchidev/etcqlite-other", external: true });
+  const { html } = renderMarkdown("# T\n\n[Etcqlite](https://github.com/mbianchidev/etcqlite) and https://github.com/mbianchidev/etcqlite are opt-in.", { resolveLink: resolve });
+  assert.match(html, /<p>Etcqlite and https:\/\/github\.com\/mbianchidev\/etcqlite are opt-in\.<\/p>/);
+  assert.doesNotMatch(html, /<a /);
+});

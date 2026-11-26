@@ -12,12 +12,6 @@ import { fileURLToPath } from "node:url";
 import { decodeEntities } from "./markdown.mjs";
 import { site } from "./pages.mjs";
 
-// Outbound links in vendored Porto docs that are known to fail for the public. Fix them upstream,
-// then remove the entry. Listed URLs are reported as warnings instead of failures.
-export const knownUnreachable = new Map([
-  ["https://github.com/mbianchidev/etcqlite", "private repository linked from Porto's docs/integrations.md"],
-]);
-
 const PINNED = new RegExp(`^https://github\\.com/${site.repository.replace(".", "\\.")}/(?:blob|tree)/[0-9a-f]{40}/`);
 
 async function htmlFiles(directory) {
@@ -174,8 +168,7 @@ async function main() {
       for (const { url, status, error } of batch) {
         const from = externals.get(url).slice(0, 3).join(", ");
         const failed = status < 200 || status >= 400;
-        if (failed && knownUnreachable.has(url)) warnings.push(`${url} returned ${status || error}: ${knownUnreachable.get(url)}`);
-        else if (failed && (transient(status) || (!status && error !== "ENOTFOUND"))) warnings.push(`${url} is temporarily unavailable (${status || error}) after retries (linked from ${from})`);
+        if (failed && (transient(status) || (!status && error !== "ENOTFOUND"))) warnings.push(`${url} is temporarily unavailable (${status || error}) after retries (linked from ${from})`);
         else if (failed) problems.push(`${url} returned ${status || error} (linked from ${from})`);
       }
     }

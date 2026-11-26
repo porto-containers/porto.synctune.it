@@ -29,12 +29,23 @@ export async function loadSource() {
   return source;
 }
 
+// Outbound destinations in vendored Porto docs that the public cannot open, such as private
+// repositories. Links to them, including their subpaths, render as plain text, the way the
+// Synctune sites list projects whose source is not public. Remove an entry once it is public.
+export const unlinkedUrls = new Set([
+  "https://github.com/mbianchidev/etcqlite", // private repository, linked from docs/integrations.md
+]);
+
+const isUnlinked = (url) => [...unlinkedUrls].some((prefix) => url === prefix || (url.startsWith(prefix) && "/?#".includes(url[prefix.length])));
+
 // Maps a Markdown link in a vendored document to a site page or a pinned GitHub URL.
 // Site pages use clean URLs: `installation` for docs/installation.html, `./` for docs/index.html.
+// Returns { href: null } for an unlinked destination, which renders as the link text alone.
 export function resolver(page, source) {
   const bySource = new Map(pages.map((entry) => [entry.source, entry]));
   const blob = new RegExp(`^https://github\\.com/${source.repository.replace(".", "\\.")}/blob/[^/]+/([^?#]+)(#.*)?$`);
   return (url) => {
+    if (isUnlinked(url)) return { href: null };
     const published = url.match(blob);
     if (published && (bySource.has(published[1]) || published[1] === indexSource)) {
       const local = bySource.get(published[1]);

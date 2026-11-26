@@ -64,9 +64,11 @@ Git commands). The sync:
   It warns about remote images that are not vendored; those render as links.
 
 Never edit files under `vendor/porto`. Fix wording or links in Porto itself,
-release it, then sync. Known upstream outbound failures live in
-`knownUnreachable` in `scripts/check-links.mjs`; remove an entry once Porto
-fixes the link.
+release it, then sync. Outbound destinations the public cannot open, such as
+the private Etcqlite repository, are listed in `unlinkedUrls` in
+`scripts/build.mjs`. Links to them render as plain text, the way the Synctune
+sites list projects whose source is not public, so the outbound link check
+stays strict. Remove an entry once the destination is public, then rebuild.
 
 ## Markdown rendering
 
