@@ -30,6 +30,7 @@ export async function loadSource() {
 }
 
 // Maps a Markdown link in a vendored document to a site page or a pinned GitHub URL.
+// Site pages use clean URLs: `installation` for docs/installation.html, `./` for docs/index.html.
 export function resolver(page, source) {
   const bySource = new Map(pages.map((entry) => [entry.source, entry]));
   const blob = new RegExp(`^https://github\\.com/${source.repository.replace(".", "\\.")}/blob/[^/]+/([^?#]+)(#.*)?$`);
@@ -37,7 +38,7 @@ export function resolver(page, source) {
     const published = url.match(blob);
     if (published && (bySource.has(published[1]) || published[1] === indexSource)) {
       const local = bySource.get(published[1]);
-      return { href: `${local ? `${local.slug}.html` : "index.html"}${published[2] ?? ""}` };
+      return { href: `${local ? local.slug : "./"}${published[2] ?? ""}` };
     }
     const target = repositoryTarget(page.source, url);
     if (target === null) {
@@ -46,8 +47,8 @@ export function resolver(page, source) {
     }
     const [, hash] = splitHash(url);
     const fragment = hash ? `#${hash}` : "";
-    if (bySource.has(target)) return { href: `${bySource.get(target).slug}.html${fragment}` };
-    if (target === indexSource) return { href: `index.html${fragment}` };
+    if (bySource.has(target)) return { href: `${bySource.get(target).slug}${fragment}` };
+    if (target === indexSource) return { href: `./${fragment}` };
     const kind = source.links[target];
     if (!kind) throw new Error(`${page.source}: ${url} is not in SOURCE.json links; run scripts/sync-porto.mjs`);
     return { href: `${githubUrl(source.repository, kind, source.commit, target)}${fragment}`, external: true };
@@ -90,7 +91,7 @@ export async function renderSite() {
   }
   files.set("docs/index.html", docsIndex({ source }));
   for (const path of handWritten) files.set(path, injectChrome(await readFile(join(root, path), "utf8"), source));
-  const urls = ["", "docs/index.html", ...pages.map((page) => `docs/${page.slug}.html`)];
+  const urls = ["", "docs/", ...pages.map((page) => `docs/${page.slug}`)];
   files.set(
     "sitemap.xml",
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${site.origin}/${url}</loc></url>`).join("\n")}\n</urlset>\n`,

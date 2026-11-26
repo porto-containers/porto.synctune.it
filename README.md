@@ -18,6 +18,7 @@ node scripts/build.mjs          # regenerate docs pages and shared page chrome
 node --test tests/              # unit tests
 node scripts/package.mjs dist   # copy the public files
 node scripts/check-links.mjs dist [--external]
+node scripts/serve.mjs dist     # preview at http://127.0.0.1:8080 with clean URLs
 ```
 
 ## License

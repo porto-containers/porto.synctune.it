@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { checkSite } from "../scripts/check-links.mjs";
+import { createSiteServer } from "../scripts/serve.mjs";
 import { repositoryTarget } from "../scripts/links.mjs";
 import { assertSafeTarget } from "../scripts/package.mjs";
 import { resolver } from "../scripts/build.mjs";
@@ -78,20 +79,82 @@ test("simple Mermaid flowcharts become an accessible list, others fall back", ()
   assert.equal(flowchartToHtml("sequenceDiagram\n  A->>B: hi"), null);
 });
 
+const page = (body, head = "") => `<!doctype html><html lang="en"><head><title>T</title>${head}</head><body><a class="skip-link" href="#content">Skip</a><main id="content"><h1 id="top">T</h1>${body}</main></body></html>`;
+
 test("the site check reports broken files, anchors and duplicate ids", async () => {
   const root = await mkdtemp(join(tmpdir(), "porto-site-"));
   try {
-    const page = (body) => `<!doctype html><html lang="en"><head><title>T</title></head><body><a class="skip-link" href="#content">Skip</a><main id="content"><h1 id="top">T</h1>${body}</main></body></html>`;
     await mkdir(join(root, "docs"));
-    await writeFile(join(root, "index.html"), page('<a href="docs/a.html#here">ok</a><a href="docs/a.html#gone">bad anchor</a><a href="missing.html">missing</a>'));
+    await writeFile(join(root, "index.html"), page('<a href="docs/a#here">ok</a><a href="docs/a#gone">bad anchor</a><a href="missing">missing</a>'));
     await writeFile(join(root, "docs/a.html"), page('<p id="here">x</p><p id="here">y</p>'));
     const { problems } = await checkSite(root);
     assert.deepEqual(problems.sort(), [
       'docs/a.html: duplicate id "here"',
-      "index.html: docs/a.html#gone has no #gone target",
-      "index.html: missing.html does not exist",
+      "index.html: docs/a#gone has no #gone target",
+      "index.html: missing does not exist",
     ]);
   } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("the site check follows GitHub Pages clean URLs and rejects .html links", async () => {
+  const root = await mkdtemp(join(tmpdir(), "porto-site-"));
+  try {
+    await mkdir(join(root, "docs"));
+    await mkdir(join(root, "assets"));
+    await writeFile(join(root, "assets/x.css"), "");
+    const links = ["./", "docs/", "docs/#top", "docs/a", "docs/a#here", "https://porto.synctune.it/docs/a", "docs", "docs/a/", "docs/missing", "docs/#gone"];
+    const legacy = ["docs/a.html#here", "docs/index.html", "index.html#top", "https://porto.synctune.it/docs/a.html"];
+    await writeFile(join(root, "index.html"), page([...links, ...legacy].map((href) => `<a href="${href}">x</a>`).join(""), '<link rel="stylesheet" href="assets/x.css">'));
+    await writeFile(join(root, "docs/index.html"), page('<a href="../">home</a><a href="a#here">a</a>'));
+    await writeFile(join(root, "docs/a.html"), page('<p id="here">x</p><a href="../#top">home</a><a href="./">docs</a>', '<meta property="og:url" content="https://porto.synctune.it/docs/a.html">'));
+    const loc = (path) => `<url><loc>https://porto.synctune.it/${path}</loc></url>`;
+    await writeFile(join(root, "sitemap.xml"), `<urlset>${["", "docs/", "docs/a", "docs/a.html", "docs"].map(loc).join("")}</urlset>`);
+    const { problems } = await checkSite(root);
+    assert.deepEqual(problems.sort(), [
+      "docs/a.html: https://porto.synctune.it/docs/a.html ends in .html; use https://porto.synctune.it/docs/a",
+      "index.html: docs is a directory without the trailing slash, which GitHub Pages redirects; use docs/",
+      "index.html: docs/#gone has no #gone target",
+      "index.html: docs/a.html#here ends in .html; use docs/a#here",
+      "index.html: docs/a/ does not exist",
+      "index.html: docs/index.html ends in .html; use docs/",
+      "index.html: docs/missing does not exist",
+      "index.html: https://porto.synctune.it/docs/a.html ends in .html; use https://porto.synctune.it/docs/a",
+      "index.html: index.html#top ends in .html; use ./#top",
+      "sitemap.xml: https://porto.synctune.it/docs is a directory without the trailing slash, which GitHub Pages redirects; use https://porto.synctune.it/docs/",
+      "sitemap.xml: https://porto.synctune.it/docs/a.html ends in .html; use https://porto.synctune.it/docs/a",
+    ]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("the preview server maps URLs like GitHub Pages", async () => {
+  const root = await mkdtemp(join(tmpdir(), "porto-serve-"));
+  const server = createSiteServer(join(root, "site"));
+  try {
+    await mkdir(join(root, "site/docs"), { recursive: true });
+    await writeFile(join(root, "secret.txt"), "secret");
+    for (const [path, body] of Object.entries({ "index.html": "home", "404.html": "not found", "docs/index.html": "docs", "docs/a.html": "page a" })) {
+      await writeFile(join(root, "site", path), body);
+    }
+    await new Promise((ready) => server.listen(0, "127.0.0.1", ready));
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const get = async (path) => {
+      const response = await fetch(`${base}${path}`, { redirect: "manual" });
+      return [response.status, response.headers.get("location") ?? (await response.text())];
+    };
+    assert.deepEqual(await get("/"), [200, "home"]);
+    assert.deepEqual(await get("/docs/a"), [200, "page a"]);
+    assert.deepEqual(await get("/docs/a.html"), [200, "page a"]);
+    assert.deepEqual(await get("/docs/"), [200, "docs"]);
+    assert.deepEqual(await get("/docs?x=1"), [301, "/docs/?x=1"]);
+    assert.deepEqual(await get("/docs/a/"), [404, "not found"]);
+    assert.deepEqual(await get("/missing"), [404, "not found"]);
+    assert.deepEqual(await get("/..%2Fsecret.txt"), [404, "not found"]);
+  } finally {
+    server.close();
     await rm(root, { recursive: true, force: true });
   }
 });
@@ -108,9 +171,10 @@ test("packaging refuses to replace the repository, its parents or its folders", 
 test("links to published Porto docs stay on the site, other files pin to the synced commit", () => {
   const source = { repository: "porto-containers/porto", commit: "a".repeat(40), links: { LICENSE: "blob", "internal/store": "tree" } };
   const resolve = resolver(pages.find((page) => page.source === "docs/installation.md"), source);
-  assert.deepEqual(resolve("../README.md#quickstart"), { href: "overview.html#quickstart" });
-  assert.deepEqual(resolve("README.md"), { href: "index.html" });
-  assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/docs/runtimes.md#requirements"), { href: "runtimes.html#requirements" });
+  assert.deepEqual(resolve("../README.md#quickstart"), { href: "overview#quickstart" });
+  assert.deepEqual(resolve("README.md"), { href: "./" });
+  assert.deepEqual(resolve("README.md#guides"), { href: "./#guides" });
+  assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/docs/runtimes.md#requirements"), { href: "runtimes#requirements" });
   assert.deepEqual(resolve("../internal/store/"), { href: `https://github.com/porto-containers/porto/tree/${"a".repeat(40)}/internal/store`, external: true });
   assert.deepEqual(resolve("https://github.com/porto-containers/porto/blob/main/go.mod"), { href: "https://github.com/porto-containers/porto/blob/main/go.mod", external: true });
   assert.throws(() => resolve("../missing.md"), /not in SOURCE\.json links/);

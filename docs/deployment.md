@@ -11,12 +11,23 @@ built-in modules. To preview the exact public files:
 
 ```sh
 node scripts/package.mjs dist
-python3 -m http.server 8080 --bind 127.0.0.1 -d dist
+node scripts/serve.mjs dist        # --port 8080 by default
 ```
 
-Visit `http://127.0.0.1:8080` and stop the server with Ctrl+C. Any static
-server works; Python is not a site dependency. `dist/` is ignored by Git.
-Python's server does not serve `404.html` for missing paths; open it directly.
+Visit `http://127.0.0.1:8080` and stop the server with Ctrl+C. `dist/` is
+ignored by Git. The preview server answers like GitHub Pages, so the site's
+clean URLs work locally:
+
+| Request | Response |
+| --- | --- |
+| `/docs/installation` | `docs/installation.html` |
+| `/docs/` | `docs/index.html` |
+| `/docs` | 301 redirect to `/docs/` |
+| `/docs/installation.html` | Still served, so old links keep working |
+| Anything else | `404.html` with status 404 |
+
+A plain static file server such as `python3 -m http.server` does not map
+`/docs/installation` to `docs/installation.html`, so page links would 404 there.
 
 ## GitHub Pages and DNS
 
@@ -47,8 +58,10 @@ schedule and manual dispatch:
 
 - **Check and package** runs the unit tests, confirms the generated pages match
   the vendored docs (`build.mjs --check`), copies the public files and checks
-  every local link, asset, anchor, unique id and basic page structure. On
-  `main` pushes and manual runs it uploads the Pages artifact.
+  every local link, asset, anchor, unique id and basic page structure. Page
+  links, `og:url` and `sitemap.xml` entries must use clean URLs (see
+  [URLs](maintenance.md#urls)). On `main` pushes and manual runs it uploads
+  the Pages artifact.
 - **Outbound links** requests every external URL. Pinned GitHub links to
   Porto's source are verified by the sync script instead. Rate limits, server
   errors and timeouts are retried, then reported as warnings; 4xx responses and
@@ -75,5 +88,8 @@ GitHub Pages serves it for missing paths at any depth.
 ## Other static hosts
 
 Publish the output of `node scripts/package.mjs <dir>`. The site needs no
-environment variables, rewrites or server functions. Select `404.html` as the
-not-found page if the host requires it.
+environment variables or server functions, but its links omit `.html`: the host
+must serve `/docs/installation` from `docs/installation.html` and `/docs/` from
+`docs/index.html`, as GitHub Pages does. Turn on the host's clean or pretty URL
+option if it has one. Select `404.html` as the not-found page if the host
+requires it.

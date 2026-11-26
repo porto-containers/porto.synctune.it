@@ -18,6 +18,27 @@ page. Edit attributes on the opening comment, not the generated lines.
 Run `node scripts/build.mjs` after editing any page, layout or script, and commit
 the result. CI fails when generated files are stale.
 
+## URLs
+
+Pages stay `.html` files, but every link uses GitHub Pages clean URLs, which
+serve `/docs/installation` from `docs/installation.html`:
+
+- Link a page without the extension: `docs/installation`,
+  `docs/installation#macos`, `../docs/runtimes`.
+- Link a directory index with a trailing slash: `./`, `docs/`, `../`. Pages
+  redirects `/docs` to `/docs/`, so never drop the slash.
+- Keep links relative in `index.html` and generated pages; `404.html` uses
+  root-absolute links such as `/docs/`.
+- Canonical, `og:url` and `sitemap.xml` URLs follow the same form:
+  `https://porto.synctune.it/docs/installation`, `https://porto.synctune.it/docs/`.
+
+`scripts/layout.mjs` writes the shared links, and `resolver()` in
+`scripts/build.mjs` maps Markdown links between Porto documents to these URLs.
+`scripts/check-links.mjs` resolves `a` to `a.html` and `dir/` to
+`dir/index.html`. It fails on links ending in `.html`, on links to a directory
+without the trailing slash and on targets that do not exist. Old `.html` URLs
+still load on GitHub Pages, so inbound links keep working.
+
 ## Update the Porto documentation
 
 The docs are a snapshot of one Porto commit, recorded in
